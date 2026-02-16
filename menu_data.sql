@@ -1,6 +1,6 @@
 -- Populate Database with Gong Cha Menu and Inventory
 
-TRUNCATE TABLE OrderModifier, OrderDetail, "Order", ProductModifier, ProductIngredient, ModifierOption, Product, Inventory, Employee RESTART IDENTITY CASCADE;
+TRUNCATE TABLE OrderModifier, OrderDetail, "order", ProductModifier, ProductIngredient, ModifierOption, Product, Inventory, Employee RESTART IDENTITY CASCADE;
 
 INSERT INTO Employee (name, role, pin_hash) VALUES 
 ('Manager One', 'Manager', 'hash123'),
@@ -37,14 +37,14 @@ INSERT INTO Inventory (item_name, quantity, unit_type, expiration_date) VALUES
 ('Ai-Yu Jelly', 20.0, 'kg', NOW() + INTERVAL '5 days'),
 ('Oreo Crumbs', 20.0, 'kg', NOW() + INTERVAL '3 months'),
 ('Milk Foam Powder', 50.0, 'kg', NOW() + INTERVAL '1 year'),
-('Red Bean', 20.0, 'kg', NOW() + INTERVAL '10 days'), -- Missing topping often found in these stores
+('Red Bean', 20.0, 'kg', NOW() + INTERVAL '10 days'), 
 ('Coffee Beans', 50.0, 'kg', NOW() + INTERVAL '3 months'),
 ('Taro Powder', 40.0, 'kg', NOW() + INTERVAL '1 year'),
 ('Matcha Powder', 30.0, 'kg', NOW() + INTERVAL '1 year'),
-('Chocolate Powder', 30.0, 'kg', NOW() + INTERVAL '1 year'), -- Good for mocha/choc options
+('Chocolate Powder', 30.0, 'kg', NOW() + INTERVAL '1 year'),
 ('Ice', 1000.0, 'kg', NOW() + INTERVAL '1 day'),
 ('Sugar', 500.0, 'kg', NOW() + INTERVAL '1 year'),
-('Cane Sugar Syrup', 100.0, 'liters', NOW() + INTERVAL '1 year'); -- Liquid sugar is key
+('Cane Sugar Syrup', 100.0, 'liters', NOW() + INTERVAL '1 year');
 
 -- Milk Foam Series
 INSERT INTO Product (name, base_price, category_name, description, color_code, is_active) VALUES
@@ -158,20 +158,159 @@ WHERE m.category = 'Milk Type'
   );
 
 
+-- === Base Teas ===
+-- Green Tea Bases
 INSERT INTO ProductIngredient (product_id, item_id)
 SELECT p.product_id, i.item_id
 FROM Product p, Inventory i
-WHERE p.name = 'Milk Foam Green Tea' 
-  AND i.item_name IN ('Green Tea Leaves', 'Milk Foam Powder');
+WHERE p.name LIKE '%Green Tea%' AND i.item_name = 'Green Tea Leaves';
 
+-- Black Tea Bases
 INSERT INTO ProductIngredient (product_id, item_id)
 SELECT p.product_id, i.item_id
 FROM Product p, Inventory i
-WHERE p.name = 'Pearl Milk Tea' 
-  AND i.item_name IN ('Black Tea Leaves', 'Milk', 'Tapioca Pearls', 'Sugar');
+WHERE (p.name LIKE '%Black Tea%' OR p.name = 'Pearl Milk Tea' OR p.name = 'Brown Sugar Milk Tea') AND i.item_name = 'Black Tea Leaves';
 
+-- Oolong Tea Bases
 INSERT INTO ProductIngredient (product_id, item_id)
 SELECT p.product_id, i.item_id
 FROM Product p, Inventory i
-WHERE p.name = 'Taro Slush' 
-  AND i.item_name IN ('Taro Powder', 'Milk', 'Ice', 'Sugar');
+WHERE p.name LIKE '%Oolong%' AND i.item_name = 'Oolong Tea Leaves';
+
+-- Earl Grey Tea Bases
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Earl Grey%' AND i.item_name = 'Earl Grey Tea Leaves';
+
+-- === Milk & Creamer ===
+-- Milk Teas 
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE (p.category_name = 'Milk Tea Series' OR p.name LIKE '%Milk Tea%') 
+  AND i.item_name IN ('Non-Dairy Creamer', 'Cane Sugar Syrup');
+
+-- === Specific Series Ingredients ===
+
+-- Milk Foam Series
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.category_name = 'Milk Foam Series' 
+  AND i.item_name IN ('Milk Foam Powder', 'Milk', 'Ice');
+
+-- Slush Series (Ice + Sugar)
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.category_name = 'Slush Series' 
+  AND i.item_name IN ('Ice', 'Cane Sugar Syrup');
+
+-- Coffee Series
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.category_name = 'Coffee Series' 
+  AND i.item_name = 'Coffee Beans';
+
+
+
+-- Wintermelon
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Wintermelon%' AND i.item_name = 'Wintermelon Syrup';
+
+-- Brown Sugar
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Brown Sugar%' AND i.item_name = 'Brown Sugar Syrup';
+
+-- Strawberry
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Strawberry%' AND i.item_name = 'Strawberry Jam';
+
+-- Mango
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Mango%' AND i.item_name = 'Mango Puree';
+
+-- Passionfruit
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Passionfruit%' AND i.item_name = 'Passionfruit Jam';
+
+-- Lychee
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Lychee%' AND i.item_name = 'Lychee Syrup';
+
+-- Hibiscus
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Hibiscus%' AND i.item_name = 'Hibiscus Syrup';
+
+-- Peach
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Peach%' AND i.item_name = 'Peach Syrup';
+
+-- Taro
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Taro%' AND i.item_name = 'Taro Powder';
+
+-- Matcha
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Matcha%' AND i.item_name = 'Matcha Powder';
+
+-- Lemon
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Lemon%' AND i.item_name = 'Lemon Juice';
+
+
+-- === Included Toppings (built-in) ===
+
+-- Pearl Milk Tea -> Tapioca
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name = 'Pearl Milk Tea' AND i.item_name = 'Tapioca Pearls';
+
+-- Brown Sugar Milk Tea 
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Creme Brulee%' AND i.item_name = 'Tapioca Pearls';
+
+-- 3J -> Pearls, Pudding, Herbal Jelly
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%3J%' AND i.item_name IN ('Tapioca Pearls', 'Pudding', 'Herbal Jelly');
+
+-- Basil Seeds
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Basil Seeds%' AND i.item_name = 'Basil Seeds';
+
+-- Ai-Yu + White Pearl
+INSERT INTO ProductIngredient (product_id, item_id)
+SELECT p.product_id, i.item_id
+FROM Product p, Inventory i
+WHERE p.name LIKE '%Ai-Yu%' AND i.item_name IN ('Ai-Yu Jelly', 'White Pearls');
