@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT * FROM "order" WHERE total_final > 20;
 =======
 SELECT
@@ -9,3 +10,9 @@ FROM "order"
 GROUP BY hour_label
 ORDER BY hour_label;
 >>>>>>> 51add1c5538fac48ffd80966ba0a34530de6585c
+=======
+SELECT * FROM "orders"
+ORDER BY total_final 
+DESC LIMIT(10); 
+// sdfsfdfd
+>>>>>>> Abel'sBranch
