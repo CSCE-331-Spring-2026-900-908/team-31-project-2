@@ -1,0 +1,1 @@
+SELECT * FROM "order" WHERE total_final > 20;
