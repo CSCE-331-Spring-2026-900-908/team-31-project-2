@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 with open("orders.csv", "w") as order_writer:
     with open("order_details.csv", "w") as detail_writer:
         with open("order_modifiers.csv", "w") as modifier_writer:
+            order_writer.write("id,emlpoyee_id,created_at,total_tax,total_final\n")
+            detail_writer.write("id,order_id,product_id,sold_price,snapshot_name\n")
+            modifier_writer.write("id,order_detail_id,modifier_option_id,price_charged,snapshot_name\n")
             big_days = [random.randint(0,364), random.randint(0,364), random.randint(0, 364)]
             order_id = 1
             detail_id = 1
