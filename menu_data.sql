@@ -3,8 +3,12 @@
 TRUNCATE TABLE OrderModifier, OrderDetail, "order", ProductModifier, ProductIngredient, ModifierOption, Product, Inventory, Employee RESTART IDENTITY CASCADE;
 
 INSERT INTO Employee (name, role, pin_hash) VALUES 
-('Manager One', 'Manager', 'hash123'),
-('Cashier Two', 'Cashier', 'hash456');
+('Vivian', 'Manager', 'hash123'),
+('Noah', 'Cashier', 'hash456'),
+('Abel', 'Cashier', 'hash789'),
+('Nitheesh', 'Cashier', 'hash1011'),
+('Long', 'Cashier', 'hash1213'),
+('Sanjit', 'Cashier', 'hash1415');
 
 INSERT INTO Inventory (item_name, quantity, unit_type, expiration_date) VALUES 
 ('Black Tea Leaves', 500.0, 'grams', NOW() + INTERVAL '1 year'),
