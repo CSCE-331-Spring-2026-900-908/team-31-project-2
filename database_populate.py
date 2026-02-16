@@ -26,7 +26,7 @@ with open("orders.csv", "w") as order_writer:
                 if day in big_days:
                     num_orders = 450
                 for order in range(num_orders):
-                    employee_id = random.randint(0, 30)
+                    employee_id = random.randint(1, 5)
                     date_time = new_year + timedelta(day, random.randint(0, 32400), 0, 0, 0, 9)
                     numItems = random.randint(1, 4)
                     order_price = 0
