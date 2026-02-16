@@ -1,3 +1,10 @@
+-- Special Query #1: "Weekly Sales History"
+
+-- Special Query #2: "Peak Sales Day"
+
+-- Special Query #3: "Realistic Sales History"
+
+-- Special Query #4: Menu Item Inventory
 SELECT p.name AS menu_item, COUNT(pi.item_id) AS inventory_item_count
 FROM product p
 JOIN productingredient pi ON p.product_id = pi.product_id
