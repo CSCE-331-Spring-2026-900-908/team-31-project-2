@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS OrderModifier CASCADE;
 DROP TABLE IF EXISTS OrderDetail CASCADE;
-DROP TABLE IF EXISTS "Order" CASCADE;
+DROP TABLE IF EXISTS "order" CASCADE;
 DROP TABLE IF EXISTS ProductModifier CASCADE;
 DROP TABLE IF EXISTS ModifierOption CASCADE;
 DROP TABLE IF EXISTS ProductIngredient CASCADE;
@@ -56,7 +56,7 @@ CREATE TABLE ProductModifier (
     PRIMARY KEY (product_id, option_id)
 );
 
-CREATE TABLE "Order" (
+CREATE TABLE "order" (
     id SERIAL PRIMARY KEY,
     employee_id INT REFERENCES Employee(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -66,7 +66,7 @@ CREATE TABLE "Order" (
 
 CREATE TABLE OrderDetail (
     id SERIAL PRIMARY KEY,
-    order_id INT REFERENCES "Order"(id),
+    order_id INT REFERENCES "order"(id),
     product_id INT REFERENCES Product(product_id),
     sold_price FLOAT NOT NULL,
     snapshot_name VARCHAR(255)
