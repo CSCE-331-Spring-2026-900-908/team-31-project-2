@@ -6,6 +6,10 @@ module com.example.team31project2 {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
 
+    requires java.sql;
+    requires org.postgresql.jdbc;
+
+
     opens com.example.team31project2 to javafx.fxml;
     exports com.example.team31project2;
 }
