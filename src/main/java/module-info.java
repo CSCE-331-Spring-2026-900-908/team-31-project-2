@@ -12,4 +12,9 @@ module com.example.team31project2 {
 
     opens com.example.team31project2 to javafx.fxml;
     exports com.example.team31project2;
+
+    opens com.example.team31project2.controller to javafx.fxml;
+    exports com.example.team31project2.controller;
+
+    
 }
