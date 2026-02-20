@@ -6,7 +6,7 @@ SELECT 'pseudocode: select count of orders grouped by week
 \prompt 'Which week would you like to see? ' weekchosen
 
 DO $$ 
-DECLARE 
+DECLARE                
     weekvar INT := :weekchosen; 
     order_ammount INT ; 
 BEGIN 
