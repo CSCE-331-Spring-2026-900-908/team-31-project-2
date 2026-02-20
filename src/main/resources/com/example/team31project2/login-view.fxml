@@ -46,43 +46,43 @@
             <RowConstraints minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
         </rowConstraints>
         
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="1" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="1" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <font><Font size="28.0" /></font>
         </Button>
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <font><Font size="28.0" /></font>
         </Button>
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="3" GridPane.columnIndex="2" GridPane.rowIndex="0">
-            <font><Font size="28.0" /></font>
-        </Button>
-        
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
-            <font><Font size="28.0" /></font>
-        </Button>
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            <font><Font size="28.0" /></font>
-        </Button>
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="6" GridPane.columnIndex="2" GridPane.rowIndex="1">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="3" GridPane.columnIndex="2" GridPane.rowIndex="0">
             <font><Font size="28.0" /></font>
         </Button>
         
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="7" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <font><Font size="28.0" /></font>
         </Button>
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="8" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <font><Font size="28.0" /></font>
         </Button>
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="9" GridPane.columnIndex="2" GridPane.rowIndex="2">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="6" GridPane.columnIndex="2" GridPane.rowIndex="1">
             <font><Font size="28.0" /></font>
         </Button>
         
-        <Button fx:id="clearButton" focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="C" GridPane.columnIndex="0" GridPane.rowIndex="3">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="7" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <font><Font size="28.0" /></font>
+        </Button>
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="8" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <font><Font size="28.0" /></font>
+        </Button>
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="9" GridPane.columnIndex="2" GridPane.rowIndex="2">
+            <font><Font size="28.0" /></font>
+        </Button>
+        
+        <Button fx:id="clearButton" focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-danger, btn-lg" prefHeight="80.0" prefWidth="80.0" text="C" GridPane.columnIndex="0" GridPane.rowIndex="3">
             <font><Font name="System Bold" size="28.0" /></font>
         </Button>
-        <Button focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <Button focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-default, btn-lg" prefHeight="80.0" prefWidth="80.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="3">
             <font><Font size="28.0" /></font>
         </Button>
-        <Button fx:id="loginButton" focusTraversable="false" onAction="#handleNumberPad" prefHeight="80.0" prefWidth="80.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="&gt;" GridPane.columnIndex="2" GridPane.rowIndex="3">
+        <Button fx:id="loginButton" focusTraversable="false" onAction="#handleNumberPad" styleClass="btn, btn-success, btn-lg" prefHeight="80.0" prefWidth="80.0" text="&gt;" GridPane.columnIndex="2" GridPane.rowIndex="3">
             <font><Font name="System Bold" size="28.0" /></font>
         </Button>
     </GridPane>

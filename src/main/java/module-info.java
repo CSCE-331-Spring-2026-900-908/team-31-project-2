@@ -10,6 +10,8 @@ module com.example.team31project2 {
     requires org.postgresql.jdbc;
 
 
+    requires org.kordamp.bootstrapfx.core;
+
     opens com.example.team31project2 to javafx.fxml;
     exports com.example.team31project2;
 
