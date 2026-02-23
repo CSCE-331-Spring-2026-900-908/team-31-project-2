@@ -2,10 +2,15 @@ package com.example.team31project2;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,7 +35,7 @@ public class LoginController {
     void handleNumberPad(ActionEvent event) {
         Button source = (Button) event.getSource();
         String text = source.getText();
-        
+
         if (text.equals("C")) {
             currentPin.setLength(0);
             pinField.setText("");
@@ -53,12 +58,27 @@ public class LoginController {
             return;
         }
 
-        boolean isValid = verifyPin(pin);
-        
-        if (isValid) {
-            System.out.println("Login successful!");
-            // TODO: Load the next scene (e.g., POS terminal)
-            
+        Employee user = authenticateUser(pin);
+
+        if (user != null) {
+            System.out.println("Login successful for user: " + user.getName());
+
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("reports-view.fxml"));
+                Parent root = loader.load();
+
+                ReportsController reportsController = loader.getController();
+                reportsController.setUser(user);
+
+                Stage stage = (Stage) pinField.getScene().getWindow();
+                // Standard dimension for the POS could be larger, e.g., 1024x768
+                stage.setScene(new Scene(root, 1024, 768));
+                stage.centerOnScreen();
+            } catch (IOException e) {
+                e.printStackTrace();
+                showError("Error loading the next page.");
+            }
+
             currentPin.setLength(0);
             pinField.setText("");
         } else {
@@ -68,25 +88,29 @@ public class LoginController {
         }
     }
 
-    private boolean verifyPin(String pin) {
-        String query = "SELECT * FROM employee WHERE pin_hash = ?";
-        
+    private Employee authenticateUser(String pin) {
+        String query = "SELECT id, name, role, pin_hash FROM employee WHERE pin_hash = ?";
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setString(1, pin);
             ResultSet rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
-                return true;
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String role = rs.getString("role");
+                String pinHash = rs.getString("pin_hash");
+                return new Employee(id, name, role, pinHash);
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             showError("Database connection error.");
         }
-        
-        return false;
+
+        return null;
     }
 
     private void showError(String message) {
