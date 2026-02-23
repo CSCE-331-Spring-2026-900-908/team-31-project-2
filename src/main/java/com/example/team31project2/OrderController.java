@@ -92,7 +92,7 @@ public class OrderController {
             e.printStackTrace();
         }
 
-        query = "SELECT * FROM product ORDER BY id;";
+        query = "SELECT name FROM product ORDER BY id;";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -132,21 +132,41 @@ public class OrderController {
     @FXML
     void addDrink(ActionEvent event) {
         Button source = (Button) event.getSource();
-        String text = source.getText();
-        int productID = Integer.valueOf(source.getId().substring(8));
-        String productName = "";
+        // String text = source.getText();
+        // int productID = Integer.valueOf(source.getId().substring(8));
+        // String productName = "";
+        // float productPrice = 0;
+
+        // String query = "SELECT name, base_price FROM product WHERE id = ?;";
+
+        // try (Connection conn = DatabaseConnection.getConnection();
+        //      PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+        //     pstmt.setInt(1, productID);
+        //     ResultSet rs = pstmt.executeQuery();
+            
+        //     if (rs.next()) {
+        //         productName = rs.getString("name");
+        //         productPrice = rs.getFloat("base_price");
+        //     }
+        // } catch (SQLException e) {
+        //     e.printStackTrace();
+        // }
+
+        String productName = source.getText();
+        int productID = 0;
         float productPrice = 0;
 
-        String query = "SELECT name, base_price FROM product WHERE id = ?;";
+        String query = "SELECT id, base_price FROM product WHERE name = ?;";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
-            pstmt.setInt(1, productID);
+            pstmt.setString(1, productName);
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                productName = rs.getString("name");
+                productID = rs.getInt("id");
                 productPrice = rs.getFloat("base_price");
             }
         } catch (SQLException e) {
@@ -177,6 +197,26 @@ public class OrderController {
     void search(ActionEvent event) {
         Label source = (Label) event.getSource();
         String text = source.getText();
+
+        String query = "SELECT name FROM product ORDER BY id WHERE name LIKE '%?%';";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setString(1, text);
+            ResultSet rs = pstmt.executeQuery();
+            
+            int i = 0;
+            while (rs.next() && i < 30) {
+                menuButtons.get(i).setText(rs.getString("name"));
+                i++;
+            }
+            for ( ; i < 30; i++) {
+                menuButtons.get(i).setVisible(false);;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateOrderInfo() {
