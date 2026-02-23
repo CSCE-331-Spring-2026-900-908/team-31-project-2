@@ -67,8 +67,8 @@ public class LoginController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("ordering-view.fxml"));
                 Parent root = loader.load();
                 
-                OrderingController orderingController = loader.getController();
-                orderingController.setUser(user);
+                // OrderingController orderingController = loader.getController();
+                // orderingController.setUser(user);
                 
                 Stage stage = (Stage) pinField.getScene().getWindow();
                 // Standard dimension for the POS could be larger, e.g., 1024x768
