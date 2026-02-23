@@ -69,7 +69,7 @@ public class LoginController {
     }
 
     private boolean verifyPin(String pin) {
-        String query = "SELECT * FROM employees WHERE pin = ?";
+        String query = "SELECT * FROM employee WHERE pin_hash = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {

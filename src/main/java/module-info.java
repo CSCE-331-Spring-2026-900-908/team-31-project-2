@@ -8,6 +8,7 @@ module com.example.team31project2 {
 
     requires java.sql;
     requires org.postgresql.jdbc;
+    requires io.github.cdimascio.dotenv.java;
 
 
     requires org.kordamp.bootstrapfx.core;
