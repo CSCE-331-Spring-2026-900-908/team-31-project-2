@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -63,7 +64,7 @@ public class OrderController {
     private int orderID;
     private List<Integer> detailIDs = new ArrayList<Integer>();
     private List<Button> menuButtons;
-    private StringBuilder category = new StringBuilder();
+    private List<String> category = new ArrayList<String>();
     private StringBuilder currentPin = new StringBuilder();
 
     @FXML
@@ -93,37 +94,39 @@ public class OrderController {
             e.printStackTrace();
         }
 
-        query = "SELECT name FROM product ORDER BY product_id;";
+        filter();
+        // query = "SELECT name FROM product ORDER BY product_id;";
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        // try (Connection conn = DatabaseConnection.getConnection();
+        //      PreparedStatement pstmt = conn.prepareStatement(query)) {
             
-            ResultSet rs = pstmt.executeQuery();
+        //     ResultSet rs = pstmt.executeQuery();
             
-            int i = 0;
-            while (rs.next() && i < 30) {
-                menuButtons.get(i).setText(rs.getString("name"));
-                menuButtons.get(i).setVisible(true);
-                i++;
-            }
-            for ( ; i < 30; i++) {
-                menuButtons.get(i).setVisible(false);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        //     int i = 0;
+        //     while (rs.next() && i < 30) {
+        //         menuButtons.get(i).setText(rs.getString("name"));
+        //         menuButtons.get(i).setVisible(true);
+        //         i++;
+        //     }
+        //     for ( ; i < 30; i++) {
+        //         menuButtons.get(i).setVisible(false);
+        //     }
+        // } catch (SQLException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     @FXML
     void toggleCategory(ActionEvent event) {
-        Button source = (Button) event.getSource();
+        ToggleButton source = (ToggleButton) event.getSource();
         String text = source.getText();
         
-        if(category.indexOf(text) >= 0) {
-            category.delete(category.indexOf(text), category.indexOf(text) + text.length());
+        if(category.contains(text)) {
+            category.remove(text);
         } else {
-            category.append(text);
+            category.add(text);
         }
+        filter();
         // if (category.contains(text)) {
         //     category = category.substring(0, category.indexOf(text)) + category.substring(category.indexOf(text) + text.length());
         // } else {
@@ -199,7 +202,11 @@ public class OrderController {
 
     @FXML
     void search(KeyEvent event) {
-        String query = "SELECT name FROM product WHERE name LIKE ? ORDER BY product_id;";
+        filter();
+    }
+    
+    private void filter() {
+        String query = "SELECT name, category_name FROM product WHERE name ILIKE ? ORDER BY product_id;";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -209,9 +216,11 @@ public class OrderController {
             
             int i = 0;
             while (rs.next() && i < 30) {
-                menuButtons.get(i).setText(rs.getString("name"));
-                menuButtons.get(i).setVisible(true);
-                i++;
+                if (category.size() == 0 || category.contains(rs.getString("category_name"))) {
+                    menuButtons.get(i).setText(rs.getString("name"));
+                    menuButtons.get(i).setVisible(true);
+                    i++;
+                }
             }
             for ( ; i < 30; i++) {
                 menuButtons.get(i).setVisible(false);
