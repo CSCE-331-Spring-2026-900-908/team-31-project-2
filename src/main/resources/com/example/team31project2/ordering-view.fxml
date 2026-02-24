@@ -108,11 +108,20 @@
                         </AnchorPane>
                     </content>
                   </ScrollPane>
-                  <TextArea fx:id="orderTotal" editable="false" prefHeight="90.0" prefWidth="115.0" text="Subtotal:     $-.--&#10;Tax:             $-.--&#10;------------------&#10;Total:           $-.--">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </TextArea>
+                  <TextFlow prefHeight="90.0" prefWidth="200.0">
+                     <children>
+                        <TextArea editable="false" prefHeight="90.0" prefWidth="70.0" text="Subtotal:&#10;Tax:&#10;------------&#10;Total:">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextArea>
+                        <TextArea fx:id="orderTotal" editable="false" prefHeight="90.0" prefWidth="45.0" text="\$-.--&#10;$-.--&#10;-----&#10;$-.--">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                  </TextFlow>
                   <Button mnemonicParsing="false" onAction="#checkout" prefWidth="115.0" text="Checkout" />
                </children>
             </VBox>

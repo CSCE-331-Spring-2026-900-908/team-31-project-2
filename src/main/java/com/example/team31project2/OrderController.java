@@ -261,7 +261,7 @@ public class OrderController {
         }
 
         orderInfo.setText(info);
-        float tax = total * (float)0.0825;
+        float tax = Math.round(total * 0.0825f * 100.0f) / 100.0f;
 
         query = "UPDATE \"order\" SET total_tax = ?, total_final = ? WHERE id = ?;";
 
@@ -276,10 +276,7 @@ public class OrderController {
             e.printStackTrace();
         }
 
-        orderTotal.setText("Subtotal: " + String.valueOf(total) + 
-                     "\nTax: " + String.valueOf(tax) +
-                     "\n----------------------" +
-                     "\nTotal: " + String.valueOf(total + tax));
+        orderTotal.setText(String.format("$%.2f\n$%.2f\n-------\n$%.2f", total, tax, total + tax));
     }
 
     private void handleLogin() {
