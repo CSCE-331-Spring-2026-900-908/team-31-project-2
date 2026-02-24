@@ -9,13 +9,15 @@ private final IntegerProperty itemId = new SimpleIntegerProperty();
     private final DoubleProperty quantity = new SimpleDoubleProperty();
     private final StringProperty unitType = new SimpleStringProperty();
     private final ObjectProperty<LocalDateTime> expirationDate = new SimpleObjectProperty<>();
+    private final DoubleProperty target = new SimpleDoubleProperty();
 
-    public InventoryItem(int itemId, String itemName, double quantity, String unitType, LocalDateTime expirationDate) {
+    public InventoryItem(int itemId, String itemName, double quantity, String unitType, LocalDateTime expirationDate, double target) {
         this.itemId.set(itemId);
         this.itemName.set(itemName);
         this.quantity.set(quantity);
         this.unitType.set(unitType);
         this.expirationDate.set(expirationDate);
+        this.target.set(target);
     }
 
     public int getItemId() { return itemId.get(); }
@@ -25,6 +27,7 @@ private final IntegerProperty itemId = new SimpleIntegerProperty();
     public StringProperty itemNameProperty() { return itemName; }
 
     public double getQuantity() { return quantity.get(); }
+    public void setQuantity(Double v) { quantity.set(v); }
     public DoubleProperty quantityProperty() { return quantity; }
 
     public String getUnitType() { return unitType.get(); }
@@ -32,6 +35,12 @@ private final IntegerProperty itemId = new SimpleIntegerProperty();
 
     public LocalDateTime getExpirationDate() { return expirationDate.get(); }
     public ObjectProperty<LocalDateTime> expirationDateProperty() { return expirationDate; }
+
+    
+    public double getTarget() { return target.get(); }
+    public void setTarget(Double v) { target.set(v); }
+    public DoubleProperty targetProperty() { return target; }
+
 }
 
 
