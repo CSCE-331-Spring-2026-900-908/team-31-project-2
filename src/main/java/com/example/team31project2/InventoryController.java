@@ -192,27 +192,27 @@ public class InventoryController {
                         
     }
 
-    @FXML
-    private void removeHandler(){
-        try {
-        int id = Integer.parseInt(textId.getText()); 
+    // @FXML
+    // private void removeHandler(){
+    //     try {
+    //     int id = Integer.parseInt(textId.getText()); 
         
-        if(id < 0 ){
-            return;
-        }
+    //     if(id < 0 ){
+    //         return;
+    //     }
 
-        boolean ok = removeFromDB(int id);
-        if(!ok){return;}
-        inventoryList.removeIf(item -> item.getItemId() == id);
+    //     boolean ok = removeFromDB(int id);
+    //     if(!ok){return;}
+    //     inventoryList.removeIf(item -> item.getItemId() == id);
 
-        textId.clear();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-    }
+    //     textId.clear();
+    //     }
+    //     catch(Exception e){
+    //         e.printStackTrace();
+    //     }
+    // }
 
-    boolean removeFromDB
+    // boolean removeFromDB
 
 }
 
