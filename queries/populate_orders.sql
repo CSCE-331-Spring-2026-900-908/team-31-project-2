@@ -1,3 +1,3 @@
-\copy "order" from 'C:/Users/noahh/Desktop/CSCE331/team-31-project-2/orders.csv' CSV HEADER
-\copy orderdetail from 'C:/Users/noahh/Desktop/CSCE331/team-31-project-2/order_details.csv' CSV HEADER
-\copy ordermodifier from 'C:/Users/noahh/Desktop/CSCE331/team-31-project-2/order_modifiers.csv' CSV HEADER
+\copy "order"(employee_id, created_at, total_tax, total_final) from 'C:/Users/noahh/Desktop/CSCE331/team-31-project-2/orders.csv' CSV HEADER
+\copy "orderdetail"(order_id, product_id, sold_price, snapshot_name) from 'C:/Users/noahh/Desktop/CSCE331/team-31-project-2/order_details.csv' CSV HEADER
+\copy "ordermodifier"(order_detail_id, modifier_option_id, price_charged, snapshot_name) from 'C:/Users/noahh/Desktop/CSCE331/team-31-project-2/order_modifiers.csv' CSV HEADER
