@@ -67,7 +67,7 @@ public class MenuEditController {
 
         Label nameLabel = new Label(name);
         nameLabel.setPrefWidth(420.0);
-        nameLabel.setStyle("-fx-font-size: 14;");
+        nameLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #333333;");
 
         Label categoryLabel = new Label(category);
         categoryLabel.setPrefWidth(220.0);
@@ -104,7 +104,7 @@ public class MenuEditController {
 
     @FXML
     void handleNavigateEmployees(ActionEvent event) {
-        // TODO: replace with employee-view.fxml once that view is created
+        navigateTo("employee-list-view.fxml");
     }
 
     @FXML
