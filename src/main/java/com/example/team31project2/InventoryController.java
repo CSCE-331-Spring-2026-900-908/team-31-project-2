@@ -168,7 +168,7 @@ public class InventoryController {
     }
 
     private boolean insertItemInDb(int id, String name, double quantity, String unit, java.time.LocalDateTime exp, double target){
-        String sql = "INSERT INTO inventory (item_id, item_name, quantity, unit_type, expiration_date, target) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO inventory (item_id, item_name, quantity, unit_type, expiration_date, target_val) VALUES (?, ?, ?, ?, ?, ?)";
 
         try(Connection conn = DatabaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)){ 
@@ -191,6 +191,28 @@ public class InventoryController {
         
                         
     }
+
+    @FXML
+    private void removeHandler(){
+        try {
+        int id = Integer.parseInt(textId.getText()); 
+        
+        if(id < 0 ){
+            return;
+        }
+
+        boolean ok = removeFromDB(int id);
+        if(!ok){return;}
+        inventoryList.removeIf(item -> item.getItemId() == id);
+
+        textId.clear();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    boolean removeFromDB
 
 }
 
