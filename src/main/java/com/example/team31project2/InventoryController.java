@@ -1,63 +1,52 @@
 package com.example.team31project2;
 
-import javafx.event.ActionEvent;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
-
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 
 public class InventoryController {
 
     
-    @FXML
-    private TableColumn<InventoryItem,String> Item; 
+   @FXML private TableView<InventoryItem> table;
 
-    @FXML
-    private TableColumn<InventoryItem,Integer> Target; 
-
-    @FXML
-    private TableColumn<InventoryItem,Integer> Current; 
-
-    @FXML 
-    private TableView<InventoryItem> table; 
+    @FXML private TableColumn<InventoryItem, Number> colId;
+    @FXML private TableColumn<InventoryItem, String> colName;
+    @FXML private TableColumn<InventoryItem, Number> colQty;
+    @FXML private TableColumn<InventoryItem, String> colUnit;
+    @FXML private TableColumn<InventoryItem, java.time.LocalDateTime> colExp;
 
     @FXML 
     public void initialize(){
-        Item.setCellValueFactory(data-> new javafx.beans.property.SimpleStringProperty(data.getValue().getItem()));
-        Current.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getCurrent()));
-        Target.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getTarget())); 
+        colId.setCellValueFactory(data -> data.getValue().itemIdProperty());
+        colName.setCellValueFactory(data -> data.getValue().itemNameProperty());
+        colQty.setCellValueFactory(data -> data.getValue().quantityProperty());
+        colUnit.setCellValueFactory(data -> data.getValue().unitTypeProperty());
+        colExp.setCellValueFactory(data -> data.getValue().expirationDateProperty());
 
-        table.getItems().setAll(new InventoryItem("Pair", 30, 20), new InventoryItem("apple", 40,9));
+        table.setItems(inventoryList);
+        loadInventoryFromDB();
+
+        
+        //table.getItems().setAll(new InventoryItem("Pair", 30, 20, 20,"2027-02-23 23:00:39.993329") );
     }
+    private final ObservableList<InventoryItem> inventoryList = FXCollections.observableArrayList();
+
+    private void loadInventoryFromDB(){
+        try(Connection conn = DatabaseConnection.getConnection()){
+            InventoryDAO dao  = new InventoryDAO(conn);
+            inventoryList.setAll(dao.getAllItems());
+            table.setItems(inventoryList);
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    
 }
 
 
-class InventoryItem {
-    public String Item; 
-    public Integer Target;
-    public Integer Current; 
-
-    public InventoryItem(String Item, Integer Target, Integer Current ){
-        this.Current = Current; 
-        this.Item = Item; 
-        this.Target = Target;
-    }
-
-    public String getItem(){return Item;}
-    public Integer getTarget(){return Target;}
-    public Integer getCurrent(){return Current;}
-}

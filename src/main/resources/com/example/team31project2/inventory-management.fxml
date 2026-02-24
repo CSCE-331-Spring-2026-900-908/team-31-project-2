@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.InventoryController">
    <children>
-      <VBox layoutX="58.0" layoutY="50.0" prefHeight="300.0" prefWidth="484.0">
+      <VBox layoutX="26.0" layoutY="125.0" prefHeight="225.0" prefWidth="547.0">
          <children>
             <TableView fx:id="table" prefHeight="305.0" prefWidth="487.0">
               <columns>
-                <TableColumn fx:id="Item" prefWidth="153.33334732055664" text="Item" />
-                <TableColumn fx:id="Target" prefWidth="76.66667175292969" text="Target" />
-                  <TableColumn fx:id="Current" minWidth="8.666671752929688" prefWidth="80.6666259765625" text="Current" />
-                  <TableColumn prefWidth="177.33340454101562" text="Fill level" />
+                  <TableColumn fx:id="colId" prefWidth="42.66668128967285" text="ID" />
+                <TableColumn fx:id="colName" prefWidth="87.9999771118164" text="Item" />
+                <TableColumn prefWidth="64.0" text="Target" />
+                  <TableColumn fx:id="colQty" minWidth="8.666671752929688" prefWidth="61.33329772949219" text="Current" />
+                  <TableColumn fx:id="colUnit" prefWidth="68.66668701171875" text="Units" />
+                  <TableColumn fx:id="colExp" prefWidth="99.33331298828125" text="Exp Date" />
+                  <TableColumn prefWidth="280.0000305175781" text="Remove" />
               </columns>
             </TableView>
          </children>
       </VBox>
+      <Button layoutX="521.0" layoutY="82.0" mnemonicParsing="false" text="Add" />
+      <TextField layoutX="26.0" layoutY="82.0" prefHeight="25.0" prefWidth="145.0" />
+      <TextField layoutX="190.0" layoutY="82.0" />
+      <TextField layoutX="356.0" layoutY="82.0" />
+      <Text layoutX="85.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Item" />
+      <Text layoutX="246.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Target" />
+      <Text layoutX="410.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Current" />
    </children>
 </AnchorPane>
