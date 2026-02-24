@@ -2,6 +2,7 @@ package com.example.team31project2;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -92,7 +93,7 @@ public class OrderController {
             e.printStackTrace();
         }
 
-        query = "SELECT name FROM product ORDER BY id;";
+        query = "SELECT name FROM product ORDER BY product_id;";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -102,10 +103,11 @@ public class OrderController {
             int i = 0;
             while (rs.next() && i < 30) {
                 menuButtons.get(i).setText(rs.getString("name"));
+                menuButtons.get(i).setVisible(true);
                 i++;
             }
             for ( ; i < 30; i++) {
-                menuButtons.get(i).setVisible(false);;
+                menuButtons.get(i).setVisible(false);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -157,7 +159,7 @@ public class OrderController {
         int productID = 0;
         float productPrice = 0;
 
-        String query = "SELECT id, base_price FROM product WHERE name = ?;";
+        String query = "SELECT product_id, base_price FROM product WHERE name = ?;";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -166,14 +168,16 @@ public class OrderController {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                productID = rs.getInt("id");
+                productID = rs.getInt("product_id");
                 productPrice = rs.getFloat("base_price");
+            } else {
+                return;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        query = "INSERT INTO \"order_detail\" (order_id, product_id, sold_price, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
+        query = "INSERT INTO \"orderdetail\" (order_id, product_id, sold_price, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -194,36 +198,41 @@ public class OrderController {
     }
 
     @FXML
-    void search(ActionEvent event) {
-        Label source = (Label) event.getSource();
-        String text = source.getText();
-
-        String query = "SELECT name FROM product ORDER BY id WHERE name LIKE '%?%';";
+    void search(KeyEvent event) {
+        String query = "SELECT name FROM product WHERE name LIKE ? ORDER BY product_id;";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
-            pstmt.setString(1, text);
+            pstmt.setString(1, "%" + searchBar.getText() + "%");
             ResultSet rs = pstmt.executeQuery();
             
             int i = 0;
             while (rs.next() && i < 30) {
                 menuButtons.get(i).setText(rs.getString("name"));
+                menuButtons.get(i).setVisible(true);
                 i++;
             }
             for ( ; i < 30; i++) {
-                menuButtons.get(i).setVisible(false);;
+                menuButtons.get(i).setVisible(false);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    @FXML
+    void checkout(ActionEvent event) {
+        detailIDs = new ArrayList<Integer>();
+        initialize();
+        updateOrderInfo();
+    }
+
     private void updateOrderInfo() {
         String info = "";
         float total = 0;
 
-        String query = "SELECT snapshot_name, sold_price FROM \"order_detail\" WHERE id = ?;";
+        String query = "SELECT snapshot_name, sold_price FROM \"orderdetail\" WHERE id = ?;";
 
         for (Integer detailID : detailIDs) {
             try (Connection conn = DatabaseConnection.getConnection();
@@ -233,7 +242,7 @@ public class OrderController {
                 ResultSet rs = pstmt.executeQuery();
                 
                 if (rs.next()) {
-                    info += rs.getString("snapshot_name") + "\n";
+                    info += " - " + rs.getString("snapshot_name") + "\n";
                     total += rs.getFloat("sold_price");
                 }
                 
