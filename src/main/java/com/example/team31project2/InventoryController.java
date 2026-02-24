@@ -156,7 +156,7 @@ public class InventoryController {
         if (!ok) return;
 
 
-        InventoryItem newItem = new InventoryItem(id, name, target, unit, exp, target);
+        InventoryItem newItem = new InventoryItem(id, name, quantity, unit, exp, target);
         inventoryList.add(newItem);
 
         textId.clear();
@@ -192,27 +192,39 @@ public class InventoryController {
                         
     }
 
-    // @FXML
-    // private void removeHandler(){
-    //     try {
-    //     int id = Integer.parseInt(textId.getText()); 
+    @FXML
+    private void removeHandler(){
+        try {
+        int id = Integer.parseInt(textId.getText()); 
         
-    //     if(id < 0 ){
-    //         return;
-    //     }
+        if(id < 0 ){
+            return;
+        }
 
-    //     boolean ok = removeFromDB(int id);
-    //     if(!ok){return;}
-    //     inventoryList.removeIf(item -> item.getItemId() == id);
+        boolean ok = removeFromDB(id);
+        if(!ok){return;}
+        inventoryList.removeIf(item -> item.getItemId() == id);
 
-    //     textId.clear();
-    //     }
-    //     catch(Exception e){
-    //         e.printStackTrace();
-    //     }
-    // }
+        textId.clear();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
-    // boolean removeFromDB
+    private boolean removeFromDB(int id){
+        String sql = "DELETE FROM inventory WHERE item_id = ?";
+
+        try(Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setInt(1,id);
+
+            return ps.executeUpdate() == 1;
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }
 
