@@ -4,18 +4,45 @@
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.OrderController">
    <children>
       <MenuBar>
         <menus>
-          <Menu id="logout" mnemonicParsing="false" text="Logout">
+          <Menu mnemonicParsing="false" text="Navigate">
             <items>
-              <MenuItem mnemonicParsing="false" text="Logout" />
+              <MenuItem mnemonicParsing="false" text="Menu"      onAction="#handleNavigateMenuEdit"/>
+              <MenuItem mnemonicParsing="false" text="Employees" onAction="#handleNavigateEmployees"/>
+              <MenuItem mnemonicParsing="false" text="Inventory" onAction="#handleNavigateInventory"/>
+              <MenuItem mnemonicParsing="false" text="Trends"    onAction="#handleNavigateTrends"/>
+              <SeparatorMenuItem/>
+              <MenuItem mnemonicParsing="false" text="Sign Out"  onAction="#handleSignOut"/>
             </items>
           </Menu>
         </menus>
       </MenuBar>
+      <!-- header -->
+      <HBox alignment="CENTER_LEFT"
+            prefHeight="60.0"
+            style="-fx-background-color: white;
+                   -fx-border-color: #e0e0e0;
+                   -fx-border-width: 0 0 1 0;">
+         <padding>
+            <Insets left="24.0" right="24.0"/>
+         </padding>
+         <Label text="Cashier Only"
+                style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+         <Region HBox.hgrow="ALWAYS"/>
+         <Button text="Sign out"
+                 onAction="#handleSignOut"
+                 style="-fx-background-color: transparent;
+                        -fx-border-color: #333333;
+                        -fx-border-radius: 20;
+                        -fx-background-radius: 20;
+                        -fx-padding: 8 20 8 20;"/>
+      </HBox>
+
       <SplitPane dividerPositions="0.8" prefHeight="376.0" prefWidth="600.0">
          <items>
             <VBox prefHeight="200.0" prefWidth="100.0">
