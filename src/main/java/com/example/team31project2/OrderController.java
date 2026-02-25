@@ -5,8 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 
@@ -65,7 +63,6 @@ public class OrderController {
     private List<Integer> detailIDs = new ArrayList<Integer>();
     private List<Button> menuButtons;
     private List<String> category = new ArrayList<String>();
-    private StringBuilder currentPin = new StringBuilder();
 
     @FXML
     public void initialize() {
@@ -277,43 +274,5 @@ public class OrderController {
         }
 
         orderTotal.setText(String.format("$%.2f\n$%.2f\n-------\n$%.2f", total, tax, total + tax));
-    }
-
-    private void handleLogin() {
-        String pin = currentPin.toString();
-        if (pin.isEmpty()) {
-            return;
-        }
-
-        boolean isValid = verifyPin(pin);
-        
-        if (isValid) {
-            System.out.println("Login successful!");
-            // TODO: Load the next scene (e.g., POS terminal)
-            
-            currentPin.setLength(0);
-        } else {
-            currentPin.setLength(0);
-        }
-    }
-
-    private boolean verifyPin(String pin) {
-        String query = "SELECT * FROM employee WHERE pin_hash = ?;";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            pstmt.setString(1, pin);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                return true;
-            }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        return false;
     }
 }
