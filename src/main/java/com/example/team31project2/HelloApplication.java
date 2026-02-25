@@ -17,15 +17,6 @@ public class HelloApplication extends Application {
         stage.setTitle("POS Login");
         stage.setScene(scene);
         stage.show();
-
-        FXMLLoader fxmlLoader2 = new FXMLLoader(
-        HelloApplication.class.getResource("/com/example/team31project2/inventory-management.fxml"));
-        Scene scene2 = new Scene(fxmlLoader2.load());
-        scene2.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
-        Stage stage2 = new Stage();
-        stage2.setTitle("Inventory-View!");
-        stage2.setScene(scene2);
-        stage2.show();
     }
 
     public static void main(String[] args) {

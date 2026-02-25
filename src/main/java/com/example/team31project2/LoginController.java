@@ -63,6 +63,7 @@ public class LoginController {
         
         if (user != null) {
             System.out.println("Login successful for user: " + user.getName());
+            UserSession.setCurrentUser(user);
             
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("ordering-view.fxml"));

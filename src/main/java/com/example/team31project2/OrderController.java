@@ -87,9 +87,16 @@ public class OrderController {
     private StringBuilder currentPin = new StringBuilder();
 
     public void setUser(Employee user) {
-        this.currentUser = user;
         if (user != null) {
+            this.currentUser = user;
             this.employeeID = user.getId();
+            UserSession.setCurrentUser(user);
+        } else {
+            Employee sessionUser = UserSession.getCurrentUser();
+            if (sessionUser != null) {
+                this.currentUser = sessionUser;
+                this.employeeID = sessionUser.getId();
+            }
         }
         updateRoleVisibility();
         updateHeaderUserLabel();
@@ -97,6 +104,12 @@ public class OrderController {
 
     @FXML
     public void initialize() {
+        Employee sessionUser = UserSession.getCurrentUser();
+        if (currentUser == null && sessionUser != null) {
+            currentUser = sessionUser;
+            employeeID = sessionUser.getId();
+        }
+
         menuButtons = List.of(menuItem01, menuItem02, menuItem03, menuItem04, menuItem05, menuItem06,
                               menuItem07, menuItem08, menuItem09, menuItem10, menuItem11, menuItem12,
                               menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
@@ -285,6 +298,7 @@ public class OrderController {
 
     @FXML
     void handleSignOut(ActionEvent event) {
+        UserSession.clear();
         navigateTo("login-view.fxml");
     }
 
