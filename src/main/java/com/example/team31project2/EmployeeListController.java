@@ -74,11 +74,11 @@ public class EmployeeListController {
         );
 
         Label nameLabel = new Label(name);
-        nameLabel.setPrefWidth(360.0);
+        nameLabel.setPrefWidth(300.0);
         nameLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #333333;");
 
         Label roleLabel = new Label(role);
-        roleLabel.setPrefWidth(280.0);
+        roleLabel.setPrefWidth(150.0);
         roleLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #555555;");
 
         Button editBtn = new Button("✎");
@@ -107,7 +107,10 @@ public class EmployeeListController {
         HBox actions = new HBox(8, editBtn, removeBtn);
         actions.setAlignment(Pos.CENTER_LEFT);
 
-        row.getChildren().addAll(nameLabel, roleLabel, actions);
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        spacer.setPrefWidth(150.0);
+
+        row.getChildren().addAll(nameLabel, roleLabel, spacer, actions);
         return row;
     }
 

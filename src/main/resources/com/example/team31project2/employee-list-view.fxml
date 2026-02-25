@@ -26,13 +26,13 @@
                 <menus>
                     <Menu mnemonicParsing="false" text="Navigate">
                         <items>
-                            <MenuItem mnemonicParsing="false" text="Ordering View"
+                            <MenuItem mnemonicParsing="false" text="Orders"
                                       onAction="#handleNavigateOrdering"/>
-                            <MenuItem mnemonicParsing="false" text="Menu Edit"
+                            <MenuItem mnemonicParsing="false" text="Menu"
                                       onAction="#handleNavigateMenuEdit"/>
                             <MenuItem mnemonicParsing="false" text="Inventory"
                                       onAction="#handleNavigateInventory"/>
-                            <MenuItem mnemonicParsing="false" text="Order Trends"
+                            <MenuItem mnemonicParsing="false" text="Trends"
                                       onAction="#handleNavigateTrends"/>
                         </items>
                     </Menu>
@@ -106,10 +106,11 @@
                 <HBox style="-fx-border-color: transparent transparent #e0e0e0 transparent;
                              -fx-border-width: 0 0 1 0;
                              -fx-padding: 0 0 8 0;">
-                    <Label text="Name" prefWidth="360.0"
+                    <Label text="Name" prefWidth="300.0"
                            style="-fx-font-size: 13; -fx-text-fill: #888888;"/>
-                    <Label text="Role" prefWidth="280.0"
+                    <Label text="Role" prefWidth="150.0"
                            style="-fx-font-size: 13; -fx-text-fill: #888888;"/>
+                    <Region prefWidth="150.0"/>
                     <Label text="Action"
                            style="-fx-font-size: 13; -fx-text-fill: #888888;"/>
                 </HBox>
