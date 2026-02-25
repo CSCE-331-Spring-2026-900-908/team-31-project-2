@@ -2,12 +2,17 @@ package com.example.team31project2;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -275,4 +280,19 @@ public class OrderController {
 
         orderTotal.setText(String.format("$%.2f\n$%.2f\n-------\n$%.2f", total, tax, total + tax));
     }
+
+    private void customize(int detailID) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("customization-view.fxml"));
+            Parent root = loader.load();
+            CustomizationController customizer = loader.getController();
+            Stage stage = (Stage) orderInfo.getScene().getWindow();
+            customizer.setParentScene(stage.getScene());
+            stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
+            stage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
