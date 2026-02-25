@@ -13,6 +13,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -42,7 +44,7 @@ public class EmployeeListController {
     }
 
     private void loadEmployees() {
-        String query = "SELECT id, name, role FROM employee ORDER BY name";
+        String query = "SELECT id, name, role, is_active FROM employee ORDER BY name";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
@@ -55,7 +57,8 @@ public class EmployeeListController {
                 int id       = rs.getInt("id");
                 String name  = rs.getString("name");
                 String role  = rs.getString("role");
-                HBox row = buildRow(id, name, role != null ? role : "");
+                boolean isActive = rs.getBoolean("is_active");
+                HBox row = buildRow(id, name, role != null ? role : "", isActive);
                 allRows.add(row);
                 employeeList.getChildren().add(row);
             }
@@ -65,7 +68,7 @@ public class EmployeeListController {
         }
     }
 
-    private HBox buildRow(int id, String name, String role) {
+    private HBox buildRow(int id, String name, String role, boolean isActive) {
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
         row.setStyle(
@@ -76,11 +79,15 @@ public class EmployeeListController {
 
         Label nameLabel = new Label(name);
         nameLabel.setPrefWidth(300.0);
-        nameLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #333333;");
+        nameLabel.setStyle(isActive
+            ? "-fx-font-size: 14; -fx-text-fill: #333333;"
+            : "-fx-font-size: 14; -fx-text-fill: #999999;");
 
-        Label roleLabel = new Label(role);
+        Label roleLabel = new Label(isActive ? role : role + " (Disabled)");
         roleLabel.setPrefWidth(150.0);
-        roleLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #555555;");
+        roleLabel.setStyle(isActive
+            ? "-fx-font-size: 14; -fx-text-fill: #555555;"
+            : "-fx-font-size: 14; -fx-text-fill: #999999;");
 
         Button editBtn = new Button("✎");
         editBtn.setStyle(
@@ -104,8 +111,23 @@ public class EmployeeListController {
             "-fx-text-fill: #cc3333;"
         );
         removeBtn.setOnAction(e -> handleRemoveEmployee(id, name, row));
-
-        HBox actions = new HBox(8, editBtn, removeBtn);
+        HBox actions;
+        if (!isActive) {
+            Button enableBtn = new Button("↺");
+            enableBtn.setStyle(
+                "-fx-background-color: transparent;" +
+                "-fx-border-color: #2f8f2f;" +
+                "-fx-border-radius: 50;" +
+                "-fx-background-radius: 50;" +
+                "-fx-padding: 4 9 4 9;" +
+                "-fx-font-size: 13;" +
+                "-fx-text-fill: #2f8f2f;"
+            );
+            enableBtn.setOnAction(e -> handleEnableEmployee(id, name));
+            actions = new HBox(8, editBtn, enableBtn);
+        } else {
+            actions = new HBox(8, editBtn, removeBtn);
+        }
         actions.setAlignment(Pos.CENTER_LEFT);
 
         javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
@@ -139,12 +161,21 @@ public class EmployeeListController {
         grid.setPadding(new Insets(20, 100, 10, 10));
 
         TextField nameField = new TextField(currentName);
-        TextField roleField = new TextField(currentRole);
+        ToggleGroup roleGroup = new ToggleGroup();
+        ToggleButton cashierBtn = createRoleButton("Cashier", roleGroup);
+        ToggleButton managerBtn = createRoleButton("Manager", roleGroup);
+        HBox roleButtons = new HBox(8, cashierBtn, managerBtn);
+
+        if ("Manager".equalsIgnoreCase(currentRole)) {
+            managerBtn.setSelected(true);
+        } else {
+            cashierBtn.setSelected(true);
+        }
 
         grid.add(new Label("Name:"), 0, 0);
         grid.add(nameField, 1, 0);
         grid.add(new Label("Role:"), 0, 1);
-        grid.add(roleField, 1, 1);
+        grid.add(roleButtons, 1, 1);
 
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -152,8 +183,8 @@ public class EmployeeListController {
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             String newName = nameField.getText().trim();
-            String newRole = roleField.getText().trim();
-            if (!newName.isEmpty()) {
+            String newRole = getSelectedRole(roleGroup);
+            if (!newName.isEmpty() && newRole != null) {
                 String sql = "UPDATE employee SET name = ?, role = ? WHERE id = ?";
                 try (Connection conn = DatabaseConnection.getConnection();
                      PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -185,7 +216,17 @@ public class EmployeeListController {
                 allRows.remove(row);
                 employeeList.getChildren().remove(row);
             } catch (SQLException e) {
-                e.printStackTrace();
+                if (isForeignKeyViolation(e)) {
+                    disableEmployee(id);
+                    Alert info = new Alert(Alert.AlertType.INFORMATION);
+                    info.setTitle("Employee Disabled");
+                    info.setHeaderText("Cannot delete " + name);
+                    info.setContentText("This employee has related records. They were disabled instead.");
+                    info.showAndWait();
+                    loadEmployees();
+                } else {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -203,15 +244,18 @@ public class EmployeeListController {
 
         TextField nameField = new TextField();
         nameField.setPromptText("Name");
-        TextField roleField = new TextField();
-        roleField.setPromptText("Cashier / Manager");
+        ToggleGroup roleGroup = new ToggleGroup();
+        ToggleButton cashierBtn = createRoleButton("Cashier", roleGroup);
+        ToggleButton managerBtn = createRoleButton("Manager", roleGroup);
+        cashierBtn.setSelected(true);
+        HBox roleButtons = new HBox(8, cashierBtn, managerBtn);
         TextField pinField = new TextField();
         pinField.setPromptText("PIN");
 
         grid.add(new Label("Name:"), 0, 0);
         grid.add(nameField, 1, 0);
         grid.add(new Label("Role:"), 0, 1);
-        grid.add(roleField, 1, 1);
+        grid.add(roleButtons, 1, 1);
         grid.add(new Label("PIN:"), 0, 2);
         grid.add(pinField, 1, 2);
 
@@ -221,9 +265,9 @@ public class EmployeeListController {
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             String name = nameField.getText().trim();
-            String role = roleField.getText().trim();
+            String role = getSelectedRole(roleGroup);
             String pin  = pinField.getText().trim();
-            if (!name.isEmpty()) {
+            if (!name.isEmpty() && role != null) {
                 String sql = "INSERT INTO employee (name, role, pin_hash) VALUES (?, ?, ?)";
                 try (Connection conn = DatabaseConnection.getConnection();
                      PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -235,6 +279,92 @@ public class EmployeeListController {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    private ToggleButton createRoleButton(String label, ToggleGroup group) {
+        ToggleButton button = new ToggleButton(label);
+        button.setToggleGroup(group);
+        button.setStyle(
+                "-fx-background-color: white;" +
+                "-fx-border-color: #bfbfbf;" +
+                "-fx-border-radius: 8;" +
+                "-fx-background-radius: 8;" +
+                "-fx-padding: 6 14 6 14;"
+        );
+        button.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (isSelected) {
+                button.setStyle(
+                        "-fx-background-color: #333333;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-border-color: #333333;" +
+                        "-fx-border-radius: 8;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-padding: 6 14 6 14;"
+                );
+            } else {
+                button.setStyle(
+                        "-fx-background-color: white;" +
+                        "-fx-border-color: #bfbfbf;" +
+                        "-fx-border-radius: 8;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-padding: 6 14 6 14;"
+                );
+            }
+        });
+        return button;
+    }
+
+    private String getSelectedRole(ToggleGroup group) {
+        if (group.getSelectedToggle() == null) {
+            return null;
+        }
+        return ((ToggleButton) group.getSelectedToggle()).getText();
+    }
+
+    private boolean isForeignKeyViolation(SQLException exception) {
+        SQLException current = exception;
+        while (current != null) {
+            if ("23503".equals(current.getSQLState())) {
+                return true;
+            }
+            String message = current.getMessage();
+            if (message != null && message.toLowerCase().contains("foreign key")) {
+                return true;
+            }
+            current = current.getNextException();
+        }
+        return false;
+    }
+
+    private void disableEmployee(int id) {
+        String sql = "UPDATE employee SET is_active = FALSE WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleEnableEmployee(int id, String name) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Enable Employee");
+        confirm.setHeaderText("Enable " + name + "?");
+        confirm.setContentText("This employee will be able to use the system again.");
+        Optional<ButtonType> result = confirm.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            String sql = "UPDATE employee SET is_active = TRUE WHERE id = ?";
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, id);
+                pstmt.executeUpdate();
+                loadEmployees();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
