@@ -51,63 +51,63 @@ INSERT INTO Inventory (item_name, quantity, unit_type, expiration_date, target_v
 ('Cane Sugar Syrup', 100.0, 'liters', NOW() + INTERVAL '1 year',0);
 
 -- Milk Foam Series
-INSERT INTO Product (name, base_price, category_name, description, color_code, is_active) VALUES
-('Milk Foam Green Tea', 5.75, 'Milk Foam Series', 'Jasmine green tea topped with signature milk foam.', '#E6E6FA', TRUE),
-('Milk Foam Black Tea', 5.75, 'Milk Foam Series', 'Rich black tea topped with signature milk foam.', '#E6E6FA', TRUE),
-('Milk Foam Earl Grey Tea', 5.75, 'Milk Foam Series', 'Citrusy Earl Grey tea topped with signature milk foam.', '#E6E6FA', TRUE),
-('Milk Foam Wintermelon', 5.75, 'Milk Foam Series', 'Caffeine-free wintermelon drink with salty-sweet foam.', '#E6E6FA', TRUE),
-('Creme Brulee Brown Sugar Milk Tea', 7.00, 'Milk Foam Series', 'Milk tea with brown sugar pearls and torched creme brulee foam.', '#E6E6FA', TRUE);
+INSERT INTO Product (name, base_price, category_name, description, color_code, is_active, image_url) VALUES
+('Milk Foam Green Tea', 5.75, 'Milk Foam Series', 'Jasmine green tea topped with signature milk foam.', '#E6E6FA', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%A5%B6%E8%93%8B%E7%B6%A0%E8%8C%B6-Milk-Foam-Green-Tea-web.png'),
+('Milk Foam Black Tea', 5.75, 'Milk Foam Series', 'Rich black tea topped with signature milk foam.', '#E6E6FA', TRUE, 'https://gongchausa.com/wp-content/uploads/2022/01/Milk-Foam-Black-Tea.png'),
+('Milk Foam Earl Grey Tea', 5.75, 'Milk Foam Series', 'Citrusy Earl Grey tea topped with signature milk foam.', '#E6E6FA', TRUE, 'https://gongchausa.com/wp-content/uploads/2022/01/Milk-Foam-Earl-Grey-Tea.png'),
+('Milk Foam Wintermelon', 5.75, 'Milk Foam Series', 'Caffeine-free wintermelon drink with salty-sweet foam.', '#E6E6FA', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%A5%B6%E8%93%8B%E5%86%AC%E7%93%9C-Milk-Foam-Wintermelon-web.png'),
+('Creme Brulee Brown Sugar Milk Tea', 7.00, 'Milk Foam Series', 'Milk tea with brown sugar pearls and torched creme brulee foam.', '#E6E6FA', TRUE, 'https://gongchausa.com/wp-content/uploads/2022/01/Creme-Brulee-Brown-Sugar-Milk-Tea.png');
 
 -- Milk Tea Series
 INSERT INTO Product (name, base_price, category_name, description, color_code, is_active) VALUES
-('Pearl Milk Tea', 5.70, 'Milk Tea Series', 'The classic. Black milk tea with tapioca pearls included.', '#F5DEB3', TRUE),
-('Black Milk Tea', 4.90, 'Milk Tea Series', 'Smooth and creamy black tea.', '#F5DEB3', TRUE),
-('Taro Milk Tea', 5.70, 'Milk Tea Series', 'Creamy purple taro root drink.', '#F5DEB3', TRUE),
-('Earl Grey Milk Tea w/ 3J', 6.50, 'Milk Tea Series', 'Earl Grey milk tea with Pearls, Pudding, and Herbal Jelly.', '#F5DEB3', TRUE),
-('Brown Sugar Milk Tea', 5.40, 'Milk Tea Series', 'Milk tea sweetened with rich brown sugar syrup.', '#F5DEB3', TRUE),
-('Strawberry Milk Tea', 5.70, 'Milk Tea Series', 'Sweet strawberry jam blended with milk tea.', '#F5DEB3', TRUE),
-('Oolong Milk Tea', 4.90, 'Milk Tea Series', 'Roasted oolong tea with milk.', '#F5DEB3', TRUE);
+('Pearl Milk Tea', 5.70, 'Milk Tea Series', 'The classic. Black milk tea with tapioca pearls included.', '#F5DEB3', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E7%8F%8D%E7%8F%A0%E5%A5%B6%E8%8C%B6-Pearl-Milk-Tea-web.png'),
+('Black Milk Tea', 4.90, 'Milk Tea Series', 'Smooth and creamy black tea.', '#F5DEB3', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%A5%B6%E8%8C%B6-Milk-Tea-web.png'),
+('Taro Milk Tea', 5.70, 'Milk Tea Series', 'Creamy purple taro root drink.', '#F5DEB3', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E8%8A%8B%E9%A0%AD%E7%89%B9%E8%AA%BF-Taro-Milk-Drink-w.png'),
+('Earl Grey Milk Tea w/ 3J', 6.50, 'Milk Tea Series', 'Earl Grey milk tea with Pearls, Pudding, and Herbal Jelly.', '#F5DEB3', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%A5%B6%E8%8C%B6-Milk-Tea-web.png'),
+('Brown Sugar Milk Tea', 5.40, 'Milk Tea Series', 'Milk tea sweetened with rich brown sugar syrup.', '#F5DEB3', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E9%BB%91%E7%B3%96%E5%A5%B6%E8%8C%B6-Brown-Sugar-Milk-Tea-web.png'),
+('Strawberry Milk Tea', 5.70, 'Milk Tea Series', 'Sweet strawberry jam blended with milk tea.', '#F5DEB3', TRUE, 'https://gongchausa.com/wp-content/uploads/2022/01/Strawberry-Milk-Tea.png'),
+('Oolong Milk Tea', 4.90, 'Milk Tea Series', 'Roasted oolong tea with milk.', '#F5DEB3', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%A5%B6%E8%8C%B6-Milk-Tea-web.png');
 
 -- Creative Mix Series
 INSERT INTO Product (name, base_price, category_name, description, color_code, is_active) VALUES
-('Mango Green Tea', 5.40, 'Creative Mix Series', 'Jasmine green tea with mango puree.', '#FFB6C1', TRUE),
-('Passionfruit Green Tea', 5.40, 'Creative Mix Series', 'Tart passionfruit jam with green tea and seeds.', '#FFB6C1', TRUE),
-('Lemon Wintermelon w/ Basil Seeds', 5.95, 'Creative Mix Series', 'Sweet wintermelon, tart lemon, and crunchy basil seeds.', '#FFB6C1', TRUE),
-('Lychee Oolong Tea', 5.40, 'Creative Mix Series', 'Roasted oolong tea with sweet lychee syrup.', '#FFB6C1', TRUE),
-('Hibiscus Green Tea', 5.40, 'Creative Mix Series', 'Tart ruby-red hibiscus flower tea.', '#FFB6C1', TRUE),
-('Lemon Ai-Yu w/ White Pearl', 5.95, 'Creative Mix Series', 'Lemon green tea with Ai-Yu jelly and crystal boba.', '#FFB6C1', TRUE);
+('Mango Green Tea', 5.40, 'Creative Mix Series', 'Jasmine green tea with mango puree.', '#FFB6C1', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E8%8D%89%E8%8E%93%E7%B6%A0%E8%8C%B6-Strawberry-Green-Tea-w.png'),
+('Passionfruit Green Tea', 5.40, 'Creative Mix Series', 'Tart passionfruit jam with green tea and seeds.', '#FFB6C1', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E8%8D%89%E8%8E%93%E7%B6%A0%E8%8C%B6-Strawberry-Green-Tea-w.png'),
+('Lemon Wintermelon w/ Basil Seeds', 5.95, 'Creative Mix Series', 'Sweet wintermelon, tart lemon, and crunchy basil seeds.', '#FFB6C1', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E6%AA%B8%E6%AA%AC%E5%86%AC%E7%93%9C%E5%B0%8F%E7%B4%AB%E8%98%87-Lemon-Wintermelon-with-Basil-Seeds-w.png'),
+('Lychee Oolong Tea', 5.40, 'Creative Mix Series', 'Roasted oolong tea with sweet lychee syrup.', '#FFB6C1', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E8%8D%94%E6%9E%9D%E7%83%8F%E9%BE%8D-Lychee-Oolong-Tea-w.png'),
+('Hibiscus Green Tea', 5.40, 'Creative Mix Series', 'Tart ruby-red hibiscus flower tea.', '#FFB6C1', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E6%B4%9B%E7%A5%9E%E7%B6%A0%E8%8C%B6-Hibiscus-Green-Tea-w.png'),
+('Lemon Ai-Yu w/ White Pearl', 5.95, 'Creative Mix Series', 'Lemon green tea with Ai-Yu jelly and crystal boba.', '#FFB6C1', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%AF%92%E5%A4%A9%E6%84%9B%E7%8E%89-Lemon-Ai-Yu-with-White-Pearl-w.png');
 
 -- Brewed Tea Series
 INSERT INTO Product (name, base_price, category_name, description, color_code, is_active) VALUES
-('Jasmine Green Tea', 4.50, 'Brewed Tea Series', 'Pure jasmine green tea.', '#90EE90', TRUE),
-('Black Tea', 4.50, 'Brewed Tea Series', 'Classic brewed black tea.', '#90EE90', TRUE),
-('Oolong Tea', 4.50, 'Brewed Tea Series', 'Roasted oolong tea.', '#90EE90', TRUE),
-('Earl Grey Tea', 4.50, 'Brewed Tea Series', 'Citrusy earl grey tea.', '#90EE90', TRUE);
+('Jasmine Green Tea', 4.50, 'Brewed Tea Series', 'Pure jasmine green tea.', '#90EE90', TRUE, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpRJxBkx9zpO92ypmnHAaDSUJLtj_rhzX7wA&s'),
+('Black Tea', 4.50, 'Brewed Tea Series', 'Classic brewed black tea.', '#90EE90', TRUE, 'https://gongcha.co.nz/images/website_thumbnail/1/a36f0449b02b834e02d62ad78728e615.jpg'),
+('Oolong Tea', 4.50, 'Brewed Tea Series', 'Roasted oolong tea.', '#90EE90', TRUE, 'https://tb-static.uber.com/prod/image-proc/processed_images/daf2bb901ccd09dc6e0c14d5c0d5fab2/5954bcb006b10dbfd0bc160f6370faf3.jpeg'),
+('Earl Grey Tea', 4.50, 'Brewed Tea Series', 'Citrusy earl grey tea.', '#90EE90', TRUE, 'https://gong-cha.ca/wp-content/uploads/2020/06/Taiwan-Earl-Grey-Tea.png.webp');
 
 -- Coffee Series
 INSERT INTO Product (name, base_price, category_name, description, color_code, is_active) VALUES
-('Milk Foam Black Coffee', 5.95, 'Coffee Series', 'Iced black coffee topped with milk foam.', '#D2691E', TRUE),
-('Coffee Milk Tea', 5.40, 'Coffee Series', 'A blend of black coffee and milk tea.', '#D2691E', TRUE);
+('Milk Foam Black Coffee', 5.95, 'Coffee Series', 'Iced black coffee topped with milk foam.', '#D2691E', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%A5%B6%E8%93%8B%E9%BB%91%E5%92%96%E5%95%A1-Milk-Foam-Black-Coffee-w.png'),
+('Coffee Milk Tea', 5.40, 'Coffee Series', 'A blend of black coffee and milk tea.', '#D2691E', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E9%B4%9B%E9%B4%A6%E5%A5%B6%E8%8C%B6-Coffe-Milk-Tea-w.png');
 
 -- Slush Series
 INSERT INTO Product (name, base_price, category_name, description, color_code, is_active) VALUES
-('Taro Slush', 6.25, 'Slush Series', 'Iced blended taro drink.', '#ADD8E6', TRUE),
-('Matcha Milk Slush', 6.75, 'Slush Series', 'Japanese matcha powder blended with ice and milk.', '#ADD8E6', TRUE),
-('Peach Slush', 6.75, 'Slush Series', 'Sweet peach syrup blended with ice.', '#ADD8E6', TRUE);
+('Taro Slush', 6.25, 'Slush Series', 'Iced blended taro drink.', '#ADD8E6', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/Taro-Slush-web.png'),
+('Matcha Milk Slush', 6.75, 'Slush Series', 'Japanese matcha powder blended with ice and milk.', '#ADD8E6', TRUE, 'https://gongchausa.com/wp-content/uploads/2021/12/%E6%8A%B9%E8%8C%B6%E9%AE%AE%E5%A5%B6%E5%86%B0%E6%B2%99-Matcha-Milk-Slush-web.png'),
+('Peach Slush', 6.75, 'Slush Series', 'Sweet peach syrup blended with ice.', '#ADD8E6', TRUE, 'https://gongchausa.com/wp-content/uploads/2022/07/Peach-Slush.png');
 
 
 -- Toppings
-INSERT INTO ModifierOption (name, category, price_adjustment, inventory_item_id)
+INSERT INTO ModifierOption (name, category, price_adjustment, inventory_item_id, image_url)
 VALUES 
-('Pearl (Boba)', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Tapioca Pearls')),
-('White Pearl (Crystal)', 'Topping', 0.75, (SELECT item_id FROM Inventory WHERE item_name = 'White Pearls')),
-('Milk Foam', 'Topping', 0.75, (SELECT item_id FROM Inventory WHERE item_name = 'Milk Foam Powder')),
-('Pudding', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Pudding')),
-('Herbal Jelly', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Herbal Jelly')),
-('Coconut Jelly', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Coconut Jelly')),
-('Basil Seeds', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Basil Seeds')),
-('Ai-Yu Jelly', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Ai-Yu Jelly')),
-('Oreo Crumbs', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Oreo Crumbs'));
+('Pearl (Boba)', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Tapioca Pearls'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E7%8F%8D%E7%8F%A0-Pearl-w.png'),
+('White Pearl (Crystal)', 'Topping', 0.75, (SELECT item_id FROM Inventory WHERE item_name = 'White Pearls'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E7%99%BD%E6%99%B6%E7%90%83-Kanten-Jelly-White-Pearl-w.png'),
+('Milk Foam', 'Topping', 0.75, (SELECT item_id FROM Inventory WHERE item_name = 'Milk Foam Powder'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E8%8D%89%E8%8E%93%E5%A5%B6%E8%93%8BStrawberry-Milk-Foam-w.png'),
+('Pudding', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Pudding'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%B8%83%E4%B8%81%E5%87%8D-Pudding-Jelly-w.png'),
+('Herbal Jelly', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Herbal Jelly'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E4%BB%99%E8%8D%89%E5%87%8D-Grass-Jelly-Herbal-Jelly-w.png'),
+('Coconut Jelly', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Coconut Jelly'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E6%A4%B0%E6%9E%9C-Coconut-Jelly-w.png'),
+('Basil Seeds', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Basil Seeds'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E5%B0%8F%E7%B4%AB%E8%98%87-Basil-Seeds-w.png'),
+('Ai-Yu Jelly', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Ai-Yu Jelly'), 'https://gongchausa.com/wp-content/uploads/2021/12/%E6%84%9B%E7%8E%89-Ai-Yu-Jelly-w.png'),
+('Oreo Crumbs', 'Topping', 0.50, (SELECT item_id FROM Inventory WHERE item_name = 'Oreo Crumbs'), 'https://gongchausa.com/wp-content/uploads/2021/12/Oreo-w.png');
 
 -- Sugar Levels
 INSERT INTO ModifierOption (name, category, price_adjustment, is_default, inventory_item_id)

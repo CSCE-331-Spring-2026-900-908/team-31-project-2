@@ -12,7 +12,8 @@ CREATE TABLE Employee (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
-    pin_hash VARCHAR(255) NOT NULL
+    pin_hash VARCHAR(255) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE Inventory (
@@ -47,7 +48,8 @@ CREATE TABLE ModifierOption (
     category VARCHAR(50),
     price_adjustment FLOAT NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
-    inventory_item_id INT REFERENCES Inventory(item_id) 
+    inventory_item_id INT REFERENCES Inventory(item_id),
+    image_url VARCHAR(255)
 );
 
 CREATE TABLE ProductModifier (
