@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -242,6 +243,7 @@ public class EmployeeListController {
 
     @FXML
     void handleSignOut(ActionEvent event) {
+        UserSession.clear();
         navigateTo("login-view.fxml");
     }
 
@@ -261,8 +263,8 @@ public class EmployeeListController {
     }
 
     @FXML
-    void handleNavigateTrends(ActionEvent event) {
-        navigateTo("order-trend.fxml");
+    void handleNavigateReports(ActionEvent event) {
+        navigateTo("reports-view.fxml");
     }
 
     private void navigateTo(String fxmlFile) {
@@ -270,7 +272,11 @@ public class EmployeeListController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
             Stage stage = (Stage) employeeList.getScene().getWindow();
-            stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
+            double width = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_WIDTH : SceneConfig.APP_WIDTH;
+            double height = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_HEIGHT : SceneConfig.APP_HEIGHT;
+            Scene scene = new Scene(root, width, height);
+            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+            stage.setScene(scene);
             stage.centerOnScreen();
         } catch (IOException e) {
             e.printStackTrace();

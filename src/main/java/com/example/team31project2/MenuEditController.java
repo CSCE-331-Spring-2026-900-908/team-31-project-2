@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -262,25 +263,29 @@ public class MenuEditController {
 
     // Navigation
 
-    @FXML void handleSignOut(ActionEvent event)           { navigateTo("login-view.fxml"); }
+    @FXML void handleSignOut(ActionEvent event)           { UserSession.clear(); navigateTo("login-view.fxml"); }
     @FXML void handleNavigateOrdering(ActionEvent event)  { navigateTo("ordering-view.fxml"); }
     @FXML void handleNavigateEmployees(ActionEvent event) { navigateTo("employee-list-view.fxml"); }
     @FXML void handleNavigateInventory(ActionEvent event) { navigateTo("inventory-view.fxml"); }
-    @FXML void handleNavigateTrends(ActionEvent event)    { navigateTo("order-trend.fxml"); }
+    @FXML void handleNavigateReports(ActionEvent event)   { navigateTo("reports-view.fxml"); }
 
     private void navigateTo(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
-            switchScene(root);
+            switchScene(root, fxmlFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void switchScene(Parent root) {
+    private void switchScene(Parent root, String fxmlFile) {
         Stage stage = (Stage) menuItemsList.getScene().getWindow();
-        stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
+        double width = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_WIDTH : SceneConfig.APP_WIDTH;
+        double height = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_HEIGHT : SceneConfig.APP_HEIGHT;
+        Scene scene = new Scene(root, width, height);
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+        stage.setScene(scene);
         stage.centerOnScreen();
     }
 }

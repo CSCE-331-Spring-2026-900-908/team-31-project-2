@@ -16,7 +16,7 @@ public class InventoryDAO{
 
     public List<InventoryItem> getAllItems(){
 
-        String sql = " SELECT item_id, item_name, quantity, unit_type, expiration_date, target_val\n FROM inventory\n ORDER BY item_name ";
+        String sql = " SELECT item_id, item_name, quantity, unit_type, expiration_date, target_val\n FROM inventory\n ORDER BY item_id ASC ";
         List<InventoryItem> items = new ArrayList<>();
 
         try(PreparedStatement ps = conn.prepareStatement(sql); 

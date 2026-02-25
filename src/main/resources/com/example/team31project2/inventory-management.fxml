@@ -27,17 +27,15 @@
          </children>
       </VBox>
       <Button layoutX="455.0" layoutY="82.0" mnemonicParsing="false" onAction="#addHandelr" text="Add" />
-      <TextField fx:id="textTarg" layoutX="171.0" layoutY="84.0" prefHeight="25.0" prefWidth="27.0" />
-      <TextField fx:id="textQty" layoutX="228.0" layoutY="85.0" prefHeight="25.0" prefWidth="27.0" />
-      <Text layoutX="103.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Item" />
-      <Text layoutX="166.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Target" />
-      <Text layoutX="220.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Current" />
+      <Text layoutX="31.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Item" />
+      <Text layoutX="117.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Target" />
+      <Text layoutX="171.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Current" />
       <TextField fx:id="textUnit" layoutX="276.0" layoutY="85.0" prefHeight="25.0" prefWidth="53.0" />
-      <TextField fx:id="textId" layoutX="25.0" layoutY="84.0" prefHeight="25.0" prefWidth="39.0" />
       <Text layoutX="291.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Unit" />
       <Text layoutX="357.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Exp Date" />
-      <Text layoutX="32.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ID" />
-      <TextField fx:id="textName" layoutX="82.0" layoutY="84.0" prefHeight="25.0" prefWidth="67.0" />
+      <TextField fx:id="textName" layoutX="25.0" layoutY="84.0" prefHeight="25.0" prefWidth="67.0" />
+      <TextField fx:id="textTarg" layoutX="122.0" layoutY="84.0" prefHeight="25.0" prefWidth="27.0" />
+      <TextField fx:id="textQty" layoutX="179.0" layoutY="85.0" prefHeight="25.0" prefWidth="27.0" />
       <DatePicker fx:id="textdate" layoutX="342.0" layoutY="85.0" prefHeight="25.0" prefWidth="94.0" />
       <Button layoutX="519.0" layoutY="82.0" mnemonicParsing="false" onAction="#removeHandler" text="Remove" />
    </children>

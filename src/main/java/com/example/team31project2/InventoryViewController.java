@@ -31,6 +31,11 @@ public class InventoryViewController {
     }
 
     @FXML
+    void handleNavigateInventory(ActionEvent event) {
+        navigateTo("inventory-view.fxml");
+    }
+
+    @FXML
     void handleNavigateTrends(ActionEvent event) {
         navigateTo("reports-view.fxml");
     }
@@ -47,7 +52,9 @@ public class InventoryViewController {
             Parent root = loader.load();
 
             Stage stage = (Stage) menuBar.getScene().getWindow();
-            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            double width = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_WIDTH : SceneConfig.APP_WIDTH;
+            double height = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_HEIGHT : SceneConfig.APP_HEIGHT;
+            Scene scene = new Scene(root, width, height);
             scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
             stage.setScene(scene);
             stage.centerOnScreen();

@@ -73,8 +73,7 @@ public class LoginController {
                 orderController.setUser(user);
                 
                 Stage stage = (Stage) pinField.getScene().getWindow();
-                // Standard dimension for the POS could be larger, e.g., 1024x768
-                Scene scene = new Scene(root, 1024, 768);
+                Scene scene = new Scene(root, SceneConfig.APP_WIDTH, SceneConfig.APP_HEIGHT);
                 scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
                 stage.setScene(scene);
                 stage.centerOnScreen();

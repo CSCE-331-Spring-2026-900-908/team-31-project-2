@@ -20,6 +20,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,9 +64,6 @@ public class ReportsController {
     @FXML
     private Button yearRangeButton;
 
-    @FXML
-    private Button backButton;
-
     private final Map<String, String> reportToFileMap = new LinkedHashMap<>();
     private final Set<String> dateRangeReports = Set.of(
             "Most Popular Modifiers",
@@ -101,10 +99,6 @@ public class ReportsController {
                 loadReport(newValue);
             }
         });
-
-        if (backButton != null) {
-            backButton.setOnAction(event -> handleBack());
-        }
 
         if (!reportSelector.getItems().isEmpty()) {
             reportSelector.getSelectionModel().selectFirst();
@@ -361,16 +355,53 @@ public class ReportsController {
         }
     }
 
-    private void handleBack() {
+    @FXML
+    private void handleNavigateOrdering() {
+        navigateTo("ordering-view.fxml");
+    }
+
+    @FXML
+    private void handleNavigateMenuEdit() {
+        navigateTo("menu-edit-view.fxml");
+    }
+
+    @FXML
+    private void handleNavigateEmployees() {
+        navigateTo("employee-list-view.fxml");
+    }
+
+    @FXML
+    private void handleNavigateInventory() {
+        navigateTo("inventory-view.fxml");
+    }
+
+    @FXML
+    private void handleNavigateReports() {
+        navigateTo("reports-view.fxml");
+    }
+
+    @FXML
+    private void handleSignOut() {
+        UserSession.clear();
+        navigateTo("login-view.fxml");
+    }
+
+    private void navigateTo(String fxmlFile) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ordering-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
 
-            OrderController controller = loader.getController();
-            controller.setUser(currentUser);
+            if ("ordering-view.fxml".equals(fxmlFile)) {
+                OrderController controller = loader.getController();
+                controller.setUser(currentUser != null ? currentUser : UserSession.getCurrentUser());
+            }
 
-            Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(new Scene(root, 1000, 700)); // Resetting back to ordering page dimensions
+            Stage stage = (Stage) reportTable.getScene().getWindow();
+            double width = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_WIDTH : SceneConfig.APP_WIDTH;
+            double height = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_HEIGHT : SceneConfig.APP_HEIGHT;
+            Scene scene = new Scene(root, width, height);
+            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+            stage.setScene(scene);
             stage.centerOnScreen();
         } catch (IOException e) {
             e.printStackTrace();

@@ -5,12 +5,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class InventoryController {
 
@@ -25,7 +25,6 @@ public class InventoryController {
     @FXML private TableColumn<InventoryItem, Double> colTarg;
 
     //TEXT FIELDS
-    @FXML private javafx.scene.control.TextField textId;
     @FXML private javafx.scene.control.TextField textName;
     @FXML private javafx.scene.control.TextField textQty;
     @FXML private javafx.scene.control.TextField textUnit;
@@ -138,7 +137,6 @@ public class InventoryController {
 
     @FXML
     private void addHandelr(){
-        Integer id = Integer.parseInt(textId.getText().trim()); 
         String name = textName.getText().trim();
         Double quantity = Double.parseDouble(textQty.getText().trim());
         double target = Double.parseDouble(textTarg.getText().trim());
@@ -152,14 +150,14 @@ public class InventoryController {
             exp = textdate.getValue().atStartOfDay(); // midnight
         }
 
-        boolean ok = insertItemInDb(id, name, quantity, unit, exp, target);
-        if (!ok) return;
+        Integer id = insertItemInDb(name, quantity, unit, exp, target);
+        if (id == null) return;
 
 
         InventoryItem newItem = new InventoryItem(id, name, quantity, unit, exp, target);
         inventoryList.add(newItem);
+        inventoryList.sort((a, b) -> Integer.compare(a.getItemId(), b.getItemId()));
 
-        textId.clear();
         textName.clear();
         textQty.clear();
         textTarg.clear();
@@ -167,26 +165,31 @@ public class InventoryController {
         if (textdate != null) textdate.setValue(null);
     }
 
-    private boolean insertItemInDb(int id, String name, double quantity, String unit, java.time.LocalDateTime exp, double target){
-        String sql = "INSERT INTO inventory (item_id, item_name, quantity, unit_type, expiration_date, target_val) VALUES (?, ?, ?, ?, ?, ?)";
+    private Integer insertItemInDb(String name, double quantity, String unit, java.time.LocalDateTime exp, double target){
+        String sql = "INSERT INTO inventory (item_name, quantity, unit_type, expiration_date, target_val) VALUES (?, ?, ?, ?, ?) RETURNING item_id";
 
         try(Connection conn = DatabaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)){ 
-        ps.setInt(1, id);
-        ps.setString(2, name);
-        ps.setDouble(3, quantity);
-        ps.setString(4, unit);
+        ps.setString(1, name);
+        ps.setDouble(2, quantity);
+        ps.setString(3, unit);
 
-        if (exp == null) ps.setTimestamp(5, null);
-        else ps.setTimestamp(5, java.sql.Timestamp.valueOf(exp));
+        if (exp == null) ps.setTimestamp(4, null);
+        else ps.setTimestamp(4, java.sql.Timestamp.valueOf(exp));
 
-        ps.setDouble(6, target);
+        ps.setDouble(5, target);
 
-        return ps.executeUpdate() == 1;  
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("item_id");
+            }
+        }
+
+        return null;
         }
         catch(Exception e){
             e.printStackTrace();
-            return false;
+            return null;
         }
         
                         
@@ -195,7 +198,11 @@ public class InventoryController {
     @FXML
     private void removeHandler(){
         try {
-        int id = Integer.parseInt(textId.getText()); 
+        InventoryItem selectedItem = table.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            return;
+        }
+        int id = selectedItem.getItemId();
         
         if(id < 0 ){
             return;
@@ -205,7 +212,6 @@ public class InventoryController {
         if(!ok){return;}
         inventoryList.removeIf(item -> item.getItemId() == id);
 
-        textId.clear();
         }
         catch(Exception e){
             e.printStackTrace();

@@ -15,6 +15,7 @@
 						<MenuItem mnemonicParsing="false" onAction="#handleNavigateOrdering" text="Orders" />
 						<MenuItem mnemonicParsing="false" onAction="#handleNavigateMenuEdit" text="Menu" />
 						<MenuItem mnemonicParsing="false" onAction="#handleNavigateEmployees" text="Employees" />
+						<MenuItem mnemonicParsing="false" onAction="#handleNavigateInventory" text="Inventory" />
 						<MenuItem mnemonicParsing="false" onAction="#handleNavigateTrends" text="Reports" />
 						<SeparatorMenuItem />
 						<MenuItem mnemonicParsing="false" onAction="#handleSignOut" text="Sign Out" />
