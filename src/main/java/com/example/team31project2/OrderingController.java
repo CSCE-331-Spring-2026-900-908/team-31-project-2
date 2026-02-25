@@ -14,10 +14,11 @@ public class OrderingController {
 
     @FXML private TextArea orderInfo;
 
-    @FXML
-    void handleMenuEdit(ActionEvent event) {
-        navigateTo("menu-edit-view.fxml");
-    }
+    @FXML void handleNavigateMenuEdit(ActionEvent event)  { navigateTo("menu-edit-view.fxml"); }
+    @FXML void handleNavigateEmployees(ActionEvent event) { navigateTo("employee-list-view.fxml"); }
+    @FXML void handleNavigateInventory(ActionEvent event) { navigateTo("inventory-view.fxml"); }
+    @FXML void handleNavigateTrends(ActionEvent event)    { navigateTo("order-trend.fxml"); }
+    @FXML void handleSignOut(ActionEvent event)           { navigateTo("login-view.fxml"); }
 
     private void navigateTo(String fxmlFile) {
         try {
