@@ -28,7 +28,16 @@
     <center>
         <VBox fx:id="contentArea" spacing="15.0" style="-fx-padding: 20;" BorderPane.alignment="CENTER">
             <children>
+                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 0 5 0;">
+                    <children>
+                        <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Date Range:" />
+                        <Button fx:id="weekRangeButton" mnemonicParsing="false" prefHeight="42.0" prefWidth="120.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; -fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;" text="1 Week" />
+                        <Button fx:id="monthRangeButton" mnemonicParsing="false" prefHeight="42.0" prefWidth="120.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; -fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;" text="1 Month" />
+                        <Button fx:id="yearRangeButton" mnemonicParsing="false" prefHeight="42.0" prefWidth="120.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; -fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;" text="1 Year" />
+                    </children>
+                </HBox>
                 <Label fx:id="reportTitle" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;" text="No Report Selected" />
+                <VBox fx:id="chartContainer" prefHeight="300.0" />
                 <TableView fx:id="reportTable" style="-fx-background-color: white; -fx-border-color: #e0e0e0;" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>

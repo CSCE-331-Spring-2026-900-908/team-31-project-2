@@ -29,8 +29,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 
 public class ReportsController {
 
@@ -49,9 +52,30 @@ public class ReportsController {
     private VBox contentArea;
 
     @FXML
+    private VBox chartContainer;
+
+    @FXML
+    private Button weekRangeButton;
+
+    @FXML
+    private Button monthRangeButton;
+
+    @FXML
+    private Button yearRangeButton;
+
+    @FXML
     private Button backButton;
 
-    private final Map<String, String> reportToFileMap = new TreeMap<>();
+    private final Map<String, String> reportToFileMap = new LinkedHashMap<>();
+    private final Set<String> dateRangeReports = Set.of(
+            "Most Popular Modifiers",
+            "Orders by Day of Week",
+            "Revenue Over Time",
+            "Sales by Category",
+            "Top 5 Products",
+            "Orders by Hour",
+            "Revenue by Employee");
+    private String selectedDateRange = "1 Month";
 
     @FXML
     public void initialize() {
@@ -59,9 +83,16 @@ public class ReportsController {
         reportToFileMap.put("Inventory Status", "custom_reports/inventory_status.sql");
         reportToFileMap.put("Most Popular Modifiers", "custom_reports/popular_modifiers.sql");
         reportToFileMap.put("Orders by Day of Week", "custom_reports/orders_by_day.sql");
-        reportToFileMap.put("Revenue by Month", "custom_reports/revenue_by_month.sql");
+        reportToFileMap.put("Revenue Over Time", "custom_reports/revenue_by_month.sql");
         reportToFileMap.put("Sales by Category", "custom_reports/sales_by_category.sql");
         reportToFileMap.put("Top 5 Products", "custom_reports/top_5_products.sql");
+        reportToFileMap.put("Orders by Hour", "custom_reports/orders_by_hour.sql");
+        reportToFileMap.put("Revenue by Employee", "custom_reports/revenue_by_employee.sql");
+
+        weekRangeButton.setOnAction(event -> handleDateRangeSelect("1 Week"));
+        monthRangeButton.setOnAction(event -> handleDateRangeSelect("1 Month"));
+        yearRangeButton.setOnAction(event -> handleDateRangeSelect("1 Year"));
+        updateDateRangeButtonStyles();
 
         reportSelector.getItems().addAll(reportToFileMap.keySet());
 
@@ -74,6 +105,10 @@ public class ReportsController {
         if (backButton != null) {
             backButton.setOnAction(event -> handleBack());
         }
+
+        if (!reportSelector.getItems().isEmpty()) {
+            reportSelector.getSelectionModel().selectFirst();
+        }
     }
 
     public void setUser(Employee user) {
@@ -85,8 +120,13 @@ public class ReportsController {
             return;
 
         reportTitle.setText(reportName);
+        boolean shouldEnableDateRange = dateRangeReports.contains(reportName);
+        weekRangeButton.setDisable(!shouldEnableDateRange);
+        monthRangeButton.setDisable(!shouldEnableDateRange);
+        yearRangeButton.setDisable(!shouldEnableDateRange);
+
         String relativePath = reportToFileMap.get(reportName);
-        String sql = readSqlFile(relativePath);
+        String sql = resolveSql(reportName, relativePath);
 
         if (sql == null || sql.trim().isEmpty()) {
             System.err.println("Could not load SQL for report: " + reportName);
@@ -109,14 +149,82 @@ public class ReportsController {
         }
     }
 
+    private String resolveSql(String reportName, String relativePath) {
+        String rawSql = readSqlFile(relativePath);
+        if (rawSql == null) {
+            return null;
+        }
+
+        String dateFilter = "";
+        if (dateRangeReports.contains(reportName)) {
+            dateFilter = " AND o.created_at BETWEEN NOW() - INTERVAL '" + getSelectedInterval() + "' AND NOW() ";
+        }
+
+        String resolvedSql = rawSql.replace("{{DATE_FILTER}}", dateFilter);
+
+        if ("Revenue Over Time".equals(reportName)) {
+            resolvedSql = resolvedSql
+                    .replace("{{TIME_BUCKET}}", getRevenueTimeBucket())
+                    .replace("{{TIME_LABEL_FORMAT}}", getRevenueLabelFormat());
+        } else {
+            resolvedSql = resolvedSql
+                    .replace("{{TIME_BUCKET}}", "day")
+                    .replace("{{TIME_LABEL_FORMAT}}", "YYYY-MM-DD");
+        }
+
+        return resolvedSql;
+    }
+
+    private String getSelectedInterval() {
+        if ("1 Week".equals(selectedDateRange)) {
+            return "7 days";
+        }
+        if ("1 Year".equals(selectedDateRange)) {
+            return "1 year";
+        }
+        return "1 month";
+    }
+
+    private String getRevenueTimeBucket() {
+        if ("1 Year".equals(selectedDateRange)) {
+            return "month";
+        }
+        return "day";
+    }
+
+    private String getRevenueLabelFormat() {
+        if ("1 Year".equals(selectedDateRange)) {
+            return "YYYY-MM";
+        }
+        return "YYYY-MM-DD";
+    }
+
+    private void handleDateRangeSelect(String range) {
+        selectedDateRange = range;
+        updateDateRangeButtonStyles();
+
+        String selectedReport = reportSelector.getSelectionModel().getSelectedItem();
+        if (selectedReport != null && dateRangeReports.contains(selectedReport)) {
+            loadReport(selectedReport);
+        }
+    }
+
+    private void updateDateRangeButtonStyles() {
+        String selectedStyle = "-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #333333; -fx-text-fill: white; "
+                + "-fx-border-color: #333333; -fx-border-radius: 6px; -fx-background-radius: 6px;";
+        String normalStyle = "-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; "
+                + "-fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;";
+
+        weekRangeButton.setStyle("1 Week".equals(selectedDateRange) ? selectedStyle : normalStyle);
+        monthRangeButton.setStyle("1 Month".equals(selectedDateRange) ? selectedStyle : normalStyle);
+        yearRangeButton.setStyle("1 Year".equals(selectedDateRange) ? selectedStyle : normalStyle);
+    }
+
     private void executeAndDisplayReport(String sql) {
         reportTable.getColumns().clear();
         reportTable.getItems().clear();
 
-        // Clear any previous chart from the top of the VBox
-        if (contentArea.getChildren().size() > 2) {
-            contentArea.getChildren().remove(1); // Assumes Title is 0, Table is last
-        }
+        chartContainer.getChildren().clear();
 
         try (Connection conn = DatabaseConnection.getConnection();
                 Statement stmt = conn.createStatement();
@@ -169,7 +277,8 @@ public class ReportsController {
 
         // Configuration based on current Report types!
         if (currentReport.equals("Top 5 Products") || currentReport.equals("Orders by Day of Week")
-                || currentReport.equals("Most Popular Modifiers")) {
+            || currentReport.equals("Most Popular Modifiers") || currentReport.equals("Orders by Hour")
+            || currentReport.equals("Revenue by Employee")) {
             CategoryAxis xAxis = new CategoryAxis();
             xAxis.setLabel(xAxisName);
             NumberAxis yAxis = new NumberAxis();
@@ -179,7 +288,9 @@ public class ReportsController {
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName(currentReport);
 
-            for (ObservableList<String> row : data) {
+            int maxRows = currentReport.equals("Top 5 Products") ? Math.min(5, data.size()) : data.size();
+            for (int i = 0; i < maxRows; i++) {
+                ObservableList<String> row = data.get(i);
                 try {
                     String xVal = row.get(0);
                     Number yVal = Double.parseDouble(row.get(1));
@@ -190,7 +301,7 @@ public class ReportsController {
             barChart.getData().add(series);
             chartNode = barChart;
 
-        } else if (currentReport.equals("Revenue by Month")) {
+        } else if (currentReport.equals("Revenue Over Time")) {
             CategoryAxis xAxis = new CategoryAxis();
             xAxis.setLabel(xAxisName);
             NumberAxis yAxis = new NumberAxis();
@@ -200,12 +311,30 @@ public class ReportsController {
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName(currentReport);
 
-            for (ObservableList<String> row : data) {
-                try {
-                    String xVal = row.get(0);
-                    Number yVal = Double.parseDouble(row.get(1));
-                    series.getData().add(new XYChart.Data<>(xVal, yVal));
-                } catch (NumberFormatException ignored) {
+            if ("1 Year".equals(selectedDateRange)) {
+                Map<String, Double> revenueByMonth = new LinkedHashMap<>();
+                for (ObservableList<String> row : data) {
+                    try {
+                        revenueByMonth.put(row.get(0), Double.parseDouble(row.get(1)));
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+
+                YearMonth currentMonth = YearMonth.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+                for (int i = 11; i >= 0; i--) {
+                    String monthLabel = currentMonth.minusMonths(i).format(formatter);
+                    double revenue = revenueByMonth.getOrDefault(monthLabel, 0.0);
+                    series.getData().add(new XYChart.Data<>(monthLabel, revenue));
+                }
+            } else {
+                for (ObservableList<String> row : data) {
+                    try {
+                        String xVal = row.get(0);
+                        Number yVal = Double.parseDouble(row.get(1));
+                        series.getData().add(new XYChart.Data<>(xVal, yVal));
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             }
             lineChart.getData().add(series);
@@ -221,14 +350,14 @@ public class ReportsController {
                 } catch (NumberFormatException ignored) {
                 }
             }
-            pieChart.setTitle("Sugar Level Preferences");
+            pieChart.setTitle("Sales by Category");
             chartNode = pieChart;
         }
 
         if (chartNode != null) {
             chartNode.setStyle(
                     "-fx-background-color: white; -fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 5px;");
-            contentArea.getChildren().add(1, chartNode); // Insert between title and table
+            chartContainer.getChildren().add(chartNode);
         }
     }
 
