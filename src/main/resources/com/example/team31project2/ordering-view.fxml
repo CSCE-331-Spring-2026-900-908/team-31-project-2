@@ -4,19 +4,45 @@
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.OrderController">
    <children>
       <MenuBar>
         <menus>
-          <Menu id="logout" mnemonicParsing="false" text="Logout">
+          <Menu mnemonicParsing="false" text="Navigate">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" text="Menu"      onAction="#handleNavigateMenuEdit"/>
+              <MenuItem mnemonicParsing="false" text="Employees" onAction="#handleNavigateEmployees"/>
+              <MenuItem mnemonicParsing="false" text="Inventory" onAction="#handleNavigateInventory"/>
+              <MenuItem mnemonicParsing="false" text="Trends"    onAction="#handleNavigateTrends"/>
+              <SeparatorMenuItem/>
+              <MenuItem mnemonicParsing="false" text="Sign Out"  onAction="#handleSignOut"/>
             </items>
           </Menu>
         </menus>
       </MenuBar>
+      <!-- header -->
+      <HBox alignment="CENTER_LEFT"
+            prefHeight="60.0"
+            style="-fx-background-color: white;
+                   -fx-border-color: #e0e0e0;
+                   -fx-border-width: 0 0 1 0;">
+         <padding>
+            <Insets left="24.0" right="24.0"/>
+         </padding>
+         <Label text="Cashier Only"
+                style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+         <Region HBox.hgrow="ALWAYS"/>
+         <Button text="Sign out"
+                 onAction="#handleSignOut"
+                 style="-fx-background-color: transparent;
+                        -fx-border-color: #333333;
+                        -fx-border-radius: 20;
+                        -fx-background-radius: 20;
+                        -fx-padding: 8 20 8 20;"/>
+      </HBox>
+
       <SplitPane dividerPositions="0.8" prefHeight="376.0" prefWidth="600.0">
          <items>
             <VBox prefHeight="200.0" prefWidth="100.0">
@@ -34,16 +60,16 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button fx:id="milkFoamButton" mnemonicParsing="false" prefHeight="100.0" text="Milk Foam Series" textAlignment="CENTER" wrapText="true" />
-                        <Button fx:id="milkTeaButton" mnemonicParsing="false" prefHeight="100.0" text="Milk Tea Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" />
-                        <Button fx:id="creativeMixButton" mnemonicParsing="false" prefHeight="100.0" text="Creative Mix Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" />
-                        <Button fx:id="brewedTeaButton" mnemonicParsing="false" prefHeight="100.0" text="Brewed Tea Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" />
-                        <Button fx:id="coffeeButton" mnemonicParsing="false" prefHeight="100.0" text="Coffee Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" />
-                        <Button fx:id="slushButton" mnemonicParsing="false" prefHeight="100.0" text="Slush Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" />
+                        <ToggleButton fx:id="milkFoam" mnemonicParsing="false" onAction="#toggleCategory" prefHeight="100.0" text="Milk Foam Series" textAlignment="CENTER" wrapText="true" />
+                        <ToggleButton fx:id="milkTea" mnemonicParsing="false" onAction="#toggleCategory" prefHeight="100.0" text="Milk Tea Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" />
+                        <ToggleButton fx:id="creativeMix" mnemonicParsing="false" onAction="#toggleCategory" prefHeight="100.0" text="Creative Mix Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" />
+                        <ToggleButton fx:id="brewedTea" mnemonicParsing="false" onAction="#toggleCategory" prefHeight="100.0" text="Brewed Tea Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" />
+                        <ToggleButton fx:id="coffee" mnemonicParsing="false" onAction="#toggleCategory" prefHeight="100.0" text="Coffee Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" />
+                        <ToggleButton fx:id="slush" mnemonicParsing="false" onAction="#toggleCategory" prefHeight="100.0" text="Slush Series" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" />
                      </children>
                   </GridPane>
-                  <TextField promptText="Search" />
-                  <ScrollPane hbarPolicy="NEVER" prefHeight="262.0" prefWidth="474.0">
+                  <TextField fx:id="searchBar" onKeyTyped="#search" promptText="Search" />
+                  <ScrollPane hbarPolicy="NEVER" prefHeight="262.0" prefWidth="474.0" vbarPolicy="NEVER">
                      <content>
                         <GridPane prefHeight="400.0" prefWidth="475.0">
                           <columnConstraints>
@@ -62,36 +88,36 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Button fx:id="menuItem01" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" />
-                              <Button fx:id="menuItem02" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" />
-                              <Button fx:id="menuItem30" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-                              <Button fx:id="menuItem03" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" />
-                              <Button fx:id="menuItem04" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" />
-                              <Button fx:id="menuItem05" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" />
-                              <Button fx:id="menuItem06" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" />
-                              <Button fx:id="menuItem07" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="1" />
-                              <Button fx:id="menuItem08" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Button fx:id="menuItem09" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Button fx:id="menuItem10" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                              <Button fx:id="menuItem11" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <Button fx:id="menuItem12" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                              <Button fx:id="menuItem13" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="2" />
-                              <Button fx:id="menuItem14" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Button fx:id="menuItem15" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <Button fx:id="menuItem16" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                              <Button fx:id="menuItem17" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                              <Button fx:id="menuItem18" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="2" />
-                              <Button fx:id="menuItem19" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="3" />
-                              <Button fx:id="menuItem20" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <Button fx:id="menuItem21" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                              <Button fx:id="menuItem22" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                              <Button fx:id="menuItem23" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                              <Button fx:id="menuItem24" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="3" />
-                              <Button fx:id="menuItem25" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="4" />
-                              <Button fx:id="menuItem26" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <Button fx:id="menuItem27" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                              <Button fx:id="menuItem28" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-                              <Button fx:id="menuItem29" mnemonicParsing="false" prefHeight="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                              <Button fx:id="menuItem01" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" />
+                              <Button fx:id="menuItem02" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" />
+                              <Button fx:id="menuItem30" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                              <Button fx:id="menuItem03" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" />
+                              <Button fx:id="menuItem04" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" />
+                              <Button fx:id="menuItem05" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" />
+                              <Button fx:id="menuItem06" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" />
+                              <Button fx:id="menuItem07" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="1" />
+                              <Button fx:id="menuItem08" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Button fx:id="menuItem09" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <Button fx:id="menuItem10" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <Button fx:id="menuItem11" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <Button fx:id="menuItem12" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <Button fx:id="menuItem13" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="2" />
+                              <Button fx:id="menuItem14" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Button fx:id="menuItem15" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <Button fx:id="menuItem16" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Button fx:id="menuItem17" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                              <Button fx:id="menuItem18" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <Button fx:id="menuItem19" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="3" />
+                              <Button fx:id="menuItem20" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Button fx:id="menuItem21" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Button fx:id="menuItem22" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Button fx:id="menuItem23" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                              <Button fx:id="menuItem24" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                              <Button fx:id="menuItem25" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="4" />
+                              <Button fx:id="menuItem26" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Button fx:id="menuItem27" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                              <Button fx:id="menuItem28" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                              <Button fx:id="menuItem29" mnemonicParsing="false" onAction="#addDrink" prefHeight="100.0" prefWidth="100.0" text="Menu Item" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="4" GridPane.rowIndex="4" />
                            </children>
                         </GridPane>
                      </content>
@@ -104,17 +130,26 @@
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                            <children>
-                              <TextArea fx:id="orderInfo" editable="false" prefHeight="250.0" prefWidth="115.0" text="Current Order" />
+                              <TextArea fx:id="orderInfo" editable="false" prefHeight="250.0" prefWidth="115.0" text="Current Order" wrapText="true" />
                            </children>
                         </AnchorPane>
                     </content>
                   </ScrollPane>
-                  <TextArea fx:id="orderTotal" editable="false" prefHeight="90.0" prefWidth="115.0" text="Subtotal:     $-.--&#10;Tax:             $-.--&#10;------------------&#10;Total:           $-.--">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </TextArea>
-                  <Button mnemonicParsing="false" prefWidth="115.0" text="Checkout" />
+                  <TextFlow prefHeight="90.0" prefWidth="200.0">
+                     <children>
+                        <TextArea editable="false" prefHeight="90.0" prefWidth="70.0" text="Subtotal:&#10;Tax:&#10;------------&#10;Total:">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextArea>
+                        <TextArea fx:id="orderTotal" editable="false" prefHeight="90.0" prefWidth="45.0" text="\$-.--&#10;$-.--&#10;-----&#10;$-.--">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                  </TextFlow>
+                  <Button mnemonicParsing="false" onAction="#checkout" prefWidth="115.0" text="Checkout" />
                </children>
             </VBox>
          </items>

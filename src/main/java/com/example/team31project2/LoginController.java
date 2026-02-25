@@ -59,17 +59,17 @@ public class LoginController {
         }
 
         Employee user = authenticateUser(pin);
-
+        
         if (user != null) {
             System.out.println("Login successful for user: " + user.getName());
-
+            
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("reports-view.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("ordering-view.fxml"));
                 Parent root = loader.load();
-
-                ReportsController reportsController = loader.getController();
-                reportsController.setUser(user);
-
+                
+                // OrderingController orderingController = loader.getController();
+                // orderingController.setUser(user);
+                
                 Stage stage = (Stage) pinField.getScene().getWindow();
                 // Standard dimension for the POS could be larger, e.g., 1024x768
                 stage.setScene(new Scene(root, 1024, 768));
@@ -78,7 +78,7 @@ public class LoginController {
                 e.printStackTrace();
                 showError("Error loading the next page.");
             }
-
+            
             currentPin.setLength(0);
             pinField.setText("");
         } else {
@@ -90,7 +90,7 @@ public class LoginController {
 
     private Employee authenticateUser(String pin) {
         String query = "SELECT id, name, role, pin_hash FROM employee WHERE pin_hash = ?";
-
+        
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
 
@@ -102,6 +102,7 @@ public class LoginController {
                 String name = rs.getString("name");
                 String role = rs.getString("role");
                 String pinHash = rs.getString("pin_hash");
+                
                 return new Employee(id, name, role, pinHash);
             }
 
@@ -109,7 +110,7 @@ public class LoginController {
             e.printStackTrace();
             showError("Database connection error.");
         }
-
+        
         return null;
     }
 
