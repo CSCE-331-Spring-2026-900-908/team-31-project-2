@@ -35,7 +35,7 @@ public class LoginController {
     void handleNumberPad(ActionEvent event) {
         Button source = (Button) event.getSource();
         String text = source.getText();
-        
+
         if (text.equals("C")) {
             currentPin.setLength(0);
             pinField.setText("");
@@ -92,11 +92,11 @@ public class LoginController {
         String query = "SELECT id, name, role, pin_hash FROM employee WHERE pin_hash = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setString(1, pin);
             ResultSet rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
@@ -105,7 +105,7 @@ public class LoginController {
                 
                 return new Employee(id, name, role, pinHash);
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             showError("Database connection error.");

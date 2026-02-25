@@ -13,12 +13,23 @@ public class Employee {
         this.pinHash = pinHash;
     }
 
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public String getRole() { return role; }
-    public String getPinHash() { return pinHash; }
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getPinHash() {
+        return pinHash;
+    }
 
     public boolean isManager() {
-        return "manager".equalsIgnoreCase(role) || "admin".equalsIgnoreCase(role);
+        return "Manager".equalsIgnoreCase(role) || "manager".equals(role);
     }
 }
