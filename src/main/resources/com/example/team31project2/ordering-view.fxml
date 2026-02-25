@@ -8,9 +8,9 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.OrderController">
    <children>
-      <MenuBar>
+         <MenuBar fx:id="topMenuBar">
         <menus>
-          <Menu mnemonicParsing="false" text="Navigate">
+               <Menu fx:id="navigateMenu" mnemonicParsing="false" text="Navigate">
             <items>
               <MenuItem mnemonicParsing="false" text="Menu"      onAction="#handleNavigateMenuEdit"/>
               <MenuItem mnemonicParsing="false" text="Employees" onAction="#handleNavigateEmployees"/>
@@ -31,7 +31,7 @@
          <padding>
             <Insets left="24.0" right="24.0"/>
          </padding>
-         <Label text="Cashier Only"
+           <Label fx:id="headerUserLabel" text="Cashier"
                 style="-fx-font-weight: bold; -fx-font-size: 16;"/>
          <Region HBox.hgrow="ALWAYS"/>
          <Button text="Sign out"

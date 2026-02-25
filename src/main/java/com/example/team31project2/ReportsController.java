@@ -366,7 +366,7 @@ public class ReportsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("ordering-view.fxml"));
             Parent root = loader.load();
 
-            OrderingController controller = loader.getController();
+            OrderController controller = loader.getController();
             controller.setUser(currentUser);
 
             Stage stage = (Stage) backButton.getScene().getWindow();

@@ -9,11 +9,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import java.io.IOException;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,6 +28,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class OrderController {
+    private Employee currentUser;
+
     @FXML
     private TextArea orderInfo;
 
@@ -33,6 +38,15 @@ public class OrderController {
 
     @FXML
     private TextField searchBar;
+
+    @FXML
+    private MenuBar topMenuBar;
+
+    @FXML
+    private Menu navigateMenu;
+
+    @FXML
+    private Label headerUserLabel;
 
     @FXML private Button menuItem01;
     @FXML private Button menuItem02;
@@ -71,6 +85,15 @@ public class OrderController {
     private List<Button> menuButtons;
     private List<String> category = new ArrayList<String>();
     private StringBuilder currentPin = new StringBuilder();
+
+    public void setUser(Employee user) {
+        this.currentUser = user;
+        if (user != null) {
+            this.employeeID = user.getId();
+        }
+        updateRoleVisibility();
+        updateHeaderUserLabel();
+    }
 
     @FXML
     public void initialize() {
@@ -119,6 +142,36 @@ public class OrderController {
         // } catch (SQLException e) {
         //     e.printStackTrace();
         // }
+
+        updateRoleVisibility();
+        updateHeaderUserLabel();
+    }
+
+    private void updateRoleVisibility() {
+        if (navigateMenu == null) {
+            return;
+        }
+
+        boolean canSeeNavigate = currentUser != null && currentUser.isManager();
+        navigateMenu.setVisible(canSeeNavigate);
+
+        if (topMenuBar != null) {
+            topMenuBar.setVisible(canSeeNavigate);
+            topMenuBar.setManaged(canSeeNavigate);
+        }
+    }
+
+    private void updateHeaderUserLabel() {
+        if (headerUserLabel == null) {
+            return;
+        }
+
+        if (currentUser == null) {
+            headerUserLabel.setText("Cashier");
+            return;
+        }
+
+        headerUserLabel.setText(currentUser.getName() + " (" + currentUser.getRole() + ")");
     }
 
     @FXML
@@ -227,7 +280,7 @@ public class OrderController {
 
     @FXML
     void handleNavigateTrends(ActionEvent event) {
-        navigateTo("order-trend.fxml");
+        navigateTo("reports-view.fxml");
     }
 
     @FXML
@@ -240,7 +293,9 @@ public class OrderController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
             Stage stage = (Stage) orderInfo.getScene().getWindow();
-            stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
+            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+            stage.setScene(scene);
             stage.centerOnScreen();
         } catch (IOException e) {
             e.printStackTrace();

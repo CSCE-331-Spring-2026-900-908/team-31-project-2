@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -67,12 +68,14 @@ public class LoginController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("ordering-view.fxml"));
                 Parent root = loader.load();
                 
-                // OrderingController orderingController = loader.getController();
-                // orderingController.setUser(user);
+                OrderController orderController = loader.getController();
+                orderController.setUser(user);
                 
                 Stage stage = (Stage) pinField.getScene().getWindow();
                 // Standard dimension for the POS could be larger, e.g., 1024x768
-                stage.setScene(new Scene(root, 1024, 768));
+                Scene scene = new Scene(root, 1024, 768);
+                scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+                stage.setScene(scene);
                 stage.centerOnScreen();
             } catch (IOException e) {
                 e.printStackTrace();
