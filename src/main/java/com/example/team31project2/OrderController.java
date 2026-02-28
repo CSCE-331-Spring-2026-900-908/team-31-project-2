@@ -8,11 +8,16 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
-
 import java.io.IOException;
+import org.kordamp.bootstrapfx.BootstrapFX;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +28,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class OrderController {
+    private Employee currentUser;
+
     @FXML
     private TextArea orderInfo;
 
@@ -31,6 +38,15 @@ public class OrderController {
 
     @FXML
     private TextField searchBar;
+
+    @FXML
+    private MenuBar topMenuBar;
+
+    @FXML
+    private Menu navigateMenu;
+
+    @FXML
+    private Label headerUserLabel;
 
     @FXML private Button menuItem01;
     @FXML private Button menuItem02;
@@ -68,6 +84,10 @@ public class OrderController {
     private List<Integer> detailIDs = new ArrayList<Integer>();
     private List<Button> menuButtons;
     private List<String> category = new ArrayList<String>();
+    private StringBuilder currentPin = new StringBuilder();
+
+    public void setUser(Employee user) {
+    }
 
     @FXML
     public void initialize() {
@@ -183,6 +203,7 @@ public class OrderController {
         }
 
         query = "INSERT INTO \"orderdetail\" (order_id, product_id, sold_price, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
+        int newDetailID = 1;
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -194,11 +215,44 @@ public class OrderController {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                detailIDs.add(rs.getInt("id"));
-                updateOrderInfo();
+                newDetailID = rs.getInt("id");
+                detailIDs.add(newDetailID);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        query = "SELECT * FROM \"modifieroption\" WHERE is_default = true";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                query = "INSERT INTO \"ordermodifier\" (order_detail_id, modifier_option_id, price_charged, snapshot_name) VALUES (?, ?, ?, ?)";
+                
+                try (Connection innerConn = DatabaseConnection.getConnection();
+                     PreparedStatement innerPstmt = conn.prepareStatement(query)) {
+            
+                    innerPstmt.setInt(1, newDetailID);
+                    innerPstmt.setInt(2, rs.getInt("option_id"));
+                    innerPstmt.setFloat(3, rs.getFloat("price_adjustment"));
+                    innerPstmt.setString(4, rs.getString("name"));
+                    innerPstmt.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        updateOrderInfo();
+
+        try {
+            customize(newDetailID);
+        } catch (IOException e) {
+            System.out.println("Failed to customize");
         }
     }
 
@@ -207,6 +261,34 @@ public class OrderController {
         filter();
     }
     
+    @FXML
+    void handleNavigateMenuEdit(ActionEvent event) {
+        navigateTo("menu-edit-view.fxml");
+    }
+
+    @FXML
+    void handleNavigateEmployees(ActionEvent event) {
+        navigateTo("employee-list-view.fxml");
+    }
+
+    @FXML
+    void handleNavigateInventory(ActionEvent event) {
+        navigateTo("inventory-view.fxml");
+    }
+
+    @FXML
+    void handleNavigateTrends(ActionEvent event) {
+        navigateTo("reports-view.fxml");
+    }
+
+    @FXML
+    void handleSignOut(ActionEvent event) {
+        navigateTo("login-view.fxml");
+    }
+
+    private void navigateTo(String fxmlFile) {
+    }
+
     private void filter() {
         String query = "SELECT name, category_name FROM product WHERE name ILIKE ? ORDER BY product_id;";
         
@@ -239,11 +321,12 @@ public class OrderController {
         updateOrderInfo();
     }
 
-    private void updateOrderInfo() {
+    public void updateOrderInfo() {
         String info = "";
         float total = 0;
 
         String query = "SELECT snapshot_name, sold_price FROM \"orderdetail\" WHERE id = ?;";
+        String modQuery = "SELECT snapshot_name, price_charged FROM \"ordermodifier\" WHERE order_detail_id = ?";
 
         for (Integer detailID : detailIDs) {
             try (Connection conn = DatabaseConnection.getConnection();
@@ -255,6 +338,20 @@ public class OrderController {
                 if (rs.next()) {
                     info += " - " + rs.getString("snapshot_name") + "\n";
                     total += rs.getFloat("sold_price");
+                }
+                
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(modQuery)) {
+                
+                pstmt.setInt(1, detailID);
+                ResultSet rs = pstmt.executeQuery();
+                
+                while (rs.next()) {
+                    info += "   - " + rs.getString("snapshot_name") + "\n";
+                    total += rs.getFloat("price_charged");                            
                 }
                 
             } catch (SQLException e) {
@@ -287,7 +384,7 @@ public class OrderController {
             Parent root = loader.load();
             CustomizationController customizer = loader.getController();
             Stage stage = (Stage) orderInfo.getScene().getWindow();
-            customizer.setParentScene(stage.getScene());
+            customizer.setParent(stage.getScene(), this, detailID);
             stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
             stage.centerOnScreen();
         } catch (IOException e) {

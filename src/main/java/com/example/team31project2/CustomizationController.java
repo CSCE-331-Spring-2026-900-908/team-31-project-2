@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
@@ -64,6 +65,9 @@ public class CustomizationController {
     @FXML
     private Slider sweetnessLevel;
 
+    @FXML
+    private GridPane addOnsTable;
+
     @FXML private Button menuItem01;
     @FXML private Button menuItem02;
     @FXML private Button menuItem03;
@@ -96,21 +100,24 @@ public class CustomizationController {
     @FXML private Button menuItem30;
     
     private int orderDetailID = 1;
-    private List<Button> menuButtons;
+    private List<ToggleButton> menuButtons = new ArrayList<ToggleButton>();
     private List<Modifier> modifiers;
     private Scene parentScene;
+    private OrderController parentController;
 
-    public void setParentScene(Scene parent) {
-        parentScene = parent;
+    public void setParent(Scene scene, OrderController controller, int detailID) {
+        parentScene = scene;
+        parentController = controller;
+        orderDetailID = detailID;
     }
 
     @FXML
     public void initialize() {
-        menuButtons = List.of(menuItem01, menuItem02, menuItem03, menuItem04, menuItem05, menuItem06,
-                              menuItem07, menuItem08, menuItem09, menuItem10, menuItem11, menuItem12,
-                              menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
-                              menuItem19, menuItem20, menuItem21, menuItem22, menuItem23, menuItem24,
-                              menuItem25, menuItem26, menuItem27, menuItem28, menuItem29, menuItem30);
+        // menuButtons = List.of(menuItem01, menuItem02, menuItem03, menuItem04, menuItem05, menuItem06,
+        //                       menuItem07, menuItem08, menuItem09, menuItem10, menuItem11, menuItem12,
+        //                       menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
+        //                       menuItem19, menuItem20, menuItem21, menuItem22, menuItem23, menuItem24,
+        //                       menuItem25, menuItem26, menuItem27, menuItem28, menuItem29, menuItem30);
         
         modifiers = new ArrayList<Modifier>();
 
@@ -129,18 +136,26 @@ public class CustomizationController {
             e.printStackTrace();
         }
 
-        query = "SELECT option_id, price_charged, name FROM modifieroption WHERE category = 'topping'";
+        query = "SELECT option_id, price_adjustment, name FROM modifieroption WHERE category = 'Topping'";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
             ResultSet rs = pstmt.executeQuery();
             
+            addOnsTable.getChildren().clear();
+            int i = 0;
             while (rs.next()) {
                 ToggleButton newButton = new ToggleButton(rs.getString("name"));
                 // newButton.setId("modifierid" + rs.getString("option_id") + "price" + rs.getString("price_charged"));
                 newButton.setStyle("height: 100; width: 100;");
-                if (modifiers.contains(new Modifier(rs.getInt("modifier_option_id"), "", 0))) {
+                newButton.setOnAction(e -> toggleModifier(e));
+                menuButtons.add(newButton);
+                int row = i % 2;
+                int col = i / 2;
+                addOnsTable.add(newButton, col, row);
+                i++;
+                if (modifiers.contains(new Modifier(rs.getInt("option_id"), "", 0))) {
                     newButton.setSelected(true);
                 }
             }
@@ -154,7 +169,7 @@ public class CustomizationController {
         ToggleButton source = (ToggleButton) event.getSource();
         String text = source.getText();
 
-        String query = "SELECT option_id, price_charged FROM modifieroption WHERE name = ?";
+        String query = "SELECT option_id, price_adjustment FROM modifieroption WHERE name = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -163,7 +178,7 @@ public class CustomizationController {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                Modifier modifier = new Modifier(rs.getInt("option_id"), text, rs.getFloat("price_charged"));
+                Modifier modifier = new Modifier(rs.getInt("option_id"), text, rs.getFloat("price_adjustment"));
                 if (modifiers.contains(modifier)) {
                     modifiers.remove(modifier);
                 } else {
@@ -235,19 +250,27 @@ public class CustomizationController {
     // }
 
     @FXML
+    void decrementQuantity(ActionEvent event) {
+    }
+
+    @FXML
+    void incrementQuantity(ActionEvent event) {
+    }
+
+    @FXML
     void cancel(ActionEvent event) {
         exit();
     }
 
     @FXML
     void save(ActionEvent event) {
-        String query = "DELETE * FROM ordermodifier WHERE order_detail_id = ?;";
+        String query = "DELETE FROM ordermodifier WHERE order_detail_id = ?;";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
             pstmt.setInt(1, orderDetailID);
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -256,7 +279,7 @@ public class CustomizationController {
         int iceID = (int) iceLevel.getValue() / 25 + 15;
         int sweetnessID = (int) sweetnessLevel.getValue() / 25 + 10;
 
-        query = "SELECT name, price_charged FROM modifieroption WHERE option_id = ?";
+        query = "SELECT name, price_adjustment FROM modifieroption WHERE option_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -265,7 +288,7 @@ public class CustomizationController {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                modifiers.add(new Modifier(iceID, rs.getString("name"), rs.getFloat("price_charged")));
+                modifiers.add(new Modifier(iceID, rs.getString("name"), rs.getFloat("price_adjustment")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -278,14 +301,13 @@ public class CustomizationController {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                modifiers.add(new Modifier(iceID, rs.getString("name"), rs.getFloat("price_charged")));
+                modifiers.add(new Modifier(sweetnessID, rs.getString("name"), rs.getFloat("price_adjustment")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         for(Modifier modifier : modifiers) {
-            
             query = "INSERT INTO \"ordermodifier\" (order_detail_id, modifier_option_id, price_charged, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
         
             try (Connection conn = DatabaseConnection.getConnection();
@@ -305,6 +327,7 @@ public class CustomizationController {
     }
 
     private void exit() {
+        parentController.updateOrderInfo();
         Stage stage = (Stage) notes.getScene().getWindow();
         stage.setScene(parentScene);
         stage.centerOnScreen();
