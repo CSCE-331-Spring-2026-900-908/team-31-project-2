@@ -5,15 +5,23 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
+import java.io.IOException;
+import org.kordamp.bootstrapfx.BootstrapFX;
 import javafx.stage.Stage;
 import java.io.IOException;
 import org.kordamp.bootstrapfx.BootstrapFX;
@@ -30,6 +38,8 @@ import java.util.ArrayList;
 public class OrderController {
     private Employee currentUser;
 
+    private Employee currentUser;
+
     @FXML
     private TextArea orderInfo;
 
@@ -38,6 +48,15 @@ public class OrderController {
 
     @FXML
     private TextField searchBar;
+
+    @FXML
+    private MenuBar topMenuBar;
+
+    @FXML
+    private Menu navigateMenu;
+
+    @FXML
+    private Label headerUserLabel;
 
     @FXML
     private MenuBar topMenuBar;
@@ -252,6 +271,7 @@ public class OrderController {
         }
 
         query = "INSERT INTO \"orderdetail\" (order_id, product_id, sold_price, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
+        int newDetailID = 1;
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -263,11 +283,44 @@ public class OrderController {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                detailIDs.add(rs.getInt("id"));
-                updateOrderInfo();
+                newDetailID = rs.getInt("id");
+                detailIDs.add(newDetailID);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        query = "SELECT * FROM \"modifieroption\" WHERE is_default = true";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                query = "INSERT INTO \"ordermodifier\" (order_detail_id, modifier_option_id, price_charged, snapshot_name) VALUES (?, ?, ?, ?)";
+                
+                try (Connection innerConn = DatabaseConnection.getConnection();
+                     PreparedStatement innerPstmt = conn.prepareStatement(query)) {
+            
+                    innerPstmt.setInt(1, newDetailID);
+                    innerPstmt.setInt(2, rs.getInt("option_id"));
+                    innerPstmt.setFloat(3, rs.getFloat("price_adjustment"));
+                    innerPstmt.setString(4, rs.getString("name"));
+                    innerPstmt.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        updateOrderInfo();
+
+        try {
+            customize(newDetailID);
+        } catch (IOException e) {
+            System.out.println("Failed to customize");
         }
     }
 
@@ -350,11 +403,12 @@ public class OrderController {
         updateOrderInfo();
     }
 
-    private void updateOrderInfo() {
+    public void updateOrderInfo() {
         String info = "";
         float total = 0;
 
         String query = "SELECT snapshot_name, sold_price FROM \"orderdetail\" WHERE id = ?;";
+        String modQuery = "SELECT snapshot_name, price_charged FROM \"ordermodifier\" WHERE order_detail_id = ?";
 
         for (Integer detailID : detailIDs) {
             try (Connection conn = DatabaseConnection.getConnection();
@@ -366,6 +420,20 @@ public class OrderController {
                 if (rs.next()) {
                     info += " - " + rs.getString("snapshot_name") + "\n";
                     total += rs.getFloat("sold_price");
+                }
+                
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(modQuery)) {
+                
+                pstmt.setInt(1, detailID);
+                ResultSet rs = pstmt.executeQuery();
+                
+                while (rs.next()) {
+                    info += "   - " + rs.getString("snapshot_name") + "\n";
+                    total += rs.getFloat("price_charged");                            
                 }
                 
             } catch (SQLException e) {
@@ -392,41 +460,22 @@ public class OrderController {
         orderTotal.setText(String.format("$%.2f\n$%.2f\n-------\n$%.2f", total, tax, total + tax));
     }
 
-    private void handleLogin() {
-        String pin = currentPin.toString();
-        if (pin.isEmpty()) {
-            return;
-        }
-
-        boolean isValid = verifyPin(pin);
-        
-        if (isValid) {
-            System.out.println("Login successful!");
-            // TODO: Load the next scene (e.g., POS terminal)
-            
-            currentPin.setLength(0);
-        } else {
-            currentPin.setLength(0);
-        }
-    }
-
-    private boolean verifyPin(String pin) {
-        String query = "SELECT * FROM employee WHERE pin_hash = ?;";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            pstmt.setString(1, pin);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                return true;
-            }
-            
-        } catch (SQLException e) {
+    private void customize(int detailID) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("customization-view.fxml"));
+            // CustomizationController customizer = new CustomizationController();
+            // Stage stage = (Stage) orderInfo.getScene().getWindow();
+            // customizer.setParent(stage.getScene(), this, detailID);
+            // loader.setController(customizer);
+            Parent root = loader.load();
+            CustomizationController customizer = loader.getController();
+            Stage stage = (Stage) orderInfo.getScene().getWindow();
+            customizer.setParent(stage.getScene(), this, detailID);
+            stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
+            stage.centerOnScreen();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        return false;
     }
+
 }

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.CustomizationController">
+   <children>
+      <Label text="Add-ons">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="1024.0" vbarPolicy="NEVER">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <GridPane fx:id="addOnsTable" alignment="CENTER" prefHeight="200.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <ToggleButton mnemonicParsing="false" text="ToggleButton" />
+                     </children>
+                  </GridPane>
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
+      <Label text="Ice">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <Slider fx:id="iceLevel" blockIncrement="1.0" majorTickUnit="1.0" max="18.0" min="15.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="17.0" />
+      <Label prefHeight="21.0" prefWidth="1064.0" text="No Ice                                                                   Less Ice                                                                 Normal Ice                                                              Extra Ice" />
+      <Label text="Sweetness">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <Slider fx:id="sweetnessLevel" blockIncrement="25.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
+      <Label text="Notes">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="notes" prefHeight="100.0" prefWidth="200.0" promptText="Special Notes/Comments">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </TextArea>
+      <Label text="Milk Type">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="75.0" prefWidth="200.0">
+         <children>
+            <ToggleButton fx:id="wholeMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Whole Milk" textAlignment="CENTER">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+               <toggleGroup>
+                  <ToggleGroup fx:id="milk" />
+               </toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="almondMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Almond Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </ToggleButton>
+            <ToggleButton fx:id="oatMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Oat Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </ToggleButton>
+            <ToggleButton fx:id="soyMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Soy Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </ToggleButton>
+         </children>
+      </HBox>
+      <Label text="Size">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="75.0" prefWidth="200.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#cancel" prefHeight="75.0" prefWidth="150.0" text="Cancel">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="20.0" right="200.0" />
+               </HBox.margin>
+            </Button>
+            <ToggleButton fx:id="medium" mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Medium" textAlignment="CENTER">
+               <font>
+                  <Font size="32.0" />
+               </font>
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+               <toggleGroup>
+                  <ToggleGroup fx:id="size" />
+               </toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="large" mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Large" textAlignment="CENTER" toggleGroup="$size">
+               <font>
+                  <Font size="32.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </ToggleButton>
+            <Button mnemonicParsing="false" onAction="#save" prefHeight="75.0" prefWidth="150.0" text="Save">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="200.0" right="20.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</VBox>
