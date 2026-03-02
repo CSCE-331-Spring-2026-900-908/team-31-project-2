@@ -130,11 +130,13 @@ public class InventoryViewController {
                 if (empty || value == null) {
                     setGraphic(null);
                     setText(null);
+                    bar.setStyle("");
                     return;
                 }
 
                 double ratio = Math.max(0.0, Math.min(1.0, value.doubleValue()));
                 bar.setProgress(ratio);
+                setProgressBarColor(bar, ratio);
                 label.setText(String.format("%.0f%%", ratio * 100.0));
                 setGraphic(box);
                 setText(null);
@@ -185,6 +187,18 @@ public class InventoryViewController {
         table.setItems(inventoryList);
         loadInventoryFromDB(); // LOADS ALL ITEMS FROM DB TO IT
         
+    }
+
+    private void setProgressBarColor(ProgressBar bar, double ratio) {
+        if (ratio >= 0.81) {
+            bar.setStyle("-fx-accent: #2ecc71;"); // green
+        } else if (ratio >= 0.41) {
+            bar.setStyle("-fx-accent: #f1c40f;"); // yellow
+        } else if (ratio >= 0.16) {
+            bar.setStyle("-fx-accent: #e67e22;"); // orange
+        } else {
+            bar.setStyle("-fx-accent: #e74c3c;"); // red
+        }
     }
 
     //LOADING FUNCTION
