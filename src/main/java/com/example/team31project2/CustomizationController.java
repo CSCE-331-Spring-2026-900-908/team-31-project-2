@@ -128,7 +128,7 @@ public class CustomizationController {
             while (rs.next()) {
                 ToggleButton newButton = new ToggleButton(rs.getString("name"));
                 // newButton.setId("modifierid" + rs.getString("option_id") + "price" + rs.getString("price_charged"));
-                newButton.setStyle("height: 100; width: 100;");
+                newButton.setStyle("-fx-pref-height: 100; -fx-pref-width: 100; -fx-font-size: 18; -fx-wrap-text: true; -fx-text-alignment: center");
                 newButton.setOnAction(e -> toggleModifier(e));
                 int row = i % 2;
                 int col = i / 2;

@@ -1,5 +1,6 @@
 package com.example.team31project2;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ private final IntegerProperty itemId = new SimpleIntegerProperty();
     private final StringProperty unitType = new SimpleStringProperty();
     private final ObjectProperty<LocalDateTime> expirationDate = new SimpleObjectProperty<>();
     private final DoubleProperty target = new SimpleDoubleProperty();
+    private final ReadOnlyDoubleWrapper fillRatio = new ReadOnlyDoubleWrapper();
 
     public InventoryItem(int itemId, String itemName, double quantity, String unitType, LocalDateTime expirationDate, double target) {
         this.itemId.set(itemId);
@@ -18,6 +20,15 @@ private final IntegerProperty itemId = new SimpleIntegerProperty();
         this.unitType.set(unitType);
         this.expirationDate.set(expirationDate);
         this.target.set(target);
+
+        fillRatio.bind(Bindings.createDoubleBinding(() -> {
+            double targetVal = this.target.get();
+            if (targetVal <= 0) {
+                return 0.0;
+            }
+            double ratio = this.quantity.get() / targetVal;
+            return Math.max(0.0, Math.min(1.0, ratio));
+        }, this.quantity, this.target));
     }
 
     public int getItemId() { return itemId.get(); }
@@ -40,6 +51,8 @@ private final IntegerProperty itemId = new SimpleIntegerProperty();
     public double getTarget() { return target.get(); }
     public void setTarget(Double v) { target.set(v); }
     public DoubleProperty targetProperty() { return target; }
+
+    public ReadOnlyDoubleProperty fillRatioProperty() { return fillRatio.getReadOnlyProperty(); }
 
 }
 
