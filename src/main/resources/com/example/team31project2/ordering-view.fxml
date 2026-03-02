@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -12,35 +13,26 @@
         <menus>
                <Menu fx:id="navigateMenu" mnemonicParsing="false" text="Navigate">
             <items>
-              <MenuItem mnemonicParsing="false" text="Menu"      onAction="#handleNavigateMenuEdit"/>
-              <MenuItem mnemonicParsing="false" text="Employees" onAction="#handleNavigateEmployees"/>
-              <MenuItem mnemonicParsing="false" text="Inventory" onAction="#handleNavigateInventory"/>
-              <MenuItem mnemonicParsing="false" text="Reports"    onAction="#handleNavigateTrends"/>
-              <SeparatorMenuItem/>
-              <MenuItem mnemonicParsing="false" text="Sign Out"  onAction="#handleSignOut"/>
+              <MenuItem mnemonicParsing="false" onAction="#handleNavigateMenuEdit" text="Menu" />
+              <MenuItem mnemonicParsing="false" onAction="#handleNavigateEmployees" text="Employees" />
+              <MenuItem mnemonicParsing="false" onAction="#handleNavigateInventory" text="Inventory" />
+              <MenuItem mnemonicParsing="false" onAction="#handleNavigateTrends" text="Reports" />
+              <SeparatorMenuItem />
+              <MenuItem mnemonicParsing="false" onAction="#handleSignOut" text="Sign Out" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
       <!-- header -->
-      <HBox alignment="CENTER_LEFT"
-            prefHeight="60.0"
-            style="-fx-background-color: white;
-                   -fx-border-color: #e0e0e0;
-                   -fx-border-width: 0 0 1 0;">
+      <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: white;                    -fx-border-color: #e0e0e0;                    -fx-border-width: 0 0 1 0;">
          <padding>
-            <Insets left="24.0" right="24.0"/>
+            <Insets left="24.0" right="24.0" />
          </padding>
-           <Label fx:id="headerUserLabel" text="Cashier"
-                style="-fx-font-weight: bold; -fx-font-size: 16;"/>
-         <Region HBox.hgrow="ALWAYS"/>
-         <Button text="Sign out"
-                 onAction="#handleSignOut"
-                 style="-fx-background-color: transparent;
-                        -fx-border-color: #333333;
-                        -fx-border-radius: 20;
-                        -fx-background-radius: 20;
-                        -fx-padding: 8 20 8 20;"/>
+         <children>
+              <Label fx:id="headerUserLabel" style="-fx-font-weight: bold; -fx-font-size: 16;" text="Cashier" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleSignOut" style="-fx-background-color: transparent;                         -fx-border-color: #333333;                         -fx-border-radius: 20;                         -fx-background-radius: 20;                         -fx-padding: 8 20 8 20;" text="Sign out" />
+         </children>
       </HBox>
 
       <SplitPane dividerPositions="0.8" VBox.vgrow="ALWAYS">
@@ -100,11 +92,12 @@
             </VBox>
             <VBox>
                <children>
-                  <TextArea fx:id="orderInfo" editable="false" text="Current Order" wrapText="true" VBox.vgrow="ALWAYS">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </TextArea>
+                  <ScrollPane fitToWidth="true" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                     <content>
+                        <VBox fx:id="orderInfoList" spacing="2.0" />
+                     </content>
+                  </ScrollPane>
+                  <TextArea fx:id="orderInfo" visible="false" managed="false" editable="false" text="Current Order" wrapText="true" />
                   <HBox prefHeight="120.0" minHeight="120.0">
                      <children>
                         <TextArea editable="false" text="Subtotal:&#10;Tax:&#10;------------&#10;Total:" HBox.hgrow="SOMETIMES" promptText="Label Area">

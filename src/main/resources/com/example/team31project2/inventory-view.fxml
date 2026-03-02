@@ -13,75 +13,128 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 
-<BorderPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.EmployeeListController">
-   <top>
-      <VBox>
-         <children>
-            <MenuBar>
-               <menus>
-                  <Menu mnemonicParsing="false" text="Navigate">
-                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleNavigateOrdering" text="Orders" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleNavigateMenuEdit" text="Menu" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleNavigateInventory" text="Inventory" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleNavigateReports" text="Reports" />
-                        <SeparatorMenuItem />
-                        <MenuItem mnemonicParsing="false" onAction="#handleSignOut" text="Sign Out" />
-                     </items>
-                  </Menu>
-               </menus>
-            </MenuBar>
-            <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: white;                          -fx-border-color: #e0e0e0;                          -fx-border-width: 0 0 1 0;">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.InventoryViewController">
+   <children>
+      <BorderPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #f0f0f0;">
+         <top>
+            <VBox>
+               <children>
+                  <MenuBar fx:id="menuBar">
+                     <menus>
+                        <Menu mnemonicParsing="false" text="Navigate">
+                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#handleNavigateOrdering" text="Orders" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleNavigateMenuEdit" text="Menu" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleNavigateInventory" text="Inventory" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleNavigateReports" text="Reports" />
+                              <SeparatorMenuItem />
+                              <MenuItem mnemonicParsing="false" onAction="#handleSignOut" text="Sign Out" />
+                           </items>
+                        </Menu>
+                     </menus>
+                  </MenuBar>
+                  <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: white;                          -fx-border-color: #e0e0e0;                          -fx-border-width: 0 0 1 0;">
+                     <padding>
+                        <Insets left="24.0" right="24.0" />
+                     </padding>
+                     <children>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 16;" text="Manager Only" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="signOutButton" onAction="#handleSignOut" style="-fx-background-color: transparent;                                -fx-border-color: #333333;                                -fx-border-radius: 20;                                -fx-background-radius: 20;                                -fx-padding: 8 20 8 20;" text="Sign out" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+         <center>
+            <VBox alignment="TOP_CENTER">
                <padding>
-                  <Insets left="24.0" right="24.0" />
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
                </padding>
                <children>
-                  <Label style="-fx-font-weight: bold; -fx-font-size: 16;" text="Manager Only" />
-                  <Region HBox.hgrow="ALWAYS" />
-                  <Button fx:id="signOutButton" onAction="#handleSignOut" style="-fx-background-color: transparent;                                -fx-border-color: #333333;                                -fx-border-radius: 20;                                -fx-background-radius: 20;                                -fx-padding: 8 20 8 20;" text="Sign out" />
+                  <VBox prefWidth="820.0" style="-fx-background-color: white;                          -fx-border-color: #d0d0d0;                          -fx-border-radius: 12;                          -fx-background-radius: 12;">
+                     <padding>
+                        <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+                     </padding>
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                           <padding>
+                              <Insets bottom="16.0" />
+                           </padding>
+                           <children>
+                              <Label style="-fx-font-weight: bold; -fx-font-size: 18;" text="Inventory" />
+                              <Region prefHeight="34.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                              <TextField prefWidth="200.0" promptText="Search" style="-fx-background-radius: 20;                                       -fx-border-radius: 20;                                       -fx-border-color: #cccccc;                                       -fx-padding: 6 15 6 15;" />
+                              <Button onAction="#showAddPopup" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="+" />
+                              <Button onAction="#removeHandler" prefHeight="34.0" prefWidth="43.0" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="-" />
+                           </children>
+                        </HBox>
+                        <TableView fx:id="table" prefHeight="585.0" prefWidth="934.0">
+                           <columns>
+                              <TableColumn fx:id="colId" prefWidth="75.0" text="ID" />
+                              <TableColumn fx:id="colName" prefWidth="304.8000259399414" text="Item" />
+                              <TableColumn fx:id="colQty" minWidth="0.0" prefWidth="76.0" text="Current" />
+                              <TableColumn fx:id="colTarg" minWidth="0.0" prefWidth="76.0" text="Target" />
+                              <TableColumn fx:id="colFill" minWidth="0.0" prefWidth="324.8000244140625" text="Fill Amount" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+      <Rectangle fx:id="popupBackdrop" arcHeight="5.0" arcWidth="5.0" height="768.0" opacity="0.4" stroke="BLACK" strokeType="INSIDE" visible="false" width="1024.0" StackPane.alignment="CENTER" />
+      <VBox fx:id="popupBox" alignment="CENTER" maxHeight="400.0" maxWidth="400.0" prefHeight="300.0" prefWidth="200.0" spacing="15.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10;" visible="false">
+         <children>
+            <Label text="Label" />
+            <Region prefHeight="41.0" prefWidth="328.0" />
+            <HBox alignment="CENTER" prefHeight="34.0" prefWidth="328.0">
+               <children>
+                  <Label text="Name">
+                     <HBox.margin>
+                        <Insets left="30.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Region prefHeight="30.0" prefWidth="85.0" />
+                  <TextField fx:id="popupName" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="34.0" prefWidth="328.0">
+               <children>
+                  <Label text="Current">
+                     <HBox.margin>
+                        <Insets left="30.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Region prefHeight="30.0" prefWidth="74.0" />
+                  <TextField fx:id="popupCurrent" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="34.0" prefWidth="328.0">
+               <children>
+                  <Label text="Target">
+                     <HBox.margin>
+                        <Insets left="30.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Region prefHeight="30.0" prefWidth="80.0" />
+                  <TextField fx:id="popupTarget" />
+               </children>
+            </HBox>
+            <Region prefHeight="62.0" prefWidth="328.0" />
+            <HBox alignment="CENTER" prefHeight="66.0" prefWidth="328.0">
+               <children>
+                  <Button fx:id="closeButton" mnemonicParsing="false" onAction="#closeAddPopup" text="Close" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+                  <Button fx:id="addButton" mnemonicParsing="false" onAction="#addHandelr" text="Add" />
                </children>
             </HBox>
          </children>
       </VBox>
-   </top>
-   <center>
-      <VBox alignment="TOP_CENTER">
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
-         </padding>
-         <children>
-            <VBox prefWidth="820.0" style="-fx-background-color: white;                          -fx-border-color: #d0d0d0;                          -fx-border-radius: 12;                          -fx-background-radius: 12;">
-               <padding>
-                  <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
-               </padding>
-               <children>
-                  <HBox alignment="CENTER_LEFT" spacing="12.0">
-                     <padding>
-                        <Insets bottom="16.0" />
-                     </padding>
-                     <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 18;" text="Inventory" />
-                        <Region prefHeight="34.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                        <TextField fx:id="textName" prefWidth="200.0" promptText="Search" style="-fx-background-radius: 20;                                       -fx-border-radius: 20;                                       -fx-border-color: #cccccc;                                       -fx-padding: 6 15 6 15;" />
-                        <Button fx:id="addButton" onAction="#handleAddEmployee" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="+" />
-                        <Button fx:id="removeButton" onAction="#removeHandler" prefHeight="34.0" prefWidth="43.0" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="-" />
-                     </children>
-                  </HBox>
-                  <TableView fx:id="table" prefHeight="585.0" prefWidth="934.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="ID" />
-                      <TableColumn prefWidth="304.8000259399414" text="Item" />
-                        <TableColumn minWidth="0.0" prefWidth="76.0" text="Current" />
-                        <TableColumn minWidth="0.0" prefWidth="76.0" text="Target" />
-                        <TableColumn minWidth="0.0" prefWidth="76.0" text="Units" />
-                        <TableColumn minWidth="0.0" prefWidth="324.8000244140625" text="Fill Amount" />
-                    </columns>
-                  </TableView>
-               </children>
-            </VBox>
-         </children>
-      </VBox>
-   </center>
-</BorderPane>
+   </children>
+</StackPane>

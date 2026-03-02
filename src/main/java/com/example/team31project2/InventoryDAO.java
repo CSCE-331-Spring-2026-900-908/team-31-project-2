@@ -16,8 +16,8 @@ public class InventoryDAO{
 
     public List<InventoryItem> getAllItems(){
 
-        String sql = " SELECT item_id, item_name, quantity, unit_type, expiration_date, target_val\n FROM inventory\n ORDER BY item_id ASC ";
-        List<InventoryItem> items = new ArrayList<>();
+        String sql = " SELECT item_id, item_name, quantity, expiration_date, target_val\n FROM inventory\n ORDER BY item_id ASC ";
+            List<InventoryItem> items = new ArrayList<>();
 
         try(PreparedStatement ps = conn.prepareStatement(sql); 
             ResultSet rs = ps.executeQuery()) {
@@ -25,12 +25,11 @@ public class InventoryDAO{
                 int id = rs.getInt("item_id");
                 String name = rs.getString("item_name");
                 double qty = rs.getDouble("quantity");
-                String unit = rs.getString("unit_type");
                 double targ = rs.getDouble("target_val");
                 Timestamp ts = rs.getTimestamp("expiration_date");
                 LocalDateTime exp = (ts == null) ? null : ts.toLocalDateTime();
 
-                items.add(new InventoryItem(id, name, qty, unit, exp, targ));
+                                items.add(new InventoryItem(id, name, qty, exp, targ));
             }
             
         }
