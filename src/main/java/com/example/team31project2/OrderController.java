@@ -3,19 +3,19 @@ package com.example.team31project2;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -24,17 +24,17 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import org.kordamp.bootstrapfx.BootstrapFX;
 import javafx.stage.Stage;
-import java.io.IOException;
-import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OrderController {
     private Employee currentUser;
@@ -97,13 +97,30 @@ public class OrderController {
     @FXML private Button menuItem28;
     @FXML private Button menuItem29;
     @FXML private Button menuItem30;
-    
+
     private int employeeID = 1;
     private int orderID;
-    private List<Integer> detailIDs = new ArrayList<Integer>();
+    public List<Integer> detailIDs = new ArrayList<Integer>();
     private List<Button> menuButtons;
     private List<String> category = new ArrayList<String>();
     private StringBuilder currentPin = new StringBuilder();
+
+    private Map<String, Integer> productNameToIdMap = new HashMap<>();
+    private Map<String, Float> productNameToPriceMap = new HashMap<>();
+
+    private static class CachedModifier {
+        int optionId;
+        float priceAdjustment;
+        String name;
+
+        CachedModifier(int optionId, float priceAdjustment, String name) {
+            this.optionId = optionId;
+            this.priceAdjustment = priceAdjustment;
+            this.name = name;
+        }
+    }
+
+    private List<CachedModifier> defaultModifiersCache = new ArrayList<>();
 
     public void setUser(Employee user) {
         if (user != null) {
@@ -130,10 +147,10 @@ public class OrderController {
         }
 
         menuButtons = List.of(menuItem01, menuItem02, menuItem03, menuItem04, menuItem05, menuItem06,
-                              menuItem07, menuItem08, menuItem09, menuItem10, menuItem11, menuItem12,
-                              menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
-                              menuItem19, menuItem20, menuItem21, menuItem22, menuItem23, menuItem24,
-                              menuItem25, menuItem26, menuItem27, menuItem28, menuItem29, menuItem30);
+                menuItem07, menuItem08, menuItem09, menuItem10, menuItem11, menuItem12,
+                menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
+                menuItem19, menuItem20, menuItem21, menuItem22, menuItem23, menuItem24,
+                menuItem25, menuItem26, menuItem27, menuItem28, menuItem29, menuItem30);
 
         for (Button b : menuButtons) {
             b.managedProperty().bind(b.visibleProperty());
@@ -150,30 +167,58 @@ public class OrderController {
         // String query = "INSERT INTO \"order\" (employee_id, created_at, total_tax, total_final) VALUES (" +
         //             String.join(", ", String.valueOf(employee_id), LocalDateTime.now().toString(), "0", "0");
         String query = "INSERT INTO \"order\" (employee_id, created_at, total_tax, total_final) VALUES (?, ?, 0, 0) RETURNING id;";
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setInt(1, employeeID);
             pstmt.setObject(2, LocalDateTime.now());
             ResultSet rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 orderID = rs.getInt("id");
             }
-            
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Load product cache
+        String productQuery = "SELECT product_id, base_price, name FROM product;";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(productQuery);
+                ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                productNameToIdMap.put(rs.getString("name"), rs.getInt("product_id"));
+                productNameToPriceMap.put(rs.getString("name"), rs.getFloat("base_price"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Load default modifiers cache
+        String modifierQuery = "SELECT option_id, price_adjustment, name FROM modifieroption WHERE is_default = true;";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(modifierQuery);
+                ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                defaultModifiersCache.add(new CachedModifier(
+                        rs.getInt("option_id"),
+                        rs.getFloat("price_adjustment"),
+                        rs.getString("name")));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         filter();
         // query = "SELECT name FROM product ORDER BY product_id;";
-        
+
         // try (Connection conn = DatabaseConnection.getConnection();
         //      PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
+
         //     ResultSet rs = pstmt.executeQuery();
-            
+
         //     int i = 0;
         //     while (rs.next() && i < 30) {
         //         menuButtons.get(i).setText(rs.getString("name"));
@@ -222,7 +267,7 @@ public class OrderController {
     void toggleCategory(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
         String text = source.getText();
-        
+
         if(category.contains(text)) {
             category.remove(text);
         } else {
@@ -240,61 +285,28 @@ public class OrderController {
     @FXML
     void addDrink(ActionEvent event) {
         Button source = (Button) event.getSource();
-        // String text = source.getText();
-        // int productID = Integer.valueOf(source.getId().substring(8));
-        // String productName = "";
-        // float productPrice = 0;
-
-        // String query = "SELECT name, base_price FROM product WHERE id = ?;";
-
-        // try (Connection conn = DatabaseConnection.getConnection();
-        //      PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-        //     pstmt.setInt(1, productID);
-        //     ResultSet rs = pstmt.executeQuery();
-            
-        //     if (rs.next()) {
-        //         productName = rs.getString("name");
-        //         productPrice = rs.getFloat("base_price");
-        //     }
-        // } catch (SQLException e) {
-        //     e.printStackTrace();
-        // }
-
         String productName = source.getText();
-        int productID = 0;
-        float productPrice = 0;
 
-        String query = "SELECT product_id, base_price FROM product WHERE name = ?;";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            pstmt.setString(1, productName);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                productID = rs.getInt("product_id");
-                productPrice = rs.getFloat("base_price");
-            } else {
-                return;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (!productNameToIdMap.containsKey(productName)) {
+            System.out.println("Product not found in cache: " + productName);
+            return;
         }
 
-        query = "INSERT INTO \"orderdetail\" (order_id, product_id, sold_price, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
+        int productID = productNameToIdMap.get(productName);
+        float productPrice = productNameToPriceMap.get(productName);
+
+        String query = "INSERT INTO \"orderdetail\" (order_id, product_id, sold_price, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
         int newDetailID = 1;
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setInt(1, orderID);
             pstmt.setInt(2, productID);
             pstmt.setFloat(3, productPrice);
             pstmt.setString(4, productName);
             ResultSet rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 newDetailID = rs.getInt("id");
                 detailIDs.add(newDetailID);
@@ -303,35 +315,29 @@ public class OrderController {
             e.printStackTrace();
         }
 
-        query = "SELECT * FROM \"modifieroption\" WHERE is_default = true";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            ResultSet rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                query = "INSERT INTO \"ordermodifier\" (order_detail_id, modifier_option_id, price_charged, snapshot_name) VALUES (?, ?, ?, ?)";
-                
-                try (Connection innerConn = DatabaseConnection.getConnection();
-                     PreparedStatement innerPstmt = conn.prepareStatement(query)) {
-            
-                    innerPstmt.setInt(1, newDetailID);
-                    innerPstmt.setInt(2, rs.getInt("option_id"));
-                    innerPstmt.setFloat(3, rs.getFloat("price_adjustment"));
-                    innerPstmt.setString(4, rs.getString("name"));
-                    innerPstmt.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+        // Batch insert default modifiers
+        if (!defaultModifiersCache.isEmpty()) {
+            String modQuery = "INSERT INTO \"ordermodifier\" (order_detail_id, modifier_option_id, price_charged, snapshot_name) VALUES (?, ?, ?, ?)";
+            try (Connection conn = DatabaseConnection.getConnection();
+                    PreparedStatement pstmt = conn.prepareStatement(modQuery)) {
+
+                for (CachedModifier mod : defaultModifiersCache) {
+                    pstmt.setInt(1, newDetailID);
+                    pstmt.setInt(2, mod.optionId);
+                    pstmt.setFloat(3, mod.priceAdjustment);
+                    pstmt.setString(4, mod.name);
+                    pstmt.addBatch();
                 }
+                pstmt.executeBatch();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+
         updateOrderInfo();
 
         try {
-            customize(newDetailID);
+            customize(newDetailID, productID, true);
         } catch (IOException e) {
             System.out.println("Failed to customize");
         }
@@ -383,7 +389,7 @@ public class OrderController {
             e.printStackTrace();
         }
     }
-    
+
     private String getCategoryStyle(String category, boolean isSelected) {
         String color;
         switch (category) {
@@ -409,19 +415,20 @@ public class OrderController {
                 color = "white";
                 break;
         }
-        String borderStyle = isSelected ? "-fx-border-color: #555555; -fx-border-width: 3;" : "-fx-border-color: #bdbdbd; -fx-border-width: 1;";
+        String borderStyle = isSelected ? "-fx-border-color: #555555; -fx-border-width: 3;"
+                : "-fx-border-color: #bdbdbd; -fx-border-width: 1;";
         return borderStyle + " -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: " + color + ";";
     }
 
     private void filter() {
         String query = "SELECT name, category_name FROM product WHERE name ILIKE ? ORDER BY product_id;";
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setString(1, "%" + searchBar.getText() + "%");
             ResultSet rs = pstmt.executeQuery();
-            
+
             int i = 0;
             while (rs.next() && i < 30) {
                 if (category.size() == 0 || category.contains(rs.getString("category_name"))) {
@@ -431,7 +438,7 @@ public class OrderController {
                     i++;
                 }
             }
-            for ( ; i < 30; i++) {
+            for (; i < 30; i++) {
                 menuButtons.get(i).setVisible(false);
             }
         } catch (SQLException e) {
@@ -447,7 +454,7 @@ public class OrderController {
         //     }
         // for(int detailID : detailIDs){
         //     String query = "UPDATE inventory SET quantity = quantity - 1 WHERE id = ?"; 
-            
+
         //     PreparedStatement ps = 
         // }
         initialize();
@@ -456,92 +463,153 @@ public class OrderController {
 
     public void updateOrderInfo() {
         orderInfoList.getChildren().clear();
-        String info = "";
-        float total = 0;
+        float subtotal = 0;
 
-        String query = "SELECT snapshot_name, sold_price FROM \"orderdetail\" WHERE id = ?;";
-        String modQuery = "SELECT snapshot_name, price_charged FROM \"ordermodifier\" WHERE order_detail_id = ?";
+        // Optimized query to fetch all details and modifiers for the current order in
+        // ONE go
+        String query = "SELECT od.id AS detail_id, od.product_id AS product_id, od.snapshot_name AS prod_name, od.sold_price, "
+                +
+                "om.snapshot_name AS mod_name, om.price_charged AS mod_price " +
+                "FROM orderdetail od " +
+                "LEFT JOIN ordermodifier om ON od.id = om.order_detail_id " +
+                "WHERE od.order_id = ? " +
+                "ORDER BY od.id, om.id";
 
-        for (Integer detailID : detailIDs) {
-            Button newButton = new Button("Text not found");
-            String itemInfo = "";
-            newButton.setOnAction(e -> customizeItem(e));
-            newButton.setId("item" + detailID.toString());
-            try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-                
-                pstmt.setInt(1, detailID);
-                ResultSet rs = pstmt.executeQuery();
-                
-                if (rs.next()) {
-                    info += " - " + rs.getString("snapshot_name") + "\n";
-                    itemInfo += " - " + rs.getString("snapshot_name") + "\n";
-                    total += rs.getFloat("sold_price");
-                }
-                
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(modQuery)) {
-                
-                pstmt.setInt(1, detailID);
-                ResultSet rs = pstmt.executeQuery();
-                
-                while (rs.next()) {
-                    itemInfo += "   - " + rs.getString("snapshot_name") + "\n";
-                    info += "   - " + rs.getString("snapshot_name") + "\n";
-                    total += rs.getFloat("price_charged");                            
-                }
-                
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            newButton.setText(itemInfo);
-            orderInfoList.getChildren().add(newButton);
-        }
-
-        orderInfo.setText(info);
-        float tax = Math.round(total * 0.0825f * 100.0f) / 100.0f;
-
-        query = "UPDATE \"order\" SET total_tax = ?, total_final = ? WHERE id = ?;";
+        // Map to store item info since result set has one row per modifier
+        // Key: detailID, Value: [Text Builder, Total Price including mods, Product ID]
+        java.util.LinkedHashMap<Integer, StringBuilder> itemTexts = new java.util.LinkedHashMap<>();
+        java.util.LinkedHashMap<Integer, Float> itemPrices = new java.util.LinkedHashMap<>();
+        java.util.LinkedHashMap<Integer, Integer> itemProductIds = new java.util.LinkedHashMap<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            pstmt.setFloat(1, total);
-            pstmt.setFloat(2, total + tax);
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, orderID);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int detailId = rs.getInt("detail_id");
+                String prodName = rs.getString("prod_name");
+                float prodPrice = rs.getFloat("sold_price");
+                String modName = rs.getString("mod_name");
+                float modPrice = rs.getFloat("mod_price"); // 0.0 if null usually, but check logic
+
+                if (!itemTexts.containsKey(detailId)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(" - ").append(prodName != null ? prodName : "Unknown").append("\n");
+                    itemTexts.put(detailId, sb);
+                    itemPrices.put(detailId, prodPrice);
+                    itemProductIds.put(detailId, rs.getInt("product_id"));
+                }
+
+                // If there is a modifier (mod_name is not null)
+                if (modName != null) {
+                    itemTexts.get(detailId).append("   - ").append(modName).append("\n");
+                    itemPrices.put(detailId, itemPrices.get(detailId) + modPrice);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Reconstruct the buttons in order
+        for (java.util.Map.Entry<Integer, StringBuilder> entry : itemTexts.entrySet()) {
+            Integer detailID = entry.getKey();
+            String text = entry.getValue().toString();
+            Float price = itemPrices.get(detailID);
+            Integer prodId = itemProductIds.get(detailID);
+            subtotal += price;
+
+            Button newButton = new Button(text);
+            newButton.setMaxWidth(Double.MAX_VALUE); // Fill horizontally
+            newButton.getStyleClass().add("order-item-button"); // Apply CSS class
+            HBox.setHgrow(newButton, Priority.ALWAYS); // Grow flexibly inside HBox
+
+            // Store product_id in UserData to retrieve it during customization
+            newButton.setUserData(prodId);
+            newButton.setOnAction(e -> customizeItem(e));
+            newButton.setId("item" + detailID.toString());
+
+            Button deleteBtn = new Button("X");
+            deleteBtn.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold; ");
+            deleteBtn.setPrefHeight(newButton.getPrefHeight()); // Try to match height
+            deleteBtn.setMaxHeight(Double.MAX_VALUE);
+            deleteBtn.setOnAction(e -> deleteItem(detailID));
+
+            HBox row = new HBox(5, newButton, deleteBtn);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setMaxWidth(Double.MAX_VALUE);
+
+            orderInfoList.getChildren().add(row);
+        }
+
+        float tax = Math.round(subtotal * 0.0825f * 100.0f) / 100.0f;
+        float totalFinal = subtotal + tax;
+
+        // Update totals text area
+        orderTotal.setText(String.format("$%.2f\n$%.2f\n-----\n$%.2f", subtotal, tax, totalFinal));
+
+        String updateQuery = "UPDATE \"order\" SET total_tax = ?, total_final = ? WHERE id = ?;";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+            pstmt.setFloat(1, tax);
+            pstmt.setFloat(2, totalFinal);
             pstmt.setInt(3, orderID);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
 
-        orderTotal.setText(String.format("$%.2f\n$%.2f\n-------\n$%.2f", total, tax, total + tax));
+    public void deleteItem(int detailID) {
+        String deleteModifiersQuery = "DELETE FROM ordermodifier WHERE order_detail_id = ?;";
+        String deleteDetailQuery = "DELETE FROM orderdetail WHERE id = ?;";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement modPstmt = conn.prepareStatement(deleteModifiersQuery);
+                PreparedStatement detailPstmt = conn.prepareStatement(deleteDetailQuery)) {
+
+            // Delete modifiers first (foreign key constraint)
+            modPstmt.setInt(1, detailID);
+            modPstmt.executeUpdate();
+
+            // Delete the main detail row
+            detailPstmt.setInt(1, detailID);
+            detailPstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Repaint the UI and recalculate the totals
+        updateOrderInfo();
     }
 
     @FXML
     void customizeItem(ActionEvent event) {
         Button source = (Button) event.getSource();
         int detailID = Integer.valueOf(source.getId().substring(4));
+        int productID = -1;
+        if (source.getUserData() != null) {
+            productID = (int) source.getUserData();
+        }
+
         try {
-            customize(detailID);
+            customize(detailID, productID, false);
         } catch (IOException e) {
             System.out.println("Failed to customize");
         }
     }
 
-    private void customize(int detailID) throws IOException {
+    private void customize(int detailID, int productID, boolean isNew) throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("customization-view.fxml"));
-            // CustomizationController customizer = new CustomizationController();
-            // Stage stage = (Stage) orderInfo.getScene().getWindow();
-            // customizer.setParent(stage.getScene(), this, detailID);
-            // loader.setController(customizer);
             Parent root = loader.load();
             CustomizationController customizer = loader.getController();
             Stage stage = (Stage) orderInfo.getScene().getWindow();
-            customizer.setParent(stage.getScene(), this, detailID);
+            customizer.setParent(stage.getScene(), this, detailID, productID, isNew);
             stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
             stage.centerOnScreen();
         } catch (IOException e) {

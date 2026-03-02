@@ -82,7 +82,8 @@ CREATE TABLE OrderDetail (
     order_id INT REFERENCES "order" (id),
     product_id INT REFERENCES Product (product_id),
     sold_price FLOAT NOT NULL,
-    snapshot_name VARCHAR(255)
+    snapshot_name VARCHAR(255),
+    notes TEXT
 );
 
 CREATE TABLE OrderModifier (
