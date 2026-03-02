@@ -15,11 +15,11 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.EmployeeListController">
+<BorderPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.InventoryViewController">
    <top>
       <VBox>
          <children>
-            <MenuBar>
+            <MenuBar fx:id="menuBar">
                <menus>
                   <Menu mnemonicParsing="false" text="Navigate">
                      <items>
@@ -64,19 +64,19 @@
                      <children>
                         <Label style="-fx-font-weight: bold; -fx-font-size: 18;" text="Inventory" />
                         <Region prefHeight="34.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                        <TextField fx:id="textName" prefWidth="200.0" promptText="Search" style="-fx-background-radius: 20;                                       -fx-border-radius: 20;                                       -fx-border-color: #cccccc;                                       -fx-padding: 6 15 6 15;" />
-                        <Button fx:id="addButton" onAction="#handleAddEmployee" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="+" />
-                        <Button fx:id="removeButton" onAction="#removeHandler" prefHeight="34.0" prefWidth="43.0" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="-" />
+                        <TextField prefWidth="200.0" promptText="Search" style="-fx-background-radius: 20;                                       -fx-border-radius: 20;                                       -fx-border-color: #cccccc;                                       -fx-padding: 6 15 6 15;" />
+                        <Button onAction="#addHandelr" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="+" />
+                        <Button onAction="#removeHandler" prefHeight="34.0" prefWidth="43.0" style="-fx-background-color: transparent;                                    -fx-border-color: #333333;                                    -fx-border-radius: 20;                                    -fx-background-radius: 20;                                    -fx-font-size: 18;                                    -fx-padding: 2 13 2 13;" text="-" />
                      </children>
                   </HBox>
-                  <TableView fx:id="table" prefHeight="585.0" prefWidth="934.0">
+                           <TableView fx:id="table" prefHeight="585.0" prefWidth="934.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="ID" />
-                      <TableColumn prefWidth="304.8000259399414" text="Item" />
-                        <TableColumn minWidth="0.0" prefWidth="76.0" text="Current" />
-                        <TableColumn minWidth="0.0" prefWidth="76.0" text="Target" />
-                        <TableColumn minWidth="0.0" prefWidth="76.0" text="Units" />
-                        <TableColumn minWidth="0.0" prefWidth="324.8000244140625" text="Fill Amount" />
+                                 <TableColumn fx:id="colId" prefWidth="75.0" text="ID" />
+                                 <TableColumn fx:id="colName" prefWidth="304.8000259399414" text="Item" />
+                                    <TableColumn fx:id="colQty" minWidth="0.0" prefWidth="76.0" text="Current" />
+                                    <TableColumn fx:id="colTarg" minWidth="0.0" prefWidth="76.0" text="Target" />
+                                    <TableColumn fx:id="colUnit" minWidth="0.0" prefWidth="76.0" text="Units" />
+                                    <TableColumn fx:id="colExp" minWidth="0.0" prefWidth="324.8000244140625" text="Fill Amount" />
                     </columns>
                   </TableView>
                </children>
