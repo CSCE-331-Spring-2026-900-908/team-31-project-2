@@ -68,39 +68,20 @@ public class CustomizationController {
     @FXML
     private GridPane addOnsTable;
 
-    @FXML private Button menuItem01;
-    @FXML private Button menuItem02;
-    @FXML private Button menuItem03;
-    @FXML private Button menuItem04;
-    @FXML private Button menuItem05;
-    @FXML private Button menuItem06;
-    @FXML private Button menuItem07;
-    @FXML private Button menuItem08;
-    @FXML private Button menuItem09;
-    @FXML private Button menuItem10;
-    @FXML private Button menuItem11;
-    @FXML private Button menuItem12;
-    @FXML private Button menuItem13;
-    @FXML private Button menuItem14;
-    @FXML private Button menuItem15;
-    @FXML private Button menuItem16;
-    @FXML private Button menuItem17;
-    @FXML private Button menuItem18;
-    @FXML private Button menuItem19;
-    @FXML private Button menuItem20;
-    @FXML private Button menuItem21;
-    @FXML private Button menuItem22;
-    @FXML private Button menuItem23;
-    @FXML private Button menuItem24;
-    @FXML private Button menuItem25;
-    @FXML private Button menuItem26;
-    @FXML private Button menuItem27;
-    @FXML private Button menuItem28;
-    @FXML private Button menuItem29;
-    @FXML private Button menuItem30;
+    @FXML
+    private ToggleButton wholeMilk;
+    @FXML
+    private ToggleButton almondMilk;
+    @FXML
+    private ToggleButton oatMilk;
+    @FXML
+    private ToggleButton soyMilk;
+    @FXML
+    private ToggleButton medium;
+    @FXML
+    private ToggleButton large;
     
     private int orderDetailID = 1;
-    private List<ToggleButton> menuButtons = new ArrayList<ToggleButton>();
     private List<Modifier> modifiers;
     private Scene parentScene;
     private OrderController parentController;
@@ -115,12 +96,7 @@ public class CustomizationController {
     @FXML
     public void initialize() {
     }
-        // menuButtons = List.of(menuItem01, menuItem02, menuItem03, menuItem04, menuItem05, menuItem06,
-        //                       menuItem07, menuItem08, menuItem09, menuItem10, menuItem11, menuItem12,
-        //                       menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
-        //                       menuItem19, menuItem20, menuItem21, menuItem22, menuItem23, menuItem24,
-        //                       menuItem25, menuItem26, menuItem27, menuItem28, menuItem29, menuItem30);
-        
+    
     public void setModifiers() {
         modifiers = new ArrayList<Modifier>();
 
@@ -154,7 +130,6 @@ public class CustomizationController {
                 // newButton.setId("modifierid" + rs.getString("option_id") + "price" + rs.getString("price_charged"));
                 newButton.setStyle("height: 100; width: 100;");
                 newButton.setOnAction(e -> toggleModifier(e));
-                menuButtons.add(newButton);
                 int row = i % 2;
                 int col = i / 2;
                 addOnsTable.add(newButton, col, row);
@@ -167,6 +142,44 @@ public class CustomizationController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        if (modifiers.contains(new Modifier(19, "", 0))) {
+            medium.setSelected(true);
+        } else {
+            large.setSelected(true);
+        }
+        
+        if (modifiers.contains(new Modifier(21, "", 0))) {
+            wholeMilk.setSelected(true);
+        } else if (modifiers.contains(new Modifier(22, "", 0))) {
+            almondMilk.setSelected(true);
+        } else if (modifiers.contains(new Modifier(23, "", 0))) {
+            oatMilk.setSelected(true);
+        } else if (modifiers.contains(new Modifier(24, "", 0))) {
+            soyMilk.setSelected(true);
+        }
+        
+        if (modifiers.contains(new Modifier(10, "", 0))) {
+            sweetnessLevel.setValue(100);
+        } else if (modifiers.contains(new Modifier(11, "", 0))) {
+            sweetnessLevel.setValue(75);
+        } else if (modifiers.contains(new Modifier(12, "", 0))) {
+            sweetnessLevel.setValue(50);
+        } else if (modifiers.contains(new Modifier(13, "", 0))) {
+            sweetnessLevel.setValue(25);
+        } else if (modifiers.contains(new Modifier(14, "", 0))) {
+            sweetnessLevel.setValue(0);
+        }
+        
+        if (modifiers.contains(new Modifier(15, "", 0))) {
+            iceLevel.setValue(15);
+        } else if (modifiers.contains(new Modifier(16, "", 0))) {
+            iceLevel.setValue(16);
+        } else if (modifiers.contains(new Modifier(17, "", 0))) {
+            iceLevel.setValue(17);
+        } else if (modifiers.contains(new Modifier(18, "", 0))) {
+            iceLevel.setValue(18);
         }
     }
 
@@ -205,66 +218,6 @@ public class CustomizationController {
         // }
     }
 
-    // @FXML
-    // void setIce(KeyEvent event) {
-    //     double level = iceLevel.getValue();
-    //     int id = (int)level / 25 + 15;
-        
-    //     String query = "SELECT name, price_charged FROM modifieroption WHERE option_id = ?";
-
-    //     try (Connection conn = DatabaseConnection.getConnection();
-    //          PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-    //         pstmt.setInt(1, id);
-    //         ResultSet rs = pstmt.executeQuery();
-            
-    //         if (rs.next()) {
-    //             Modifier modifier = new Modifier(id, rs.getString("name"), rs.getFloat("price_charged"))
-    //             if (modifiers.contains(modifier)) {
-    //                 modifiers.remove(modifier);
-    //             } else {
-    //                 modifiers.add(modifier);
-    //             }
-    //         }
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // @FXML
-    // void setSweetness(KeyEvent event) {
-    //     double level = sweetnessLevel.getValue();
-    //     int id = (int)level / 25 + 10;
-        
-    //     String query = "SELECT name, price_charged FROM modifieroption WHERE option_id = ?";
-
-    //     try (Connection conn = DatabaseConnection.getConnection();
-    //          PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-    //         pstmt.setInt(1, id);
-    //         ResultSet rs = pstmt.executeQuery();
-            
-    //         if (rs.next()) {
-    //             Modifier modifier = new Modifier(id, rs.getString("name"), rs.getFloat("price_charged"))
-    //             if (modifiers.contains(modifier)) {
-    //                 modifiers.remove(modifier);
-    //             } else {
-    //                 modifiers.add(modifier);
-    //             }
-    //         }
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    @FXML
-    void decrementQuantity(ActionEvent event) {
-    }
-
-    @FXML
-    void incrementQuantity(ActionEvent event) {
-    }
-
     @FXML
     void setSize(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
@@ -276,7 +229,24 @@ public class CustomizationController {
         } else {
             modifiers.add(new Modifier(20, text, 0.75f));
         }
+    }
 
+    @FXML
+    void setMilk(ActionEvent event) {
+        ToggleButton source = (ToggleButton) event.getSource();
+        String text = source.getText();
+
+        modifiers.removeIf(modifier -> modifier.name.contains("Milk"));
+        if (text.equals("Whole Milk")) {
+            modifiers.add(new Modifier(21, text, 0));
+        } else if (text.equals("Almond Milk")) {
+            modifiers.add(new Modifier(22, text, 0.5f));
+        } else if (text.equals("Oat Milk")) {
+            modifiers.add(new Modifier(23, text, 0.5f));
+        } else if (text.equals("Soy Milk")) {
+            modifiers.add(new Modifier(24, text, 0.5f));
+        }
+    }
         // String query = "SELECT option_id, price_adjustment FROM modifieroption WHERE name = ?";
 
         // try (Connection conn = DatabaseConnection.getConnection();
@@ -298,7 +268,6 @@ public class CustomizationController {
         // } catch (SQLException e) {
         //     e.printStackTrace();
         // }
-    }
 
     @FXML
     void cancel(ActionEvent event) {
@@ -319,8 +288,8 @@ public class CustomizationController {
         }
 
         modifiers.removeIf(modifier -> modifier.name.contains("Ice") || modifier.name.contains("Sugar"));
-        int iceID = (int) iceLevel.getValue() / 25 + 15;
-        int sweetnessID = (int) sweetnessLevel.getValue() / 25 + 10;
+        int iceID = (int) iceLevel.getValue();
+        int sweetnessID = (int) (100 - sweetnessLevel.getValue()) / 25 + 10;
 
         query = "SELECT name, price_adjustment FROM modifieroption WHERE option_id = ?";
 

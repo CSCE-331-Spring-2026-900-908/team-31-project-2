@@ -53,7 +53,8 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Slider fx:id="iceLevel" blockIncrement="25.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
+      <Slider fx:id="iceLevel" blockIncrement="1.0" majorTickUnit="1.0" max="18.0" min="15.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="17.0" />
+      <Label prefHeight="21.0" prefWidth="1064.0" text="No Ice                                                                   Less Ice                                                                 Normal Ice                                                              Extra Ice" />
       <Label text="Sweetness">
          <font>
             <Font name="System Bold" size="24.0" />
@@ -77,7 +78,7 @@
       </Label>
       <HBox alignment="CENTER" prefHeight="75.0" prefWidth="200.0">
          <children>
-            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Whole Milk" textAlignment="CENTER">
+            <ToggleButton fx:id="wholeMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Whole Milk" textAlignment="CENTER">
                <font>
                   <Font size="24.0" />
                </font>
@@ -88,7 +89,7 @@
                   <ToggleGroup fx:id="milk" />
                </toggleGroup>
             </ToggleButton>
-            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Almond Milk" textAlignment="CENTER" toggleGroup="$milk">
+            <ToggleButton fx:id="almondMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Almond Milk" textAlignment="CENTER" toggleGroup="$milk">
                <font>
                   <Font size="24.0" />
                </font>
@@ -96,7 +97,7 @@
                   <Insets left="5.0" right="5.0" />
                </HBox.margin>
             </ToggleButton>
-            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Oat Milk" textAlignment="CENTER" toggleGroup="$milk">
+            <ToggleButton fx:id="oatMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Oat Milk" textAlignment="CENTER" toggleGroup="$milk">
                <font>
                   <Font size="24.0" />
                </font>
@@ -104,7 +105,7 @@
                   <Insets left="5.0" right="5.0" />
                </HBox.margin>
             </ToggleButton>
-            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Soy Milk" textAlignment="CENTER" toggleGroup="$milk">
+            <ToggleButton fx:id="soyMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Soy Milk" textAlignment="CENTER" toggleGroup="$milk">
                <font>
                   <Font size="24.0" />
                </font>
@@ -129,7 +130,7 @@
                   <Insets left="20.0" right="200.0" />
                </HBox.margin>
             </Button>
-            <ToggleButton mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Medium" textAlignment="CENTER">
+            <ToggleButton fx:id="medium" mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Medium" textAlignment="CENTER">
                <font>
                   <Font size="32.0" />
                </font>
@@ -140,7 +141,7 @@
                   <ToggleGroup fx:id="size" />
                </toggleGroup>
             </ToggleButton>
-            <ToggleButton mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Large" textAlignment="CENTER" toggleGroup="$size">
+            <ToggleButton fx:id="large" mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Large" textAlignment="CENTER" toggleGroup="$size">
                <font>
                   <Font size="32.0" />
                </font>
