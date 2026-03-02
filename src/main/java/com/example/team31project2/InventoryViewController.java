@@ -20,7 +20,11 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 
 public class InventoryViewController {
 
@@ -82,7 +86,7 @@ public class InventoryViewController {
     @FXML private TableColumn<InventoryItem, String> colName;
     @FXML private TableColumn<InventoryItem, Double> colQty;
     @FXML private TableColumn<InventoryItem, String> colUnit;
-    @FXML private TableColumn<InventoryItem, java.time.LocalDateTime> colExp;
+    @FXML private TableColumn<InventoryItem, Double> colFill;
     @FXML private TableColumn<InventoryItem, Double> colTarg;
 
     //TEXT FIELDS
@@ -100,11 +104,38 @@ public class InventoryViewController {
         colName.setCellValueFactory(data -> data.getValue().itemNameProperty());
         colQty.setCellValueFactory(data -> data.getValue().quantityProperty().asObject());
         colUnit.setCellValueFactory(data -> data.getValue().unitTypeProperty());
-        colExp.setCellValueFactory(data -> data.getValue().expirationDateProperty());
         colTarg.setCellValueFactory(data -> data.getValue().targetProperty().asObject());
+        colFill.setCellValueFactory(data -> data.getValue().fillRatioProperty().asObject());
 
         colQty.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         colTarg.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        colFill.setCellFactory(column -> new TableCell<InventoryItem, Double>() {
+            private final ProgressBar bar = new ProgressBar(0);
+            private final Label label = new Label();
+            private final HBox box = new HBox(8, bar, label);
+
+            {
+                bar.setMaxWidth(Double.MAX_VALUE);
+                box.setFillHeight(true);
+            }
+
+            @Override
+            protected void updateItem(Double value, boolean empty) {
+                super.updateItem(value, empty);
+
+                if (empty || value == null) {
+                    setGraphic(null);
+                    setText(null);
+                    return;
+                }
+
+                double ratio = Math.max(0.0, Math.min(1.0, value.doubleValue()));
+                bar.setProgress(ratio);
+                label.setText(String.format("%.0f%%", ratio * 100.0));
+                setGraphic(box);
+                setText(null);
+            }
+        });
         
         //MAKE ROWS QTY AND TARGET EDITABLE 
         colQty.setOnEditCommit(event -> {

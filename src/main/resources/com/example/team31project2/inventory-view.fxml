@@ -76,7 +76,7 @@
                                     <TableColumn fx:id="colQty" minWidth="0.0" prefWidth="76.0" text="Current" />
                                     <TableColumn fx:id="colTarg" minWidth="0.0" prefWidth="76.0" text="Target" />
                                     <TableColumn fx:id="colUnit" minWidth="0.0" prefWidth="76.0" text="Units" />
-                                    <TableColumn fx:id="colExp" minWidth="0.0" prefWidth="324.8000244140625" text="Fill Amount" />
+                                    <TableColumn fx:id="colFill" minWidth="0.0" prefWidth="324.8000244140625" text="Fill Amount" />
                     </columns>
                   </TableView>
                </children>
