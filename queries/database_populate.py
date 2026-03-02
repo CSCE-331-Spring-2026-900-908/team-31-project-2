@@ -190,7 +190,7 @@ def daily_order_count(current_day, special_peak_days):
     day_of_week = current_day.weekday()
     month = current_day.month
 
-    base = random.randint(120, 165)
+    base = random.randint(240, 300)
     volume = base * WEEKDAY_VOLUME[day_of_week]
 
     if month in (6, 7, 8):
@@ -207,14 +207,14 @@ def daily_order_count(current_day, special_peak_days):
     return max(75, int(volume * noise))
 
 
-with open("orders.csv", "w") as order_writer:
-    with open("order_details.csv", "w") as detail_writer:
-        with open("order_modifiers.csv", "w") as modifier_writer:
+with open("./orders.csv", "w") as order_writer:
+    with open("./order_details.csv", "w") as detail_writer:
+        with open("./order_modifiers.csv", "w") as modifier_writer:
             order_writer.write("employee_id,created_at,total_tax,total_final\n")
             detail_writer.write("order_id,product_id,sold_price,snapshot_name\n")
             modifier_writer.write("order_detail_id,modifier_option_id,price_charged,snapshot_name\n")
 
-            special_peak_days = set(random.sample(range(1, 366), k=12))
+            special_peak_days = set(random.sample(range(1, 366), k=3))
             order_id = 1
             detail_id = 1
             start_date = datetime(2025, 1, 1)
