@@ -346,6 +346,14 @@ public class OrderController {
     @FXML
     void checkout(ActionEvent event) {
         detailIDs = new ArrayList<Integer>();
+        // try (Connection conn = DBConnection.getConnection()) {
+
+        //     }
+        // for(int detailID : detailIDs){
+        //     String query = "UPDATE inventory SET quantity = quantity - 1 WHERE id = ?"; 
+            
+        //     PreparedStatement ps = 
+        // }
         initialize();
         updateOrderInfo();
     }
