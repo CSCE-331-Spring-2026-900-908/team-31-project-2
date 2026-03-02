@@ -25,6 +25,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 
 public class InventoryViewController {
 
@@ -85,16 +89,17 @@ public class InventoryViewController {
     @FXML private TableColumn<InventoryItem, Number> colId;
     @FXML private TableColumn<InventoryItem, String> colName;
     @FXML private TableColumn<InventoryItem, Double> colQty;
-    @FXML private TableColumn<InventoryItem, String> colUnit;
     @FXML private TableColumn<InventoryItem, Double> colFill;
     @FXML private TableColumn<InventoryItem, Double> colTarg;
 
-    //TEXT FIELDS
-    @FXML private javafx.scene.control.TextField textName;
-    @FXML private javafx.scene.control.TextField textQty;
-    @FXML private javafx.scene.control.TextField textUnit;
-    @FXML private javafx.scene.control.DatePicker textdate;
-    @FXML private javafx.scene.control.TextField textTarg;
+    //POPUP FIELDS
+    @FXML private Rectangle popupBackdrop;
+    @FXML private VBox popupBox;
+    @FXML private TextField popupName;
+    @FXML private TextField popupCurrent;
+    @FXML private TextField popupTarget;
+    @FXML private Button closeButton;
+    @FXML private Button addButton;
 
     public void initialize(){
         //LINK THE DB TO THE ROWS
@@ -103,7 +108,6 @@ public class InventoryViewController {
         colId.setCellValueFactory(data -> data.getValue().itemIdProperty());
         colName.setCellValueFactory(data -> data.getValue().itemNameProperty());
         colQty.setCellValueFactory(data -> data.getValue().quantityProperty().asObject());
-        colUnit.setCellValueFactory(data -> data.getValue().unitTypeProperty());
         colTarg.setCellValueFactory(data -> data.getValue().targetProperty().asObject());
         colFill.setCellValueFactory(data -> data.getValue().fillRatioProperty().asObject());
 
@@ -229,47 +233,47 @@ public class InventoryViewController {
 
     @FXML
     private void addHandelr(){
-        String name = textName.getText().trim();
-        Double quantity = Double.parseDouble(textQty.getText().trim());
-        double target = Double.parseDouble(textTarg.getText().trim());
-        String unit = textUnit.getText().trim();
+        String name = popupName.getText().trim();
+        Double quantity;
+        Double target;
 
-        if (name.isEmpty() || unit.isEmpty()) return;
+        try {
+            quantity = Double.parseDouble(popupCurrent.getText().trim());
+            target = Double.parseDouble(popupTarget.getText().trim());
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        if (name.isEmpty()) return;
         if (target < 0 || quantity < 0) return;
 
         java.time.LocalDateTime exp = null;
-        if (textdate != null && textdate.getValue() != null) {
-            exp = textdate.getValue().atStartOfDay(); // midnight
-        }
 
-        Integer id = insertItemInDb(name, quantity, unit, exp, target);
+        Integer id = insertItemInDb(name, quantity, exp, target);
         if (id == null) return;
 
-
-        InventoryItem newItem = new InventoryItem(id, name, quantity, unit, exp, target);
+        InventoryItem newItem = new InventoryItem(id, name, quantity, exp, target);
         inventoryList.add(newItem);
         inventoryList.sort((a, b) -> Integer.compare(a.getItemId(), b.getItemId()));
 
-        textName.clear();
-        textQty.clear();
-        textTarg.clear();
-        textUnit.clear();
-        if (textdate != null) textdate.setValue(null);
+        popupName.clear();
+        popupCurrent.clear();
+        popupTarget.clear();
+        closeAddPopup();
     }
 
-    private Integer insertItemInDb(String name, double quantity, String unit, java.time.LocalDateTime exp, double target){
-        String sql = "INSERT INTO inventory (item_name, quantity, unit_type, expiration_date, target_val) VALUES (?, ?, ?, ?, ?) RETURNING item_id";
+    private Integer insertItemInDb(String name, double quantity, java.time.LocalDateTime exp, double target){
+        String sql = "INSERT INTO inventory (item_name, quantity, expiration_date, target_val) VALUES (?, ?, ?, ?) RETURNING item_id";
 
         try(Connection conn = DatabaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)){ 
         ps.setString(1, name);
         ps.setDouble(2, quantity);
-        ps.setString(3, unit);
 
-        if (exp == null) ps.setTimestamp(4, null);
-        else ps.setTimestamp(4, java.sql.Timestamp.valueOf(exp));
+        if (exp == null) ps.setTimestamp(3, null);
+        else ps.setTimestamp(3, java.sql.Timestamp.valueOf(exp));
 
-        ps.setDouble(5, target);
+        ps.setDouble(4, target);
 
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
@@ -322,5 +326,20 @@ public class InventoryViewController {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @FXML
+    private void showAddPopup() {
+        popupName.clear();
+        popupCurrent.clear();
+        popupTarget.clear();
+        popupBackdrop.setVisible(true);
+        popupBox.setVisible(true);
+    }
+
+    @FXML
+    private void closeAddPopup() {
+        popupBackdrop.setVisible(false);
+        popupBox.setVisible(false);
     }
 }

@@ -8,16 +8,14 @@ class InventoryItem {
 private final IntegerProperty itemId = new SimpleIntegerProperty();
     private final StringProperty itemName = new SimpleStringProperty();
     private final DoubleProperty quantity = new SimpleDoubleProperty();
-    private final StringProperty unitType = new SimpleStringProperty();
     private final ObjectProperty<LocalDateTime> expirationDate = new SimpleObjectProperty<>();
     private final DoubleProperty target = new SimpleDoubleProperty();
     private final ReadOnlyDoubleWrapper fillRatio = new ReadOnlyDoubleWrapper();
 
-    public InventoryItem(int itemId, String itemName, double quantity, String unitType, LocalDateTime expirationDate, double target) {
+    public InventoryItem(int itemId, String itemName, double quantity, LocalDateTime expirationDate, double target) {
         this.itemId.set(itemId);
         this.itemName.set(itemName);
         this.quantity.set(quantity);
-        this.unitType.set(unitType);
         this.expirationDate.set(expirationDate);
         this.target.set(target);
 
@@ -40,9 +38,6 @@ private final IntegerProperty itemId = new SimpleIntegerProperty();
     public double getQuantity() { return quantity.get(); }
     public void setQuantity(Double v) { quantity.set(v); }
     public DoubleProperty quantityProperty() { return quantity; }
-
-    public String getUnitType() { return unitType.get(); }
-    public StringProperty unitTypeProperty() { return unitType; }
 
     public LocalDateTime getExpirationDate() { return expirationDate.get(); }
     public ObjectProperty<LocalDateTime> expirationDateProperty() { return expirationDate; }
