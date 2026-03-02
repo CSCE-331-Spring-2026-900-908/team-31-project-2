@@ -381,6 +381,10 @@ public class OrderController {
     private void customize(int detailID) throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("customization-view.fxml"));
+            // CustomizationController customizer = new CustomizationController();
+            // Stage stage = (Stage) orderInfo.getScene().getWindow();
+            // customizer.setParent(stage.getScene(), this, detailID);
+            // loader.setController(customizer);
             Parent root = loader.load();
             CustomizationController customizer = loader.getController();
             Stage stage = (Stage) orderInfo.getScene().getWindow();

@@ -17,7 +17,7 @@
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <GridPane fx:id="addOnsTable" prefHeight="200.0">
+                  <GridPane fx:id="addOnsTable" alignment="CENTER" prefHeight="200.0">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -65,11 +65,55 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <TextArea fx:id="notes" prefHeight="200.0" prefWidth="200.0" promptText="Special Notes/Comments">
+      <TextArea fx:id="notes" prefHeight="100.0" prefWidth="200.0" promptText="Special Notes/Comments">
          <font>
             <Font size="24.0" />
          </font>
       </TextArea>
+      <Label text="Milk Type">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="75.0" prefWidth="200.0">
+         <children>
+            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Whole Milk" textAlignment="CENTER">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+               <toggleGroup>
+                  <ToggleGroup fx:id="milk" />
+               </toggleGroup>
+            </ToggleButton>
+            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Almond Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </ToggleButton>
+            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Oat Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </ToggleButton>
+            <ToggleButton mnemonicParsing="false" onAction="#setMilk" prefHeight="75.0" prefWidth="200.0" text="Soy Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </ToggleButton>
+         </children>
+      </HBox>
       <Label text="Size">
          <font>
             <Font name="System Bold" size="24.0" />
@@ -85,22 +129,25 @@
                   <Insets left="20.0" right="200.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" onAction="#decrementQuantity" prefHeight="75.0" prefWidth="200.0" text="Medium">
+            <ToggleButton mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Medium" textAlignment="CENTER">
                <font>
                   <Font size="32.0" />
                </font>
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#incrementQuantity" prefHeight="75.0" prefWidth="200.0" text="Large">
+               <toggleGroup>
+                  <ToggleGroup fx:id="size" />
+               </toggleGroup>
+            </ToggleButton>
+            <ToggleButton mnemonicParsing="false" onAction="#setSize" prefHeight="75.0" prefWidth="200.0" text="Large" textAlignment="CENTER" toggleGroup="$size">
                <font>
                   <Font size="32.0" />
                </font>
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
-            </Button>
+            </ToggleButton>
             <Button mnemonicParsing="false" onAction="#save" prefHeight="75.0" prefWidth="150.0" text="Save">
                <font>
                   <Font size="24.0" />

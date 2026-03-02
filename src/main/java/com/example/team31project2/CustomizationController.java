@@ -109,16 +109,19 @@ public class CustomizationController {
         parentScene = scene;
         parentController = controller;
         orderDetailID = detailID;
+        setModifiers();
     }
 
     @FXML
     public void initialize() {
+    }
         // menuButtons = List.of(menuItem01, menuItem02, menuItem03, menuItem04, menuItem05, menuItem06,
         //                       menuItem07, menuItem08, menuItem09, menuItem10, menuItem11, menuItem12,
         //                       menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
         //                       menuItem19, menuItem20, menuItem21, menuItem22, menuItem23, menuItem24,
         //                       menuItem25, menuItem26, menuItem27, menuItem28, menuItem29, menuItem30);
         
+    public void setModifiers() {
         modifiers = new ArrayList<Modifier>();
 
         String query = "SELECT modifier_option_id, price_charged, snapshot_name FROM ordermodifier WHERE order_detail_id = ?;";
@@ -130,6 +133,7 @@ public class CustomizationController {
             ResultSet rs = pstmt.executeQuery();
             
             while (rs.next()) {
+                System.out.println(rs.getString("snapshot_name"));
                 modifiers.add(new Modifier(rs.getInt("modifier_option_id"), rs.getString("snapshot_name"), rs.getFloat("price_charged")));
             }
         } catch (SQLException e) {
@@ -157,6 +161,8 @@ public class CustomizationController {
                 i++;
                 if (modifiers.contains(new Modifier(rs.getInt("option_id"), "", 0))) {
                     newButton.setSelected(true);
+                } else {
+                    newButton.setSelected(false);
                 }
             }
         } catch (SQLException e) {
@@ -180,8 +186,10 @@ public class CustomizationController {
             if (rs.next()) {
                 Modifier modifier = new Modifier(rs.getInt("option_id"), text, rs.getFloat("price_adjustment"));
                 if (modifiers.contains(modifier)) {
+                    System.out.println("Removing " + text + "...");
                     modifiers.remove(modifier);
                 } else {
+                    System.out.println("Adding " + text + "...");
                     modifiers.add(modifier);
                 }
             }
@@ -258,6 +266,41 @@ public class CustomizationController {
     }
 
     @FXML
+    void setSize(ActionEvent event) {
+        ToggleButton source = (ToggleButton) event.getSource();
+        String text = source.getText();
+
+        modifiers.removeIf(modifier -> modifier.name.equals("Medium") || modifier.name.equals("Large"));
+        if (text.equals("Medium")) {
+            modifiers.add(new Modifier(19, text, 0));
+        } else {
+            modifiers.add(new Modifier(20, text, 0.75f));
+        }
+
+        // String query = "SELECT option_id, price_adjustment FROM modifieroption WHERE name = ?";
+
+        // try (Connection conn = DatabaseConnection.getConnection();
+        //      PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+        //     pstmt.setString(1, text);
+        //     ResultSet rs = pstmt.executeQuery();
+            
+        //     if (rs.next()) {
+        //         Modifier modifier = new Modifier(rs.getInt("option_id"), text, rs.getFloat("price_adjustment"));
+        //         if (modifiers.contains(modifier)) {
+        //             System.out.println("Removing " + text + "...");
+        //             modifiers.remove(modifier);
+        //         } else {
+        //             System.out.println("Adding " + text + "...");
+        //             modifiers.add(modifier);
+        //         }
+        //     }
+        // } catch (SQLException e) {
+        //     e.printStackTrace();
+        // }
+    }
+
+    @FXML
     void cancel(ActionEvent event) {
         exit();
     }
@@ -308,6 +351,8 @@ public class CustomizationController {
         }
 
         for(Modifier modifier : modifiers) {
+            System.out.println(modifier.name);
+
             query = "INSERT INTO \"ordermodifier\" (order_detail_id, modifier_option_id, price_charged, snapshot_name) VALUES (?, ?, ?, ?) RETURNING id;";
         
             try (Connection conn = DatabaseConnection.getConnection();
