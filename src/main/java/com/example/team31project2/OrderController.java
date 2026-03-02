@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Label;
@@ -40,6 +41,9 @@ public class OrderController {
 
     @FXML
     private TextArea orderInfo;
+
+    @FXML
+    private VBox orderInfoList;
 
     @FXML
     private TextArea orderTotal;
@@ -393,6 +397,7 @@ public class OrderController {
     }
 
     public void updateOrderInfo() {
+        orderInfoList.getChildren().clear();
         String info = "";
         float total = 0;
 
@@ -400,6 +405,10 @@ public class OrderController {
         String modQuery = "SELECT snapshot_name, price_charged FROM \"ordermodifier\" WHERE order_detail_id = ?";
 
         for (Integer detailID : detailIDs) {
+            Button newButton = new Button("Text not found");
+            String itemInfo = "";
+            newButton.setOnAction(e -> customizeItem(e));
+            newButton.setId("item" + detailID.toString());
             try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
                 
@@ -408,6 +417,7 @@ public class OrderController {
                 
                 if (rs.next()) {
                     info += " - " + rs.getString("snapshot_name") + "\n";
+                    itemInfo += " - " + rs.getString("snapshot_name") + "\n";
                     total += rs.getFloat("sold_price");
                 }
                 
@@ -421,6 +431,7 @@ public class OrderController {
                 ResultSet rs = pstmt.executeQuery();
                 
                 while (rs.next()) {
+                    itemInfo += "   - " + rs.getString("snapshot_name") + "\n";
                     info += "   - " + rs.getString("snapshot_name") + "\n";
                     total += rs.getFloat("price_charged");                            
                 }
@@ -428,6 +439,8 @@ public class OrderController {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            newButton.setText(itemInfo);
+            orderInfoList.getChildren().add(newButton);
         }
 
         orderInfo.setText(info);
@@ -447,6 +460,17 @@ public class OrderController {
         }
 
         orderTotal.setText(String.format("$%.2f\n$%.2f\n-------\n$%.2f", total, tax, total + tax));
+    }
+
+    @FXML
+    void customizeItem(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        int detailID = Integer.valueOf(source.getId().substring(4));
+        try {
+            customize(detailID);
+        } catch (IOException e) {
+            System.out.println("Failed to customize");
+        }
     }
 
     private void customize(int detailID) throws IOException {
