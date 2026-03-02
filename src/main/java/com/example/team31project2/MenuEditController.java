@@ -30,8 +30,10 @@ import java.util.Optional;
 
 public class MenuEditController {
 
-    @FXML private TextField searchField;
-    @FXML private VBox menuItemsList;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private VBox menuItemsList;
 
     private final List<HBox> allRows = new ArrayList<>();
 
@@ -45,16 +47,16 @@ public class MenuEditController {
         String query = "SELECT product_id, name, base_price, category_name FROM product ORDER BY name";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                ResultSet rs = pstmt.executeQuery()) {
 
             allRows.clear();
             menuItemsList.getChildren().clear();
 
             while (rs.next()) {
-                int id          = rs.getInt("product_id");
-                String name     = rs.getString("name");
-                double price    = rs.getDouble("base_price");
+                int id = rs.getInt("product_id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("base_price");
                 String category = rs.getString("category_name");
                 HBox row = buildRow(id, name, price, category != null ? category : "");
                 allRows.add(row);
@@ -70,10 +72,9 @@ public class MenuEditController {
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
         row.setStyle(
-            "-fx-border-color: transparent transparent #e0e0e0 transparent;" +
-            "-fx-border-width: 0 0 1 0;" +
-            "-fx-padding: 10 0 10 0;"
-        );
+                "-fx-border-color: transparent transparent #e0e0e0 transparent;" +
+                        "-fx-border-width: 0 0 1 0;" +
+                        "-fx-padding: 10 0 10 0;");
 
         Label nameLabel = new Label(name);
         nameLabel.setPrefWidth(300.0);
@@ -89,25 +90,23 @@ public class MenuEditController {
 
         Button editBtn = new Button("✎");
         editBtn.setStyle(
-            "-fx-background-color: transparent;" +
-            "-fx-border-color: #555555;" +
-            "-fx-border-radius: 50;" +
-            "-fx-background-radius: 50;" +
-            "-fx-padding: 4 9 4 9;" +
-            "-fx-font-size: 13;"
-        );
+                "-fx-background-color: transparent;" +
+                        "-fx-border-color: #555555;" +
+                        "-fx-border-radius: 50;" +
+                        "-fx-background-radius: 50;" +
+                        "-fx-padding: 4 9 4 9;" +
+                        "-fx-font-size: 13;");
         editBtn.setOnAction(e -> handleEditMenuItem(id, name, price, category));
 
         Button removeBtn = new Button("✕");
         removeBtn.setStyle(
-            "-fx-background-color: transparent;" +
-            "-fx-border-color: #cc3333;" +
-            "-fx-border-radius: 50;" +
-            "-fx-background-radius: 50;" +
-            "-fx-padding: 4 9 4 9;" +
-            "-fx-font-size: 13;" +
-            "-fx-text-fill: #cc3333;"
-        );
+                "-fx-background-color: transparent;" +
+                        "-fx-border-color: #cc3333;" +
+                        "-fx-border-radius: 50;" +
+                        "-fx-background-radius: 50;" +
+                        "-fx-padding: 4 9 4 9;" +
+                        "-fx-font-size: 13;" +
+                        "-fx-text-fill: #cc3333;");
         removeBtn.setOnAction(e -> handleRemoveMenuItem(id, name, row));
 
         HBox actions = new HBox(8, editBtn, removeBtn);
@@ -121,7 +120,7 @@ public class MenuEditController {
         String lower = query == null ? "" : query.toLowerCase();
         menuItemsList.getChildren().clear();
         for (HBox row : allRows) {
-            Label nameLabel     = (Label) row.getChildren().get(0);
+            Label nameLabel = (Label) row.getChildren().get(0);
             Label categoryLabel = (Label) row.getChildren().get(1);
             if (nameLabel.getText().toLowerCase().contains(lower)
                     || categoryLabel.getText().toLowerCase().contains(lower)) {
@@ -140,27 +139,30 @@ public class MenuEditController {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 100, 10, 10));
 
-        TextField nameField     = new TextField(currentName);
-        TextField priceField    = new TextField(String.valueOf(currentPrice));
+        TextField nameField = new TextField(currentName);
+        TextField priceField = new TextField(String.valueOf(currentPrice));
         TextField categoryField = new TextField(currentCategory);
 
-        grid.add(new Label("Name:"),     0, 0); grid.add(nameField,     1, 0);
-        grid.add(new Label("Price:"),    0, 1); grid.add(priceField,    1, 1);
-        grid.add(new Label("Category:"), 0, 2); grid.add(categoryField, 1, 2);
+        grid.add(new Label("Name:"), 0, 0);
+        grid.add(nameField, 1, 0);
+        grid.add(new Label("Price:"), 0, 1);
+        grid.add(priceField, 1, 1);
+        grid.add(new Label("Category:"), 0, 2);
+        grid.add(categoryField, 1, 2);
 
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            String newName     = nameField.getText().trim();
+            String newName = nameField.getText().trim();
             String newCategory = categoryField.getText().trim();
             if (!newName.isEmpty()) {
                 try {
                     double newPrice = Double.parseDouble(priceField.getText().trim());
                     String sql = "UPDATE product SET name = ?, base_price = ?, category_name = ? WHERE product_id = ?";
                     try (Connection conn = DatabaseConnection.getConnection();
-                         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                            PreparedStatement pstmt = conn.prepareStatement(sql)) {
                         pstmt.setString(1, newName);
                         pstmt.setDouble(2, newPrice);
                         pstmt.setString(3, newCategory);
@@ -205,8 +207,9 @@ public class MenuEditController {
                 menuItemsList.getChildren().remove(row);
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR,
-                    "Cannot delete \"" + name + "\" because it is referenced in existing orders.\n" +
-                    "Consider deactivating it instead.").showAndWait();
+                        "Cannot delete \"" + name + "\" because it is referenced in existing orders.\n" +
+                                "Consider deactivating it instead.")
+                        .showAndWait();
             }
         }
     }
@@ -222,34 +225,75 @@ public class MenuEditController {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 100, 10, 10));
 
-        TextField nameField     = new TextField();
+        TextField nameField = new TextField();
         nameField.setPromptText("Name");
-        TextField priceField    = new TextField();
+        TextField priceField = new TextField();
         priceField.setPromptText("0.00");
         TextField categoryField = new TextField();
         categoryField.setPromptText("Category");
 
-        grid.add(new Label("Name:"),     0, 0); grid.add(nameField,     1, 0);
-        grid.add(new Label("Price:"),    0, 1); grid.add(priceField,    1, 1);
-        grid.add(new Label("Category:"), 0, 2); grid.add(categoryField, 1, 2);
+        javafx.scene.control.ListView<String> ingredientList = new javafx.scene.control.ListView<>();
+        ingredientList.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
+        ingredientList.setPrefHeight(100);
+        java.util.Map<String, Integer> inventoryMap = new java.util.HashMap<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement pstmt = conn
+                        .prepareStatement("SELECT item_id, item_name FROM inventory ORDER BY item_name");
+                ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String itemName = rs.getString("item_name");
+                inventoryMap.put(itemName, rs.getInt("item_id"));
+                ingredientList.getItems().add(itemName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        grid.add(new Label("Name:"), 0, 0);
+        grid.add(nameField, 1, 0);
+        grid.add(new Label("Price:"), 0, 1);
+        grid.add(priceField, 1, 1);
+        grid.add(new Label("Category:"), 0, 2);
+        grid.add(categoryField, 1, 2);
+        grid.add(new Label("Ingredients:"), 0, 3);
+        grid.add(ingredientList, 1, 3);
 
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            String name     = nameField.getText().trim();
+            String name = nameField.getText().trim();
             String category = categoryField.getText().trim();
             if (!name.isEmpty()) {
                 try {
                     double price = Double.parseDouble(priceField.getText().trim());
-                    String sql = "INSERT INTO product (name, base_price, category_name) VALUES (?, ?, ?)";
+                    String sql = "INSERT INTO product (name, base_price, category_name) VALUES (?, ?, ?) RETURNING product_id";
                     try (Connection conn = DatabaseConnection.getConnection();
-                         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                            PreparedStatement pstmt = conn.prepareStatement(sql)) {
                         pstmt.setString(1, name);
                         pstmt.setDouble(2, price);
                         pstmt.setString(3, category);
-                        pstmt.executeUpdate();
+
+                        ResultSet rs = pstmt.executeQuery();
+                        if (rs.next()) {
+                            int newProductId = rs.getInt(1);
+
+                            java.util.List<String> selectedIngredients = ingredientList.getSelectionModel()
+                                    .getSelectedItems();
+                            if (!selectedIngredients.isEmpty()) {
+                                String ingredientSql = "INSERT INTO productingredient (product_id, item_id, quantity_used) VALUES (?, ?, 1.0)";
+                                try (PreparedStatement ingStmt = conn.prepareStatement(ingredientSql)) {
+                                    for (String ingredientName : selectedIngredients) {
+                                        ingStmt.setInt(1, newProductId);
+                                        ingStmt.setInt(2, inventoryMap.get(ingredientName));
+                                        ingStmt.addBatch();
+                                    }
+                                    ingStmt.executeBatch();
+                                }
+                            }
+                        }
                         loadMenuItems();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -263,11 +307,31 @@ public class MenuEditController {
 
     // Navigation
 
-    @FXML void handleSignOut(ActionEvent event)           { UserSession.clear(); navigateTo("login-view.fxml"); }
-    @FXML void handleNavigateOrdering(ActionEvent event)  { navigateTo("ordering-view.fxml"); }
-    @FXML void handleNavigateEmployees(ActionEvent event) { navigateTo("employee-list-view.fxml"); }
-    @FXML void handleNavigateInventory(ActionEvent event) { navigateTo("inventory-view.fxml"); }
-    @FXML void handleNavigateReports(ActionEvent event)   { navigateTo("reports-view.fxml"); }
+    @FXML
+    void handleSignOut(ActionEvent event) {
+        UserSession.clear();
+        navigateTo("login-view.fxml");
+    }
+
+    @FXML
+    void handleNavigateOrdering(ActionEvent event) {
+        navigateTo("ordering-view.fxml");
+    }
+
+    @FXML
+    void handleNavigateEmployees(ActionEvent event) {
+        navigateTo("employee-list-view.fxml");
+    }
+
+    @FXML
+    void handleNavigateInventory(ActionEvent event) {
+        navigateTo("inventory-view.fxml");
+    }
+
+    @FXML
+    void handleNavigateReports(ActionEvent event) {
+        navigateTo("reports-view.fxml");
+    }
 
     private void navigateTo(String fxmlFile) {
         try {

@@ -72,7 +72,9 @@ public class ReportsController {
             "Sales by Category",
             "Top 5 Products",
             "Orders by Hour",
-            "Revenue by Employee");
+            "Revenue by Employee",
+            "Product Usage Chart",
+            "Sales Report");
     private String selectedDateRange = "1 Month";
 
     @FXML
@@ -86,6 +88,10 @@ public class ReportsController {
         reportToFileMap.put("Top 5 Products", "custom_reports/top_5_products.sql");
         reportToFileMap.put("Orders by Hour", "custom_reports/orders_by_hour.sql");
         reportToFileMap.put("Revenue by Employee", "custom_reports/revenue_by_employee.sql");
+        reportToFileMap.put("Product Usage Chart", "custom_reports/product_usage.sql");
+        reportToFileMap.put("Sales Report", "custom_reports/sales_by_item.sql");
+        reportToFileMap.put("X-Report", "custom_reports/x_report.sql");
+        reportToFileMap.put("Z-Report", "custom_reports/z_report.sql");
 
         weekRangeButton.setOnAction(event -> handleDateRangeSelect("1 Week"));
         monthRangeButton.setOnAction(event -> handleDateRangeSelect("1 Month"));
@@ -112,6 +118,26 @@ public class ReportsController {
     private void loadReport(String reportName) {
         if (reportName == null || !reportToFileMap.containsKey(reportName))
             return;
+
+        if ("Z-Report".equals(reportName)) {
+            try (Connection conn = DatabaseConnection.getConnection();
+                    Statement stmt = conn.createStatement();
+                    ResultSet checkRs = stmt.executeQuery(
+                            "SELECT 1 FROM \"order\" WHERE z_report_run = TRUE AND DATE(created_at) = CURRENT_DATE LIMIT 1")) {
+                if (checkRs.next()) {
+                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                            javafx.scene.control.Alert.AlertType.WARNING, "Z-Report has already been generated today.");
+                    alert.showAndWait();
+                    reportTitle.setText(reportName);
+                    reportTable.getColumns().clear();
+                    reportTable.getItems().clear();
+                    chartContainer.getChildren().clear();
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         reportTitle.setText(reportName);
         boolean shouldEnableDateRange = dateRangeReports.contains(reportName);
@@ -251,6 +277,16 @@ public class ReportsController {
             // metadata rules
             generateChartFromData(metaData.getColumnName(1), metaData.getColumnName(2), data);
 
+            if ("Z-Report".equals(reportSelector.getSelectionModel().getSelectedItem()) && !data.isEmpty()) {
+                try (Statement updateStmt = conn.createStatement()) {
+                    updateStmt.executeUpdate("UPDATE \"order\" SET z_report_run = TRUE WHERE z_report_run = FALSE;");
+                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                            javafx.scene.control.Alert.AlertType.INFORMATION,
+                            "Z-Report generated successfully and the totals have been reset.");
+                    alert.showAndWait();
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -271,8 +307,10 @@ public class ReportsController {
 
         // Configuration based on current Report types!
         if (currentReport.equals("Top 5 Products") || currentReport.equals("Orders by Day of Week")
-            || currentReport.equals("Most Popular Modifiers") || currentReport.equals("Orders by Hour")
-            || currentReport.equals("Revenue by Employee")) {
+                || currentReport.equals("Most Popular Modifiers") || currentReport.equals("Orders by Hour")
+                || currentReport.equals("Revenue by Employee") || currentReport.equals("Product Usage Chart")
+                || currentReport.equals("Sales Report") || currentReport.equals("X-Report")
+                || currentReport.equals("Z-Report")) {
             CategoryAxis xAxis = new CategoryAxis();
             xAxis.setLabel(xAxisName);
             NumberAxis yAxis = new NumberAxis();

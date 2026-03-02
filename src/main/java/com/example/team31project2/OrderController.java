@@ -48,6 +48,13 @@ public class OrderController {
     @FXML
     private Label headerUserLabel;
 
+    @FXML private ToggleButton milkFoam;
+    @FXML private ToggleButton milkTea;
+    @FXML private ToggleButton creativeMix;
+    @FXML private ToggleButton brewedTea;
+    @FXML private ToggleButton coffee;
+    @FXML private ToggleButton slush;
+
     @FXML private Button menuItem01;
     @FXML private Button menuItem02;
     @FXML private Button menuItem03;
@@ -115,6 +122,18 @@ public class OrderController {
                               menuItem13, menuItem14, menuItem15, menuItem16, menuItem17, menuItem18,
                               menuItem19, menuItem20, menuItem21, menuItem22, menuItem23, menuItem24,
                               menuItem25, menuItem26, menuItem27, menuItem28, menuItem29, menuItem30);
+
+        for (Button b : menuButtons) {
+            b.managedProperty().bind(b.visibleProperty());
+        }
+
+        milkFoam.setStyle(getCategoryStyle("Milk Foam Series", false));
+        milkTea.setStyle(getCategoryStyle("Milk Tea Series", false));
+        creativeMix.setStyle(getCategoryStyle("Creative Mix Series", false));
+        brewedTea.setStyle(getCategoryStyle("Brewed Tea Series", false));
+        coffee.setStyle(getCategoryStyle("Coffee Series", false));
+        slush.setStyle(getCategoryStyle("Slush Series", false));
+
         // String[] orderDetails = {String.valueOf(employee_id), LocalDateTime.now().toString(), "0", "0"};
         // String query = "INSERT INTO \"order\" (employee_id, created_at, total_tax, total_final) VALUES (" +
         //             String.join(", ", String.valueOf(employee_id), LocalDateTime.now().toString(), "0", "0");
@@ -197,6 +216,7 @@ public class OrderController {
         } else {
             category.add(text);
         }
+        source.setStyle(getCategoryStyle(text, source.isSelected()));
         filter();
         // if (category.contains(text)) {
         //     category = category.substring(0, category.indexOf(text)) + category.substring(category.indexOf(text) + text.length());
@@ -318,6 +338,35 @@ public class OrderController {
         }
     }
     
+    private String getCategoryStyle(String category, boolean isSelected) {
+        String color;
+        switch (category) {
+            case "Milk Foam Series":
+                color = "#E0F7FA"; // Light Cyan
+                break;
+            case "Milk Tea Series":
+                color = "#FFF8E1"; // Light amber/cream
+                break;
+            case "Creative Mix Series":
+                color = "#F3E5F5"; // Light Purple
+                break;
+            case "Brewed Tea Series":
+                color = "#E8F5E9"; // Light Green
+                break;
+            case "Coffee Series":
+                color = "#EFEBE9"; // Light Brown
+                break;
+            case "Slush Series":
+                color = "#FFEBEE"; // Light Red/Pink
+                break;
+            default:
+                color = "white";
+                break;
+        }
+        String borderStyle = isSelected ? "-fx-border-color: #555555; -fx-border-width: 3;" : "-fx-border-color: #bdbdbd; -fx-border-width: 1;";
+        return borderStyle + " -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: " + color + ";";
+    }
+
     private void filter() {
         String query = "SELECT name, category_name FROM product WHERE name ILIKE ? ORDER BY product_id;";
         
@@ -331,6 +380,7 @@ public class OrderController {
             while (rs.next() && i < 30) {
                 if (category.size() == 0 || category.contains(rs.getString("category_name"))) {
                     menuButtons.get(i).setText(rs.getString("name"));
+                    menuButtons.get(i).setStyle(getCategoryStyle(rs.getString("category_name"), false));
                     menuButtons.get(i).setVisible(true);
                     i++;
                 }
