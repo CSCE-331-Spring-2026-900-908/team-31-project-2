@@ -38,8 +38,6 @@ import java.util.ArrayList;
 public class OrderController {
     private Employee currentUser;
 
-    private Employee currentUser;
-
     @FXML
     private TextArea orderInfo;
 
@@ -48,15 +46,6 @@ public class OrderController {
 
     @FXML
     private TextField searchBar;
-
-    @FXML
-    private MenuBar topMenuBar;
-
-    @FXML
-    private Menu navigateMenu;
-
-    @FXML
-    private Label headerUserLabel;
 
     @FXML
     private MenuBar topMenuBar;
