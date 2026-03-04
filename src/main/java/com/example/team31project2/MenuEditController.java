@@ -295,15 +295,15 @@ public class MenuEditController {
             e.printStackTrace();
         }
 
-        // Fetch existing ingredients
-        List<Integer> existingIngredients = new ArrayList<>();
+        // Fetch existing ingredients with quantities
+        java.util.Map<Integer, Double> existingIngredients = new java.util.HashMap<>();
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn
-                        .prepareStatement("SELECT item_id FROM ProductIngredient WHERE product_id = ?")) {
+                        .prepareStatement("SELECT item_id, quantity_used FROM ProductIngredient WHERE product_id = ?")) {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    existingIngredients.add(rs.getInt("item_id"));
+                    existingIngredients.put(rs.getInt("item_id"), rs.getDouble("quantity_used"));
                 }
             }
         } catch (SQLException e) {
@@ -319,8 +319,10 @@ public class MenuEditController {
 
         java.util.Map<String, Integer> inventoryMap = new java.util.HashMap<>();
         List<ToggleButton> ingredientButtons = new ArrayList<>();
+        java.util.Map<String, TextField> ingredientQtyFields = new java.util.HashMap<>();
 
         String currentTeaItem = null;
+        double currentTeaQty = 1.0;
 
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn
@@ -332,23 +334,35 @@ public class MenuEditController {
                 inventoryMap.put(itemName, itemId);
 
                 if (itemName.toLowerCase().contains("tea leaves")) {
-                    if (existingIngredients.contains(itemId)) {
+                    if (existingIngredients.containsKey(itemId)) {
                         currentTeaItem = itemName;
+                        currentTeaQty = existingIngredients.get(itemId);
                     }
                 } else {
                     ToggleButton btn = new ToggleButton(itemName);
-                    btn.setPrefSize(100, 100);
+                    btn.setPrefSize(100, 75);
                     btn.setWrapText(true);
                     btn.setStyle(
                             "-fx-background-color: white; -fx-border-color: #ccc; -fx-background-radius: 5; -fx-border-radius: 5;");
 
-                    if (existingIngredients.contains(itemId)) {
+                    boolean isExisting = existingIngredients.containsKey(itemId);
+                    double existingQty = isExisting ? existingIngredients.get(itemId) : 1.0;
+
+                    TextField qtyField = new TextField(String.valueOf(existingQty));
+                    qtyField.setPrefWidth(100);
+                    qtyField.setPromptText("qty");
+                    qtyField.setDisable(!isExisting);
+                    qtyField.setStyle("-fx-font-size: 11; -fx-padding: 2 5 2 5;");
+                    ingredientQtyFields.put(itemName, qtyField);
+
+                    if (isExisting) {
                         btn.setSelected(true);
                         btn.setStyle(
                                 "-fx-background-color: #e0f7fa; -fx-border-color: #00bcd4; -fx-background-radius: 5; -fx-border-radius: 5;");
                     }
 
                     btn.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                        qtyField.setDisable(!newVal);
                         if (newVal) {
                             btn.setStyle(
                                     "-fx-background-color: #e0f7fa; -fx-border-color: #00bcd4; -fx-background-radius: 5; -fx-border-radius: 5;");
@@ -358,7 +372,7 @@ public class MenuEditController {
                         }
                     });
                     ingredientButtons.add(btn);
-                    ingredientsPane.getChildren().add(btn);
+                    ingredientsPane.getChildren().add(new VBox(2, btn, qtyField));
                 }
             }
         } catch (SQLException e) {
@@ -403,6 +417,13 @@ public class MenuEditController {
             teaBaseBox.setValue(currentTeaItem);
         }
 
+        Label teaQtyLbl = new Label("Tea Qty:");
+        teaQtyLbl.setStyle("-fx-font-weight: bold;");
+        TextField teaQtyField = new TextField(String.format("%.0f", currentTeaQty));
+        teaQtyField.setPrefWidth(80);
+        teaQtyField.setStyle(
+                "-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #ccc; -fx-padding: 4 8 4 8;");
+
         Label activeLbl = new Label("Active Item:");
         activeLbl.setStyle("-fx-font-weight: bold;");
         CheckBox activeCheck = new CheckBox();
@@ -411,8 +432,10 @@ public class MenuEditController {
 
         bottomGrid.add(teaBaseLbl, 0, 0);
         bottomGrid.add(teaBaseBox, 1, 0);
-        bottomGrid.add(activeLbl, 2, 0);
-        bottomGrid.add(activeCheck, 3, 0);
+        bottomGrid.add(teaQtyLbl, 2, 0);
+        bottomGrid.add(teaQtyField, 3, 0);
+        bottomGrid.add(activeLbl, 0, 1);
+        bottomGrid.add(activeCheck, 1, 1);
 
         content.getChildren().addAll(ingredientsHeader, ingredientsPane, invHeader, bottomGrid);
 
@@ -477,25 +500,36 @@ public class MenuEditController {
                             }
 
                             // Insert new relations - Ingredients
-                            List<Integer> finalIngredients = new ArrayList<>();
                             String selectedTea = teaBaseBox.getValue();
+                            List<Integer> finalIngredients = new ArrayList<>();
+                            List<Double> finalQuantities = new ArrayList<>();
                             if (selectedTea != null && inventoryMap.containsKey(selectedTea)) {
                                 finalIngredients.add(inventoryMap.get(selectedTea));
+                                double teaQty = 5.0;
+                                try { teaQty = Double.parseDouble(teaQtyField.getText().trim()); } catch (NumberFormatException ignored) {}
+                                finalQuantities.add(teaQty);
                             }
                             for (ToggleButton btn : ingredientButtons) {
                                 if (btn.isSelected()) {
                                     Integer invId = inventoryMap.get(btn.getText());
                                     if (invId != null && !finalIngredients.contains(invId)) {
                                         finalIngredients.add(invId);
+                                        double qty = 1.0;
+                                        TextField qf = ingredientQtyFields.get(btn.getText());
+                                        if (qf != null) {
+                                            try { qty = Double.parseDouble(qf.getText().trim()); } catch (NumberFormatException ignored) {}
+                                        }
+                                        finalQuantities.add(qty);
                                     }
                                 }
                             }
                             if (!finalIngredients.isEmpty()) {
-                                String ingSql = "INSERT INTO ProductIngredient (product_id, item_id, quantity_used) VALUES (?, ?, 1.0)";
+                                String ingSql = "INSERT INTO ProductIngredient (product_id, item_id, quantity_used) VALUES (?, ?, ?)";
                                 try (PreparedStatement ingStmt = conn.prepareStatement(ingSql)) {
-                                    for (Integer invId : finalIngredients) {
+                                    for (int i = 0; i < finalIngredients.size(); i++) {
                                         ingStmt.setInt(1, id);
-                                        ingStmt.setInt(2, invId);
+                                        ingStmt.setInt(2, finalIngredients.get(i));
+                                        ingStmt.setDouble(3, finalQuantities.get(i));
                                         ingStmt.addBatch();
                                     }
                                     ingStmt.executeBatch();
@@ -694,6 +728,7 @@ public class MenuEditController {
 
         java.util.Map<String, Integer> inventoryMap = new java.util.HashMap<>();
         List<ToggleButton> ingredientButtons = new ArrayList<>();
+        java.util.Map<String, TextField> ingredientQtyFields = new java.util.HashMap<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn
@@ -706,11 +741,20 @@ public class MenuEditController {
                 // Only add to base ingredients if it's NOT a tea base
                 if (!itemName.toLowerCase().contains("tea leaves")) {
                     ToggleButton btn = new ToggleButton(itemName);
-                    btn.setPrefSize(100, 100);
+                    btn.setPrefSize(100, 75);
                     btn.setWrapText(true);
                     btn.setStyle(
                             "-fx-background-color: white; -fx-border-color: #ccc; -fx-background-radius: 5; -fx-border-radius: 5;");
+
+                    TextField qtyField = new TextField("1");
+                    qtyField.setPrefWidth(100);
+                    qtyField.setPromptText("qty");
+                    qtyField.setDisable(true);
+                    qtyField.setStyle("-fx-font-size: 11; -fx-padding: 2 5 2 5;");
+                    ingredientQtyFields.put(itemName, qtyField);
+
                     btn.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                        qtyField.setDisable(!newVal);
                         if (newVal) {
                             btn.setStyle(
                                     "-fx-background-color: #e0f7fa; -fx-border-color: #00bcd4; -fx-background-radius: 5; -fx-border-radius: 5;");
@@ -720,7 +764,7 @@ public class MenuEditController {
                         }
                     });
                     ingredientButtons.add(btn);
-                    ingredientsPane.getChildren().add(btn);
+                    ingredientsPane.getChildren().add(new VBox(2, btn, qtyField));
                 }
             }
         } catch (SQLException e) {
@@ -758,6 +802,13 @@ public class MenuEditController {
             }
         }
 
+        Label teaQtyLbl = new Label("Tea Qty:");
+        teaQtyLbl.setStyle("-fx-font-weight: bold;");
+        TextField teaQtyField = new TextField("5");
+        teaQtyField.setPrefWidth(80);
+        teaQtyField.setStyle(
+                "-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #ccc; -fx-padding: 4 8 4 8;");
+
         Label activeLbl = new Label("Active Item:");
         activeLbl.setStyle("-fx-font-weight: bold;");
         CheckBox activeCheck = new CheckBox();
@@ -766,8 +817,10 @@ public class MenuEditController {
 
         bottomGrid.add(teaBaseLbl, 0, 0);
         bottomGrid.add(teaBaseBox, 1, 0);
-        bottomGrid.add(activeLbl, 2, 0);
-        bottomGrid.add(activeCheck, 3, 0);
+        bottomGrid.add(teaQtyLbl, 2, 0);
+        bottomGrid.add(teaQtyField, 3, 0);
+        bottomGrid.add(activeLbl, 0, 1);
+        bottomGrid.add(activeCheck, 1, 1);
 
         content.getChildren().addAll(ingredientsHeader, ingredientsPane, invHeader, bottomGrid);
 
@@ -804,24 +857,35 @@ public class MenuEditController {
 
                             String selectedTea = teaBaseBox.getValue();
                             List<Integer> finalIngredients = new ArrayList<>();
+                            List<Double> finalQuantities = new ArrayList<>();
                             if (selectedTea != null && inventoryMap.containsKey(selectedTea)) {
                                 finalIngredients.add(inventoryMap.get(selectedTea));
+                                double teaQty = 5.0;
+                                try { teaQty = Double.parseDouble(teaQtyField.getText().trim()); } catch (NumberFormatException ignored) {}
+                                finalQuantities.add(teaQty);
                             }
                             for (ToggleButton btn : ingredientButtons) {
                                 if (btn.isSelected()) {
                                     Integer id = inventoryMap.get(btn.getText());
                                     if (id != null && !finalIngredients.contains(id)) {
                                         finalIngredients.add(id);
+                                        double qty = 1.0;
+                                        TextField qf = ingredientQtyFields.get(btn.getText());
+                                        if (qf != null) {
+                                            try { qty = Double.parseDouble(qf.getText().trim()); } catch (NumberFormatException ignored) {}
+                                        }
+                                        finalQuantities.add(qty);
                                     }
                                 }
                             }
 
                             if (!finalIngredients.isEmpty()) {
-                                String ingredientSql = "INSERT INTO productingredient (product_id, item_id, quantity_used) VALUES (?, ?, 1.0)";
+                                String ingredientSql = "INSERT INTO productingredient (product_id, item_id, quantity_used) VALUES (?, ?, ?)";
                                 try (PreparedStatement ingStmt = conn.prepareStatement(ingredientSql)) {
-                                    for (Integer invId : finalIngredients) {
+                                    for (int i = 0; i < finalIngredients.size(); i++) {
                                         ingStmt.setInt(1, newProductId);
-                                        ingStmt.setInt(2, invId);
+                                        ingStmt.setInt(2, finalIngredients.get(i));
+                                        ingStmt.setDouble(3, finalQuantities.get(i));
                                         ingStmt.addBatch();
                                     }
                                     ingStmt.executeBatch();

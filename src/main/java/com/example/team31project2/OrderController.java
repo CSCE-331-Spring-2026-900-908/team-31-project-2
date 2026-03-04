@@ -448,15 +448,36 @@ public class OrderController {
 
     @FXML
     void checkout(ActionEvent event) {
-        detailIDs = new ArrayList<Integer>();
-        // try (Connection conn = DBConnection.getConnection()) {
+        // Decrement base ingredient inventory based on productingredient quantities
+        String baseDecrSql = "UPDATE inventory SET quantity = quantity - subq.total_used " +
+                "FROM (SELECT pi.item_id, SUM(pi.quantity_used) AS total_used " +
+                "FROM orderdetail od JOIN productingredient pi ON od.product_id = pi.product_id " +
+                "WHERE od.order_id = ? GROUP BY pi.item_id) subq " +
+                "WHERE inventory.item_id = subq.item_id";
 
-        //     }
-        // for(int detailID : detailIDs){
-        //     String query = "UPDATE inventory SET quantity = quantity - 1 WHERE id = ?"; 
+        // Decrement modifier ingredient inventory via modifieroption.inventory_item_id
+        String modDecrSql = "UPDATE inventory SET quantity = quantity - subq.total_used " +
+                "FROM (SELECT mo.inventory_item_id AS item_id, COUNT(*) AS total_used " +
+                "FROM ordermodifier om JOIN orderdetail od ON om.order_detail_id = od.id " +
+                "JOIN modifieroption mo ON om.modifier_option_id = mo.option_id " +
+                "WHERE od.order_id = ? AND mo.inventory_item_id IS NOT NULL " +
+                "GROUP BY mo.inventory_item_id) subq " +
+                "WHERE inventory.item_id = subq.item_id";
 
-        //     PreparedStatement ps = 
-        // }
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(baseDecrSql)) {
+                ps.setInt(1, orderID);
+                ps.executeUpdate();
+            }
+            try (PreparedStatement ps = conn.prepareStatement(modDecrSql)) {
+                ps.setInt(1, orderID);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        detailIDs = new ArrayList<>();
         initialize();
         updateOrderInfo();
     }
