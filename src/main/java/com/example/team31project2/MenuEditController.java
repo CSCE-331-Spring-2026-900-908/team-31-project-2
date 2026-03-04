@@ -32,6 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller for the Menu Edit view (Manager Only).
+ * Allows for adding, editing, and removing menu items (products),
+ * managing their prices, categories, active status,
+ * and associated modifiers/ingredients.
+ */
 public class MenuEditController {
 
     @FXML
@@ -41,12 +47,19 @@ public class MenuEditController {
 
     private final List<HBox> allRows = new ArrayList<>();
 
+    /**
+     * Initializes the controller class.
+     * Loads menu items and sets up search filtering.
+     */
     @FXML
     public void initialize() {
         loadMenuItems();
         searchField.textProperty().addListener((obs, oldVal, newVal) -> filterRows(newVal));
     }
 
+    /**
+     * Loads all menu items from the database and populates the view.
+     */
     private void loadMenuItems() {
         String query = "SELECT product_id, name, base_price, category_name FROM product ORDER BY name";
 
@@ -72,6 +85,15 @@ public class MenuEditController {
         }
     }
 
+    /**
+     * Builds a UI row for a single menu item.
+     *
+     * @param id       The product ID.
+     * @param name     The product name.
+     * @param price    The product base price.
+     * @param category The product category.
+     * @return An HBox containing the row UI elements.
+     */
     private HBox buildRow(int id, String name, double price, String category) {
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
@@ -111,13 +133,13 @@ public class MenuEditController {
                         "-fx-padding: 4 9 4 9;" +
                         "-fx-font-size: 13;" +
                         "-fx-text-fill: #cc3333;");
-        removeBtn.setOnAction(e -> handleRemoveMenuItem(id, name, row));
+                        removeBtn.setOnAction(e -> handleRemoveMenuItem(id, name, row));                        
 
-        HBox actions = new HBox(8, editBtn, removeBtn);
-        actions.setAlignment(Pos.CENTER_LEFT);
-
-        row.getChildren().addAll(nameLabel, categoryLabel, priceLabel, actions);
-        return row;
+                        HBox actions = new HBox(8, editBtn, removeBtn);
+                        actions.setAlignment(Pos.CENTER_LEFT);
+                        
+                        row.getChildren().addAll(nameLabel, categoryLabel, priceLabel, actions);
+                        return row;
     }
 
     private void filterRows(String query) {
@@ -133,6 +155,15 @@ public class MenuEditController {
         }
     }
 
+    /**
+     * Handles the action to edit an existing menu item.
+     * Opens a dialog with pre-filled data to update product details.
+     *
+     * @param id              The product ID.
+     * @param currentName     The current name of the product.
+     * @param currentPrice    The current price of the product.
+     * @param currentCategory The current category of the product.
+     */
     private void handleEditMenuItem(int id, String currentName, double currentPrice, String currentCategory) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Menu Item");
@@ -520,6 +551,14 @@ public class MenuEditController {
         }
     }
 
+    /**
+     * Handles the action to remove a menu item.
+     * Prompts for confirmation before deletion.
+     *
+     * @param id   The product ID to remove.
+     * @param name The name of the product.
+     * @param row  The UI row to remove from the list upon success.
+     */
     private void handleRemoveMenuItem(int id, String name, HBox row) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Remove Menu Item");
@@ -555,6 +594,12 @@ public class MenuEditController {
         }
     }
 
+    /**
+     * Handles the action to add a new menu item.
+     * Opens a dialog to enter product details, modifiers, and ingredients.
+     *
+     * @param event The action event triggered by the add button.
+     */
     @FXML
     void handleAddMenuItem(ActionEvent event) {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -861,32 +906,63 @@ public class MenuEditController {
 
     // Navigation
 
+    /**
+     * Handles the sign-out action.
+     * Clears the user session and navigates to the login view.
+     *
+     * @param event The action event.
+     */
     @FXML
     void handleSignOut(ActionEvent event) {
         UserSession.clear();
         navigateTo("login-view.fxml");
     }
 
+    /**
+     * Navigates to the Ordering view.
+     *
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateOrdering(ActionEvent event) {
         navigateTo("ordering-view.fxml");
     }
 
+    /**
+     * Navigates to the Employees view.
+     *
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateEmployees(ActionEvent event) {
         navigateTo("employee-list-view.fxml");
     }
 
+    /**
+     * Navigates to the Inventory view.
+     *
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateInventory(ActionEvent event) {
         navigateTo("inventory-view.fxml");
     }
 
+    /**
+     * Navigates to the Reports view.
+     *
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateReports(ActionEvent event) {
         navigateTo("reports-view.fxml");
     }
 
+    /**
+     * Navigates to a specified FXML view.
+     *
+     * @param fxmlFile The path to the FXML file.
+     */
     private void navigateTo(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
@@ -897,6 +973,13 @@ public class MenuEditController {
         }
     }
 
+    /**
+     * Switches the current scene to the new root.
+     * Handles scene sizing based on the view type.
+     *
+     * @param root     The root node of the new scene.
+     * @param fxmlFile The FXML filename used to determine scene dimensions.
+     */
     private void switchScene(Parent root, String fxmlFile) {
         Stage stage = (Stage) menuItemsList.getScene().getWindow();
         double width = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_WIDTH : SceneConfig.APP_WIDTH;
