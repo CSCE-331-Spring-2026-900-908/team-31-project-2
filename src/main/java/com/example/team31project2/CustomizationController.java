@@ -40,6 +40,12 @@ public class CustomizationController {
             this.price = price;
         }
 
+        /**
+         * @author Noah Higgins
+         * @param o the Object/Modifier to be compared
+         * @return whether or not the two Modifiers have the same id
+         * @throws none
+         */
         @Override
         public boolean equals(Object o) {
             if (o == this) {
@@ -86,6 +92,13 @@ public class CustomizationController {
     private Scene parentScene;
     private OrderController parentController;
 
+    /**
+     * @author Noah Higgins
+     * @param scene the scene of the order controller, controller the reference to
+     * the parent order controller, detailID the ID of the item to be customized
+     * @return void
+     * @throws none
+     */
     public void setParent(Scene scene, OrderController controller, int detailID) {
         parentScene = scene;
         parentController = controller;
@@ -93,10 +106,22 @@ public class CustomizationController {
         setModifiers();
     }
 
+    /**
+     * @author Noah Higgins
+     * @param none
+     * @return void
+     * @throws none
+     */
     @FXML
     public void initialize() {
     }
     
+    /**
+     * @author Noah Higgins
+     * @param none
+     * @return void
+     * @throws none
+     */
     public void setModifiers() {
         modifiers = new ArrayList<Modifier>();
 
@@ -183,6 +208,12 @@ public class CustomizationController {
         }
     }
 
+    /**
+     * @author Noah Higgins
+     * @param event the ToggleButton being pressed, with text that is the name of the topping to be toggled
+     * @return void
+     * @throws none
+     */
     @FXML
     void toggleModifier(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
@@ -218,6 +249,12 @@ public class CustomizationController {
         // }
     }
 
+    /**
+     * @author Noah Higgins
+     * @param event the ToggleButton being pressed, with text that is the name of the size being selected
+     * @return void
+     * @throws none
+     */
     @FXML
     void setSize(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
@@ -231,6 +268,12 @@ public class CustomizationController {
         }
     }
 
+    /**
+     * @author Noah Higgins
+     * @param event the ToggleButton being pressed, with text that is the name of the milk type being selected
+     * @return void
+     * @throws none
+     */
     @FXML
     void setMilk(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
@@ -269,11 +312,23 @@ public class CustomizationController {
         //     e.printStackTrace();
         // }
 
+    /**
+     * @author Noah Higgins
+     * @param event the Button being pressed
+     * @return void
+     * @throws none
+     */
     @FXML
     void cancel(ActionEvent event) {
         exit();
     }
 
+    /**
+     * @author Noah Higgins
+     * @param event the Button being pressed
+     * @return void
+     * @throws none
+     */
     @FXML
     void save(ActionEvent event) {
         String query = "DELETE FROM ordermodifier WHERE order_detail_id = ?;";
@@ -340,6 +395,12 @@ public class CustomizationController {
         exit();
     }
 
+    /**
+     * @author Noah Higgins
+     * @param none
+     * @return void
+     * @throws none
+     */
     private void exit() {
         parentController.updateOrderInfo();
         Stage stage = (Stage) notes.getScene().getWindow();
