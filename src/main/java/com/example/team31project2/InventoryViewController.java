@@ -33,6 +33,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Controller for the inventory management view.
+ *
+ * @author Team-31
+ */
 public class InventoryViewController {
 
     @FXML private MenuBar menuBar;
@@ -42,11 +47,17 @@ public class InventoryViewController {
     private final List<HBox> allRows = new ArrayList<>();
     private final List<InventoryItem> allItems = new ArrayList<>();
 
+    /**
+     * Initializes the inventory view and hooks up the search filter.
+     */
     public void initialize() {
         loadInventoryFromDB();
         searchField.textProperty().addListener((obs, oldVal, newVal) -> filterRows(newVal));
     }
 
+    /**
+     * Loads inventory items from the database and renders them in the view.
+     */
     private void loadInventoryFromDB() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             InventoryDAO dao = new InventoryDAO(conn);
@@ -65,6 +76,12 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Builds a UI row for a single inventory item.
+     *
+     * @param item inventory item to render
+     * @return row node for the item
+     */
     private HBox buildRow(InventoryItem item) {
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
@@ -142,6 +159,9 @@ public class InventoryViewController {
         return row;
     }
 
+    /**
+     * Shows the dialog for adding a new inventory item.
+     */
     @FXML
     private void showAddPopup() {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -197,6 +217,11 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Shows the dialog for editing an existing inventory item.
+     *
+     * @param item inventory item to edit
+     */
     private void handleEditItem(InventoryItem item) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Inventory Item");
@@ -229,6 +254,11 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Confirms and removes an inventory item.
+     *
+     * @param item inventory item to remove
+     */
     private void handleRemoveItem(InventoryItem item) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Remove Item");
@@ -244,6 +274,11 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Filters the displayed rows based on a search query.
+     *
+     * @param query search string used to filter item names
+     */
     private void filterRows(String query) {
         String lower = query == null ? "" : query.toLowerCase();
         inventoryList.getChildren().clear();
@@ -254,6 +289,13 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Creates a styled unit toggle button for the unit selector.
+     *
+     * @param label unit label
+     * @param group toggle group to join
+     * @return configured toggle button
+     */
     private ToggleButton createUnitButton(String label, ToggleGroup group) {
         ToggleButton button = new ToggleButton(label);
         button.setToggleGroup(group);
@@ -287,11 +329,23 @@ public class InventoryViewController {
         return button;
     }
 
+    /**
+     * Gets the currently selected unit text.
+     *
+     * @param group toggle group to read
+     * @return selected unit text, or null if none selected
+     */
     private String getSelectedUnit(ToggleGroup group) {
         if (group.getSelectedToggle() == null) return null;
         return ((ToggleButton) group.getSelectedToggle()).getText();
     }
 
+    /**
+     * Sets the progress bar color based on the fill ratio.
+     *
+     * @param bar progress bar to update
+     * @param ratio fill ratio between 0.0 and 1.0
+     */
     private void setProgressBarColor(ProgressBar bar, double ratio) {
         if (ratio >= 0.81) {
             bar.setStyle("-fx-accent: #2ecc71;");
@@ -304,6 +358,16 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Inserts a new inventory item in the database.
+     *
+     * @param name item name
+     * @param quantity initial quantity
+     * @param exp expiration date, or null if unknown
+     * @param target target quantity
+     * @param unitType unit type string
+     * @return generated item id, or null if insert fails
+     */
     private Integer insertItemInDb(String name, double quantity, java.time.LocalDateTime exp, double target, String unitType) {
         String sql = "INSERT INTO inventory (item_name, quantity, unit_type, expiration_date, target_val) VALUES (?, ?, ?, ?, ?) RETURNING item_id";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -324,6 +388,13 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Updates the quantity for a specific inventory item.
+     *
+     * @param itemId item identifier
+     * @param newCurrent new quantity value
+     * @return true if one row was updated
+     */
     private boolean updateQuantityInDb(int itemId, Double newCurrent) {
         String sql = "UPDATE inventory SET quantity = ? WHERE item_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -337,6 +408,13 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Updates the target quantity for a specific inventory item.
+     *
+     * @param itemId item identifier
+     * @param newTarget new target value
+     * @return true if one row was updated
+     */
     private boolean updateTargetInDb(int itemId, Double newTarget) {
         String sql = "UPDATE inventory SET target_val = ? WHERE item_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -350,6 +428,12 @@ public class InventoryViewController {
         }
     }
 
+    /**
+     * Removes an inventory item from the database.
+     *
+     * @param id item identifier
+     * @return true if one row was deleted
+     */
     private boolean removeFromDB(int id) {
         String sql = "DELETE FROM inventory WHERE item_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -364,18 +448,57 @@ public class InventoryViewController {
 
     // Navigation
 
+    /**
+     * Navigates to the ordering view.
+     *
+     * @param event action event
+     */
     @FXML void handleNavigateOrdering(ActionEvent event)  { navigateTo("ordering-view.fxml"); }
+
+    /**
+     * Navigates to the menu edit view.
+     *
+     * @param event action event
+     */
     @FXML void handleNavigateMenuEdit(ActionEvent event)   { navigateTo("menu-edit-view.fxml"); }
+
+    /**
+     * Navigates to the employee list view.
+     *
+     * @param event action event
+     */
     @FXML void handleNavigateEmployees(ActionEvent event)  { navigateTo("employee-list-view.fxml"); }
+
+    /**
+     * Navigates to the inventory view.
+     *
+     * @param event action event
+     */
     @FXML void handleNavigateInventory(ActionEvent event)  { navigateTo("inventory-view.fxml"); }
+
+    /**
+     * Navigates to the reports view.
+     *
+     * @param event action event
+     */
     @FXML void handleNavigateReports(ActionEvent event)    { navigateTo("reports-view.fxml"); }
 
+    /**
+     * Signs out the current user and returns to the login view.
+     *
+     * @param event action event
+     */
     @FXML
     void handleSignOut(ActionEvent event) {
         UserSession.clear();
         navigateTo("login-view.fxml");
     }
 
+    /**
+     * Loads and displays a new scene based on the provided FXML file.
+     *
+     * @param fxmlFile FXML file name to load
+     */
     private void navigateTo(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));

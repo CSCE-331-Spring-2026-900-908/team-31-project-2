@@ -36,6 +36,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Controller class for the Reports dashboard.
+ * Generates and displays various analytical reports for the business.
+ * Supports visualization through charts and tabular data for business metrics.
+ * 
+ * @author Team 31
+ */
 public class ReportsController {
 
     private Employee currentUser;
@@ -77,6 +84,10 @@ public class ReportsController {
             "Sales Report");
     private String selectedDateRange = "1 Month";
 
+    /**
+     * Initializes the controller class.
+     * Sets up the report selection map and initializes UI components.
+     */
     @FXML
     public void initialize() {
         // Setup the report map
@@ -111,10 +122,21 @@ public class ReportsController {
         }
     }
 
+    /**
+     * Sets the current user for the session.
+     * 
+     * @param user The Employee object representing the current user.
+     */
     public void setUser(Employee user) {
         this.currentUser = user;
     }
 
+    /**
+     * Loads the specified report.
+     * Validates the report name, prepares the SQL query, and executing it.
+     * 
+     * @param reportName The name of the report to load.
+     */
     private void loadReport(String reportName) {
         if (reportName == null || !reportToFileMap.containsKey(reportName))
             return;
@@ -155,10 +177,16 @@ public class ReportsController {
             reportTable.getItems().clear();
             return;
         }
-
+        
         executeAndDisplayReport(sql);
     }
-
+    
+    /**
+     * Reads the content of an SQL file.
+     * 
+     * @param relativePath The relative path to the SQL file.
+     * @return The content of the file as a string.
+     */
     private String readSqlFile(String relativePath) {
         Path path = Paths.get("queries", relativePath);
         try {
@@ -168,7 +196,14 @@ public class ReportsController {
             return null;
         }
     }
-
+    
+    /**
+     * Resolves the SQL query by replacing placeholders with actual values.
+     * 
+     * @param reportName The name of the report.
+     * @param relativePath The path to the SQL file.
+     * @return The resolved SQL query string.
+     */
     private String resolveSql(String reportName, String relativePath) {
         String rawSql = readSqlFile(relativePath);
         if (rawSql == null) {
@@ -190,11 +225,16 @@ public class ReportsController {
             resolvedSql = resolvedSql
                     .replace("{{TIME_BUCKET}}", "day")
                     .replace("{{TIME_LABEL_FORMAT}}", "YYYY-MM-DD");
+            }
+            
+            return resolvedSql;
         }
-
-        return resolvedSql;
-    }
-
+            
+    /**
+     * Gets the selected time interval for the report.
+     * 
+     * @return The interval string (e.g., "7 days", "1 month").
+     */
     private String getSelectedInterval() {
         if ("1 Week".equals(selectedDateRange)) {
             return "7 days";
@@ -204,42 +244,66 @@ public class ReportsController {
         }
         return "1 month";
     }
-
+    
+    /**
+     * Determines the time bucket for revenue reports based on the selected range.
+     * 
+     * @return "month" for yearly reports, "day" otherwise.
+     */
     private String getRevenueTimeBucket() {
         if ("1 Year".equals(selectedDateRange)) {
             return "month";
         }
         return "day";
     }
-
+    
+    /**
+     * Determines the label format for revenue reports.
+     * 
+     * @return The date format string (e.g., "YYYY-MM").
+     */
     private String getRevenueLabelFormat() {
         if ("1 Year".equals(selectedDateRange)) {
             return "YYYY-MM";
         }
         return "YYYY-MM-DD";
     }
-
+    
+    /**
+     * Handles the selection of a date range.
+     * Updates the UI and reloads the current report if applicable.
+     * 
+     * @param range The selected date range.
+     */
     private void handleDateRangeSelect(String range) {
         selectedDateRange = range;
         updateDateRangeButtonStyles();
-
+        
         String selectedReport = reportSelector.getSelectionModel().getSelectedItem();
         if (selectedReport != null && dateRangeReports.contains(selectedReport)) {
             loadReport(selectedReport);
         }
     }
-
+    
+    /**
+     * Updates the visual style of date range buttons to indicate the active selection.
+     */
     private void updateDateRangeButtonStyles() {
         String selectedStyle = "-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #333333; -fx-text-fill: white; "
-                + "-fx-border-color: #333333; -fx-border-radius: 6px; -fx-background-radius: 6px;";
+        + "-fx-border-color: #333333; -fx-border-radius: 6px; -fx-background-radius: 6px;";
         String normalStyle = "-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; "
-                + "-fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;";
-
+        + "-fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;";
+        
         weekRangeButton.setStyle("1 Week".equals(selectedDateRange) ? selectedStyle : normalStyle);
         monthRangeButton.setStyle("1 Month".equals(selectedDateRange) ? selectedStyle : normalStyle);
         yearRangeButton.setStyle("1 Year".equals(selectedDateRange) ? selectedStyle : normalStyle);
     }
-
+    
+    /**
+     * Executes the SQL query and displays the results in the table and chart.
+     * 
+     * @param sql The SQL query to execute.
+     */
     private void executeAndDisplayReport(String sql) {
         reportTable.getColumns().clear();
         reportTable.getItems().clear();
@@ -292,6 +356,14 @@ public class ReportsController {
         }
     }
 
+    /**
+     * Generates a chart visualization from the report data.
+     * Supports BarChart, LineChart, and PieChart depending on the report type.
+     * 
+     * @param xAxisName The label for the X-axis.
+     * @param yAxisName The label for the Y-axis.
+     * @param data The data to visualize.
+     */
     private void generateChartFromData(String xAxisName, String yAxisName,
             ObservableList<ObservableList<String>> data) {
         String currentReport = reportSelector.getSelectionModel().getSelectedItem();
@@ -388,42 +460,65 @@ public class ReportsController {
 
         if (chartNode != null) {
             chartNode.setStyle(
-                    "-fx-background-color: white; -fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 5px;");
-            chartContainer.getChildren().add(chartNode);
-        }
+                "-fx-background-color: white; -fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 5px;");
+                    chartContainer.getChildren().add(chartNode);
+                }
     }
-
+    
+    /**
+     * Navigates to the ordering screen.
+     */
     @FXML
     private void handleNavigateOrdering() {
         navigateTo("ordering-view.fxml");
     }
-
+    
+    /**
+     * Navigates to the menu edit screen.
+     */
     @FXML
     private void handleNavigateMenuEdit() {
         navigateTo("menu-edit-view.fxml");
     }
-
+    
+    /**
+     * Navigates to the employee management screen.
+     */
     @FXML
     private void handleNavigateEmployees() {
         navigateTo("employee-list-view.fxml");
     }
-
+    
+    /**
+     * Navigates to the inventory management screen.
+     */
     @FXML
     private void handleNavigateInventory() {
         navigateTo("inventory-view.fxml");
     }
-
+    
+    /**
+     * Navigates to the reports dashboard (refreshes current view).
+     */
     @FXML
     private void handleNavigateReports() {
         navigateTo("reports-view.fxml");
     }
-
+    
+    /**
+     * Handles sign-out and returns to login screen.
+     */
     @FXML
     private void handleSignOut() {
         UserSession.clear();
         navigateTo("login-view.fxml");
     }
-
+    
+    /**
+     * Helper method to load a new scene.
+     * 
+     * @param fxmlFile The name of the FXML file to load.
+     */
     private void navigateTo(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));

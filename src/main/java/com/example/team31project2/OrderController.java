@@ -36,6 +36,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Controller class for the Order processing screen.
+ * Manages the creation and processing of customer orders.
+ * Handles order item selection, total calculation, and order submission.
+ * 
+ * @author Team 31
+ */
 public class OrderController {
     private Employee currentUser;
 
@@ -122,6 +129,12 @@ public class OrderController {
 
     private List<CachedModifier> defaultModifiersCache = new ArrayList<>();
 
+    /**
+     * Sets the current user for the session.
+     * Updates UI elements based on the user's role.
+     * 
+     * @param user The Employee object representing the current user.
+     */
     public void setUser(Employee user) {
         if (user != null) {
             this.currentUser = user;
@@ -138,6 +151,10 @@ public class OrderController {
         updateHeaderUserLabel();
     }
 
+    /**
+     * Initializes the controller class.
+     * Sets up the menu buttons, loads product data, and initializes a new order in the database.
+     */
     @FXML
     public void initialize() {
         Employee sessionUser = UserSession.getCurrentUser();
@@ -235,7 +252,11 @@ public class OrderController {
         updateRoleVisibility();
         updateHeaderUserLabel();
     }
-
+    
+    /**
+     * Updates the visibility of navigation menus based on user role.
+     * Managers have access to additional navigation options.
+     */
     private void updateRoleVisibility() {
         if (navigateMenu == null) {
             return;
@@ -243,31 +264,39 @@ public class OrderController {
 
         boolean canSeeNavigate = currentUser != null && currentUser.isManager();
         navigateMenu.setVisible(canSeeNavigate);
-
+        
         if (topMenuBar != null) {
             topMenuBar.setVisible(canSeeNavigate);
             topMenuBar.setManaged(canSeeNavigate);
         }
     }
-
+    
+    /**
+     * Updates the header label to display the current user's name and role.
+     */
     private void updateHeaderUserLabel() {
         if (headerUserLabel == null) {
             return;
         }
-
+        
         if (currentUser == null) {
             headerUserLabel.setText("Cashier");
             return;
         }
-
+        
         headerUserLabel.setText(currentUser.getName() + " (" + currentUser.getRole() + ")");
     }
-
+    
+    /**
+     * Toggles the visibility of menu categories based on user selection.
+     * 
+     * @param event The action event from the toggle button.
+     */
     @FXML
     void toggleCategory(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
         String text = source.getText();
-
+        
         if(category.contains(text)) {
             category.remove(text);
         } else {
@@ -282,6 +311,12 @@ public class OrderController {
         // }
     }
 
+    /**
+     * Adds a drink to the current order.
+     * Inserts the order detail into the database and opens the customization view.
+     * 
+     * @param event The action event from the menu item button.
+     */
     @FXML
     void addDrink(ActionEvent event) {
         Button source = (Button) event.getSource();
@@ -321,59 +356,94 @@ public class OrderController {
             try (Connection conn = DatabaseConnection.getConnection();
                     PreparedStatement pstmt = conn.prepareStatement(modQuery)) {
 
-                for (CachedModifier mod : defaultModifiersCache) {
-                    pstmt.setInt(1, newDetailID);
-                    pstmt.setInt(2, mod.optionId);
-                    pstmt.setFloat(3, mod.priceAdjustment);
-                    pstmt.setString(4, mod.name);
-                    pstmt.addBatch();
+                        for (CachedModifier mod : defaultModifiersCache) {
+                            pstmt.setInt(1, newDetailID);
+                            pstmt.setInt(2, mod.optionId);
+                            pstmt.setFloat(3, mod.priceAdjustment);
+                            pstmt.setString(4, mod.name);
+                            pstmt.addBatch();
+                        }
+                        pstmt.executeBatch();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
-                pstmt.executeBatch();
-            } catch (SQLException e) {
-                e.printStackTrace();
+                
+                updateOrderInfo();
+                
+                try {
+                    customize(newDetailID, productID, true);
+                } catch (IOException e) {
+                    System.out.println("Failed to customize");
+                }
             }
-        }
-
-        updateOrderInfo();
-
-        try {
-            customize(newDetailID, productID, true);
-        } catch (IOException e) {
-            System.out.println("Failed to customize");
-        }
-    }
-
+            
+    /**
+     * Filters the menu items based on the search bar input.
+     * 
+     * @param event The key event from the search bar.
+     */
     @FXML
     void search(KeyEvent event) {
         filter();
     }
-
+    
+    /**
+     * Navigates to the menu edit screen.
+     * 
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateMenuEdit(ActionEvent event) {
         navigateTo("menu-edit-view.fxml");
     }
 
+    /**
+     * Navigates to the employee management screen.
+     * 
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateEmployees(ActionEvent event) {
         navigateTo("employee-list-view.fxml");
     }
 
+    /**
+     * Navigates to the inventory management screen.
+     * 
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateInventory(ActionEvent event) {
         navigateTo("inventory-view.fxml");
     }
-
+    
+    /**
+     * Navigates to the reports and trends screen.
+     * 
+     * @param event The action event.
+     */
     @FXML
     void handleNavigateTrends(ActionEvent event) {
         navigateTo("reports-view.fxml");
     }
-
+    
+    /**
+     * Handles the sign-out action, clearing the session and returning to the login screen.
+     * 
+     * @param event The action event.
+     */
     @FXML
     void handleSignOut(ActionEvent event) {
         UserSession.clear();
         navigateTo("login-view.fxml");
     }
-
+    
+    /**
+     * Helper method to load a new scene.
+     * 
+     * @param fxmlFile The name of the FXML file to load.
+    */
     private void navigateTo(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
@@ -389,7 +459,14 @@ public class OrderController {
             e.printStackTrace();
         }
     }
-
+    
+    /**
+     * Determines the CSS style for a category button based on its selection state.
+     * 
+     * @param category The name of the category.
+     * @param isSelected Whether the category is currently selected.
+     * @return The CSS style string.
+     */
     private String getCategoryStyle(String category, boolean isSelected) {
         String color;
         switch (category) {
@@ -419,16 +496,19 @@ public class OrderController {
                 : "-fx-border-color: #bdbdbd; -fx-border-width: 1;";
         return borderStyle + " -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: " + color + ";";
     }
-
+    
+    /**
+     * Filters the displayed product buttons based on the search criteria.
+     */
     private void filter() {
         String query = "SELECT name, category_name FROM product WHERE name ILIKE ? ORDER BY product_id;";
 
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            pstmt.setString(1, "%" + searchBar.getText() + "%");
-            ResultSet rs = pstmt.executeQuery();
-
+                    pstmt.setString(1, "%" + searchBar.getText() + "%");
+                    ResultSet rs = pstmt.executeQuery();
+                    
             int i = 0;
             while (rs.next() && i < 30) {
                 if (category.size() == 0 || category.contains(rs.getString("category_name"))) {
@@ -446,6 +526,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Completes the order checkout process.
+     * Resets the order state for the next customer.
+     * 
+     * @param event The action event.
+     */
     @FXML
     void checkout(ActionEvent event) {
         // Decrement base ingredient inventory based on productingredient quantities
@@ -481,7 +567,11 @@ public class OrderController {
         initialize();
         updateOrderInfo();
     }
-
+    
+    /**
+     * Updates the order summary display.
+     * Recalculates totals and refreshes the list of items in the current order.
+     */
     public void updateOrderInfo() {
         orderInfoList.getChildren().clear();
         float subtotal = 0;
@@ -583,8 +673,13 @@ public class OrderController {
             e.printStackTrace();
         }
     }
-
-    public void deleteItem(int detailID) {
+    
+    /**
+     * Removes an item from the current order.
+     * 
+     * @param detailID The ID of the order detail to remove.
+ */
+public void deleteItem(int detailID) {
         String deleteModifiersQuery = "DELETE FROM ordermodifier WHERE order_detail_id = ?;";
         String deleteDetailQuery = "DELETE FROM orderdetail WHERE id = ?;";
 
@@ -595,7 +690,7 @@ public class OrderController {
             // Delete modifiers first (foreign key constraint)
             modPstmt.setInt(1, detailID);
             modPstmt.executeUpdate();
-
+            
             // Delete the main detail row
             detailPstmt.setInt(1, detailID);
             detailPstmt.executeUpdate();
@@ -603,11 +698,16 @@ public class OrderController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
         // Repaint the UI and recalculate the totals
         updateOrderInfo();
     }
-
+    
+    /**
+     * Initiates the customization process for an existing order item.
+     * 
+     * @param event The action event.
+    */
     @FXML
     void customizeItem(ActionEvent event) {
         Button source = (Button) event.getSource();
@@ -623,7 +723,15 @@ public class OrderController {
             System.out.println("Failed to customize");
         }
     }
-
+    
+    /**
+     * Opens the customization view for a product.
+    * 
+    * @param detailID The ID of the order detail to customize.
+    * @param productID The ID of the product.
+    * @param isNew Whether this is a newly added item or an edit of an existing one.
+    * @throws IOException If the FXML file cannot be loaded.
+    */
     private void customize(int detailID, int productID, boolean isNew) throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("customization-view.fxml"));
