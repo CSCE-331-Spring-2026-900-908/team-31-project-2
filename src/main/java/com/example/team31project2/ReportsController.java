@@ -18,8 +18,14 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.application.Platform;
 import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
@@ -34,6 +40,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -70,6 +77,17 @@ public class ReportsController {
 
     @FXML
     private Button yearRangeButton;
+    @FXML
+    private Button runZReportButton;
+
+    @FXML
+    private TabPane viewTabPane;
+    @FXML
+    private VBox dashboardContent;
+    @FXML
+    private VBox tableContent;
+    @FXML
+    private VBox chartContent;
 
     private final Map<String, String> reportToFileMap = new LinkedHashMap<>();
     private final Set<String> dateRangeReports = Set.of(
@@ -107,6 +125,7 @@ public class ReportsController {
         weekRangeButton.setOnAction(event -> handleDateRangeSelect("1 Week"));
         monthRangeButton.setOnAction(event -> handleDateRangeSelect("1 Month"));
         yearRangeButton.setOnAction(event -> handleDateRangeSelect("1 Year"));
+        runZReportButton.setOnAction(event -> handleRunZReport());
         updateDateRangeButtonStyles();
 
         reportSelector.getItems().addAll(reportToFileMap.keySet());
@@ -119,6 +138,32 @@ public class ReportsController {
 
         if (!reportSelector.getItems().isEmpty()) {
             reportSelector.getSelectionModel().selectFirst();
+        }
+
+        viewTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab != null) {
+                handleTabSwitch(newTab.getText());
+            }
+        });
+    }
+
+    private void handleTabSwitch(String tabName) {
+        switch (tabName) {
+            case "Dashboard":
+                dashboardContent.getChildren().setAll(chartContainer, reportTable);
+                chartContainer.setPrefHeight(300.0);
+                VBox.setVgrow(chartContainer, Priority.NEVER);
+                VBox.setVgrow(reportTable, Priority.ALWAYS);
+                break;
+            case "Table Only":
+                tableContent.getChildren().setAll(reportTable);
+                VBox.setVgrow(reportTable, Priority.ALWAYS);
+                break;
+            case "Chart Only":
+                chartContent.getChildren().setAll(chartContainer);
+                chartContainer.setPrefHeight(VBox.USE_COMPUTED_SIZE);
+                VBox.setVgrow(chartContainer, Priority.ALWAYS);
+                break;
         }
     }
 
@@ -141,24 +186,17 @@ public class ReportsController {
         if (reportName == null || !reportToFileMap.containsKey(reportName))
             return;
 
-        if ("Z-Report".equals(reportName)) {
-            try (Connection conn = DatabaseConnection.getConnection();
-                    Statement stmt = conn.createStatement();
-                    ResultSet checkRs = stmt.executeQuery(
-                            "SELECT 1 FROM \"order\" WHERE z_report_run = TRUE AND DATE(created_at) = CURRENT_DATE LIMIT 1")) {
-                if (checkRs.next()) {
-                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                            javafx.scene.control.Alert.AlertType.WARNING, "Z-Report has already been generated today.");
-                    alert.showAndWait();
-                    reportTitle.setText(reportName);
-                    reportTable.getColumns().clear();
-                    reportTable.getItems().clear();
-                    chartContainer.getChildren().clear();
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if ("Inventory Status".equals(reportName)) {
+            Platform.runLater(() -> viewTabPane.getSelectionModel().select(1));
+        } else if ("Inventory Status".equals(reportTitle.getText())) {
+            Platform.runLater(() -> viewTabPane.getSelectionModel().select(0));
+        }
+
+        // Show/Hide "Run Z-Report" button
+        boolean isZReport = "Z-Report".equals(reportName);
+        if (runZReportButton != null) {
+            runZReportButton.setVisible(isZReport);
+            runZReportButton.setManaged(isZReport);
         }
 
         reportTitle.setText(reportName);
@@ -167,8 +205,47 @@ public class ReportsController {
         monthRangeButton.setDisable(!shouldEnableDateRange);
         yearRangeButton.setDisable(!shouldEnableDateRange);
 
+
         String relativePath = reportToFileMap.get(reportName);
-        String sql = resolveSql(reportName, relativePath);
+        if (relativePath == null)
+            return;
+
+        String sql = null;
+        boolean alreadyRun = false;
+
+        if (isZReport) {
+            try (Connection conn = DatabaseConnection.getConnection();
+                    Statement stmt = conn.createStatement();
+                    ResultSet checkRs = stmt.executeQuery(
+                            "SELECT 1 FROM \"order\" WHERE z_report_run = TRUE AND DATE(created_at) = CURRENT_DATE LIMIT 1")) {
+                if (checkRs.next()) {
+                    alreadyRun = true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (isZReport && alreadyRun) {
+            // Return the Completed Report for the day
+            String rawSql = readSqlFile(relativePath);
+            if (rawSql != null) {
+                // Modified query to show today's closed Z-Report
+                sql = rawSql.replace("o.z_report_run = FALSE",
+                        "o.z_report_run = TRUE AND DATE(o.created_at) = CURRENT_DATE");
+            }
+            if (runZReportButton != null) {
+                runZReportButton.setDisable(true);
+                runZReportButton.setText("Closed Today");
+            }
+        } else {
+            // Normal behavior for pending Z-Report or any other report
+            sql = resolveSql(reportName, relativePath);
+            if (isZReport && runZReportButton != null) {
+                runZReportButton.setDisable(false);
+                runZReportButton.setText("Run Z-Report");
+            }
+        }
 
         if (sql == null || sql.trim().isEmpty()) {
             System.err.println("Could not load SQL for report: " + reportName);
@@ -177,7 +254,7 @@ public class ReportsController {
             reportTable.getItems().clear();
             return;
         }
-        
+
         executeAndDisplayReport(sql);
     }
     
@@ -341,18 +418,51 @@ public class ReportsController {
             // metadata rules
             generateChartFromData(metaData.getColumnName(1), metaData.getColumnName(2), data);
 
-            if ("Z-Report".equals(reportSelector.getSelectionModel().getSelectedItem()) && !data.isEmpty()) {
-                try (Statement updateStmt = conn.createStatement()) {
-                    updateStmt.executeUpdate("UPDATE \"order\" SET z_report_run = TRUE WHERE z_report_run = FALSE;");
-                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                            javafx.scene.control.Alert.AlertType.INFORMATION,
-                            "Z-Report generated successfully and the totals have been reset.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles the execution of the Z-Report logic: validation, confirmation, and update.
+     */
+    private void handleRunZReport() {
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            // Check if already run today
+            try (ResultSet checkRs = stmt.executeQuery(
+                    "SELECT 1 FROM \"order\" WHERE z_report_run = TRUE AND DATE(created_at) = CURRENT_DATE LIMIT 1")) {
+                if (checkRs.next()) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "Z-Report has already been generated today.");
                     alert.showAndWait();
+                    return;
                 }
+            }
+
+            // Confirm Action
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Run Z-Report");
+            confirm.setHeaderText("Close Day and Generate Z-Report?");
+            confirm.setContentText(
+                    "This will generate the daily report and reset sales totals. This action cannot be undone. Continue?");
+
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Execute Update
+                stmt.executeUpdate("UPDATE \"order\" SET z_report_run = TRUE WHERE z_report_run = FALSE;");
+                
+                Alert success = new Alert(Alert.AlertType.INFORMATION,
+                        "Z-Report generated successfully and the totals have been reset.");
+                success.showAndWait();
+
+                // Refresh the view (will now be empty as totals are reset)
+                loadReport("Z-Report");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Failed to run Z-Report: " + e.getMessage()).showAndWait();
         }
     }
 
@@ -530,12 +640,29 @@ public class ReportsController {
             }
 
             Stage stage = (Stage) reportTable.getScene().getWindow();
-            double width = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_WIDTH : SceneConfig.APP_WIDTH;
-            double height = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_HEIGHT : SceneConfig.APP_HEIGHT;
-            Scene scene = new Scene(root, width, height);
-            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
-            stage.setScene(scene);
-            stage.centerOnScreen();
+            
+            if (SceneConfig.isLoginView(fxmlFile)) {
+                Scene scene = new Scene(root, SceneConfig.LOGIN_WIDTH, SceneConfig.LOGIN_HEIGHT);
+                scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+                stage.setScene(scene);
+                stage.centerOnScreen();
+                stage.setFullScreen(false);
+                stage.setMaximized(false);
+            } else {
+                boolean wasMaximized = stage.isMaximized();
+                boolean wasFullScreen = stage.isFullScreen();
+                double width = stage.getScene().getWidth();
+                double height = stage.getScene().getHeight();
+
+                Scene scene = new Scene(root, width, height);
+                scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+                
+                stage.setScene(scene);
+                
+                // Restore state
+                stage.setMaximized(wasMaximized);
+                stage.setFullScreen(wasFullScreen);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

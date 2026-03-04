@@ -504,12 +504,29 @@ public class InventoryViewController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
             Stage stage = (Stage) menuBar.getScene().getWindow();
-            double width  = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_WIDTH  : SceneConfig.APP_WIDTH;
-            double height = SceneConfig.isLoginView(fxmlFile) ? SceneConfig.LOGIN_HEIGHT : SceneConfig.APP_HEIGHT;
-            Scene scene = new Scene(root, width, height);
-            scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
-            stage.setScene(scene);
-            stage.centerOnScreen();
+
+            if (SceneConfig.isLoginView(fxmlFile)) {
+                Scene scene = new Scene(root, SceneConfig.LOGIN_WIDTH, SceneConfig.LOGIN_HEIGHT);
+                scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+                stage.setScene(scene);
+                stage.centerOnScreen();
+                stage.setFullScreen(false);
+                stage.setMaximized(false);
+            } else {
+                boolean wasMaximized = stage.isMaximized();
+                boolean wasFullScreen = stage.isFullScreen();
+                double width = stage.getScene().getWidth();
+                double height = stage.getScene().getHeight();
+
+                Scene scene = new Scene(root, width, height);
+                scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+                
+                stage.setScene(scene);
+                
+                // Restore state
+                stage.setMaximized(wasMaximized);
+                stage.setFullScreen(wasFullScreen);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

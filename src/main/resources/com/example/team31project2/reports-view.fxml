@@ -7,6 +7,8 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -53,11 +55,35 @@
                         <Button fx:id="weekRangeButton" mnemonicParsing="false" prefHeight="42.0" prefWidth="120.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; -fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;" text="1 Week" />
                         <Button fx:id="monthRangeButton" mnemonicParsing="false" prefHeight="42.0" prefWidth="120.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; -fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;" text="1 Month" />
                         <Button fx:id="yearRangeButton" mnemonicParsing="false" prefHeight="42.0" prefWidth="120.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: white; -fx-border-color: #bbbbbb; -fx-border-radius: 6px; -fx-background-radius: 6px;" text="1 Year" />
+                        <Button fx:id="runZReportButton" mnemonicParsing="false" prefHeight="42.0" prefWidth="150.0" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #d9534f; -fx-text-fill: white; -fx-border-color: #d43f3a; -fx-border-radius: 6px; -fx-background-radius: 6px;" text="Run Z-Report" visible="false" managed="false" />
                     </children>
                 </HBox>
                 <Label fx:id="reportTitle" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;" text="No Report Selected" />
-                <VBox fx:id="chartContainer" prefHeight="300.0" />
-                <TableView fx:id="reportTable" style="-fx-background-color: white; -fx-border-color: #e0e0e0;" VBox.vgrow="ALWAYS" />
+
+                <TabPane fx:id="viewTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                    <tabs>
+                        <Tab text="Dashboard">
+                            <content>
+                                <VBox fx:id="dashboardContent" spacing="10.0" style="-fx-padding: 10;">
+                                    <children>
+                                        <VBox fx:id="chartContainer" prefHeight="300.0" />
+                                        <TableView fx:id="reportTable" style="-fx-background-color: white; -fx-border-color: #e0e0e0;" VBox.vgrow="ALWAYS" />
+                                    </children>
+                                </VBox>
+                            </content>
+                        </Tab>
+                        <Tab text="Table Only">
+                            <content>
+                                <VBox fx:id="tableContent" style="-fx-padding: 10;" />
+                            </content>
+                        </Tab>
+                        <Tab text="Chart Only">
+                            <content>
+                                <VBox fx:id="chartContent" style="-fx-padding: 10;" />
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
             </children>
         </VBox>
     </center>

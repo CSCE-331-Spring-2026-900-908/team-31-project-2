@@ -9,6 +9,7 @@ FROM "order" o
 WHERE
     o.z_report_run = FALSE
     AND DATE(o.created_at) = CURRENT_DATE
+    AND o.total_final > 0
 GROUP BY
     "Hour of Day"
 ORDER BY "Hour of Day";
