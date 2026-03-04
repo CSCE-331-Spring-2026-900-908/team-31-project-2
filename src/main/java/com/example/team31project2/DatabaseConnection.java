@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import io.github.cdimascio.dotenv.Dotenv;
 
+/*gets a connection to the sql database */
 public class DatabaseConnection {
 
     private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();

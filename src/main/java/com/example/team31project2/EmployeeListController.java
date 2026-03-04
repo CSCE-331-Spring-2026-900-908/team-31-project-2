@@ -1,3 +1,4 @@
+
 package com.example.team31project2;
 
 import javafx.event.ActionEvent;
@@ -29,6 +30,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+/*  
+        @author team-31  
+*/  
 
 public class EmployeeListController {
 
@@ -36,13 +40,17 @@ public class EmployeeListController {
     @FXML private VBox employeeList;
 
     private final List<HBox> allRows = new ArrayList<>();
-
+    /*  
+        @returns nothing
+    */  
     @FXML
     public void initialize() {
         loadEmployees();
         searchField.textProperty().addListener((obs, oldVal, newVal) -> filterRows(newVal));
     }
-
+    /*  
+        @returns nothing
+    */  
     private void loadEmployees() {
         String query = "SELECT id, name, role, is_active FROM employee ORDER BY name";
 
@@ -68,6 +76,15 @@ public class EmployeeListController {
         }
     }
 
+    
+    /*  
+        @param id of employee 
+        @param name of employee
+        @param role of employee 
+        @param check if actuve
+        @returns type Hbox
+    */  
+     
     private HBox buildRow(int id, String name, String role, boolean isActive) {
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
@@ -137,6 +154,11 @@ public class EmployeeListController {
         return row;
     }
 
+    /* 
+        @param the query to filiter the rows
+        @returns nothing
+    */  
+     
     private void filterRows(String query) {
         String lower = query == null ? "" : query.toLowerCase();
         employeeList.getChildren().clear();
@@ -150,6 +172,12 @@ public class EmployeeListController {
         }
     }
 
+     /* 
+        @param get id for employees 
+        @param String get name
+        @param get get current role 
+        @returns nothing
+    */  
     private void handleEditEmployee(int id, String currentName, String currentRole) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Employee");
@@ -200,6 +228,12 @@ public class EmployeeListController {
         }
     }
 
+    /* 
+        @param get id 
+        @param String get name
+        @param get row of box
+        @returns nothing
+    */  
     private void handleRemoveEmployee(int id, String name, HBox row) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Remove Employee");
@@ -231,6 +265,10 @@ public class EmployeeListController {
         }
     }
 
+    /* 
+        @param get the action
+        @returns nothing
+    */  
     @FXML
     void handleAddEmployee(ActionEvent event) {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -283,6 +321,11 @@ public class EmployeeListController {
         }
     }
 
+    /* 
+        @param get the label in the table 
+        @param get the group  
+        @returns reutrns the toggle
+    */
     private ToggleButton createRoleButton(String label, ToggleGroup group) {
         ToggleButton button = new ToggleButton(label);
         button.setToggleGroup(group);
@@ -316,13 +359,20 @@ public class EmployeeListController {
         return button;
     }
 
+    /* 
+        @param getS the group 
+        @returns reutrns the string of the role
+    */
     private String getSelectedRole(ToggleGroup group) {
         if (group.getSelectedToggle() == null) {
             return null;
         }
         return ((ToggleButton) group.getSelectedToggle()).getText();
     }
-
+    /* 
+        @param gets any expections 
+        @returns reutrns if there is one thrown
+    */
     private boolean isForeignKeyViolation(SQLException exception) {
         SQLException current = exception;
         while (current != null) {
@@ -338,6 +388,10 @@ public class EmployeeListController {
         return false;
     }
 
+    /* 
+        @param get id 
+        @returns reutrns the string of the role
+    */
     private void disableEmployee(int id) {
         String sql = "UPDATE employee SET is_active = FALSE WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -349,6 +403,12 @@ public class EmployeeListController {
         }
     }
 
+    
+    /* 
+        @param get id 
+        @param get name 
+        @returns reutrns the string of the role
+    */
     private void handleEnableEmployee(int id, String name) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Enable Employee");
@@ -371,32 +431,55 @@ public class EmployeeListController {
 
     // Navigation
 
+    /* 
+        @param event
+        @returns reutrns nothing
+    */
     @FXML
     void handleSignOut(ActionEvent event) {
         UserSession.clear();
         navigateTo("login-view.fxml");
     }
+    /* 
+        @param event
+        @returns reutrns nothing
+    */
 
     @FXML
     void handleNavigateOrdering(ActionEvent event) {
         navigateTo("ordering-view.fxml");
     }
-
+    /* 
+        @param event
+        @returns reutrns nothing
+    */
     @FXML
     void handleNavigateMenuEdit(ActionEvent event) {
         navigateTo("menu-edit-view.fxml");
     }
 
+    /* 
+        @param event
+        @returns reutrns nothing
+    */
     @FXML
     void handleNavigateInventory(ActionEvent event) {
         navigateTo("inventory-view.fxml");
     }
 
+    /* 
+        @param event
+        @returns reutrns nothing
+    */
     @FXML
     void handleNavigateReports(ActionEvent event) {
         navigateTo("reports-view.fxml");
     }
 
+    /* 
+        @param get fxml File
+        @returns reutrns nothing
+    */
     private void navigateTo(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
