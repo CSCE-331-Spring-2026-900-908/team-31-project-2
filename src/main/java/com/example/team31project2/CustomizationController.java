@@ -44,7 +44,6 @@ public class CustomizationController {
          * @author Noah Higgins
          * @param o the Object/Modifier to be compared
          * @return whether or not the two Modifiers have the same id
-         * @throws none
          */
         @Override
         public boolean equals(Object o) {
@@ -94,10 +93,9 @@ public class CustomizationController {
 
     /**
      * @author Noah Higgins
-     * @param scene the scene of the order controller, controller the reference to
-     * the parent order controller, detailID the ID of the item to be customized
-     * @return void
-     * @throws none
+     * @param scene         the scene of the order controller
+     * @param controller    the reference to the parent order controller
+     * @param detailID      the ID of the item to be customized
      */
     public void setParent(Scene scene, OrderController controller, int detailID) {
         parentScene = scene;
@@ -108,9 +106,6 @@ public class CustomizationController {
 
     /**
      * @author Noah Higgins
-     * @param none
-     * @return void
-     * @throws none
      */
     @FXML
     public void initialize() {
@@ -118,9 +113,6 @@ public class CustomizationController {
     
     /**
      * @author Noah Higgins
-     * @param none
-     * @return void
-     * @throws none
      */
     public void setModifiers() {
         modifiers = new ArrayList<Modifier>();
@@ -211,8 +203,6 @@ public class CustomizationController {
     /**
      * @author Noah Higgins
      * @param event the ToggleButton being pressed, with text that is the name of the topping to be toggled
-     * @return void
-     * @throws none
      */
     @FXML
     void toggleModifier(ActionEvent event) {
@@ -240,20 +230,11 @@ public class CustomizationController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        // String fxid = source.getId();
-        // int id = Integer.valueOf(source.getId().substring(8));
-        // if (modifiers.contains(id)) {
-        //     modifiers.remove(id);
-        // } else {
-        //     modifiers.add(id);
-        // }
     }
 
     /**
      * @author Noah Higgins
      * @param event the ToggleButton being pressed, with text that is the name of the size being selected
-     * @return void
-     * @throws none
      */
     @FXML
     void setSize(ActionEvent event) {
@@ -271,8 +252,6 @@ public class CustomizationController {
     /**
      * @author Noah Higgins
      * @param event the ToggleButton being pressed, with text that is the name of the milk type being selected
-     * @return void
-     * @throws none
      */
     @FXML
     void setMilk(ActionEvent event) {
@@ -290,33 +269,10 @@ public class CustomizationController {
             modifiers.add(new Modifier(24, text, 0.5f));
         }
     }
-        // String query = "SELECT option_id, price_adjustment FROM modifieroption WHERE name = ?";
-
-        // try (Connection conn = DatabaseConnection.getConnection();
-        //      PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-        //     pstmt.setString(1, text);
-        //     ResultSet rs = pstmt.executeQuery();
-            
-        //     if (rs.next()) {
-        //         Modifier modifier = new Modifier(rs.getInt("option_id"), text, rs.getFloat("price_adjustment"));
-        //         if (modifiers.contains(modifier)) {
-        //             System.out.println("Removing " + text + "...");
-        //             modifiers.remove(modifier);
-        //         } else {
-        //             System.out.println("Adding " + text + "...");
-        //             modifiers.add(modifier);
-        //         }
-        //     }
-        // } catch (SQLException e) {
-        //     e.printStackTrace();
-        // }
 
     /**
      * @author Noah Higgins
      * @param event the Button being pressed
-     * @return void
-     * @throws none
      */
     @FXML
     void cancel(ActionEvent event) {
@@ -326,8 +282,6 @@ public class CustomizationController {
     /**
      * @author Noah Higgins
      * @param event the Button being pressed
-     * @return void
-     * @throws none
      */
     @FXML
     void save(ActionEvent event) {
@@ -397,9 +351,6 @@ public class CustomizationController {
 
     /**
      * @author Noah Higgins
-     * @param none
-     * @return void
-     * @throws none
      */
     private void exit() {
         parentController.updateOrderInfo();
@@ -407,9 +358,4 @@ public class CustomizationController {
         stage.setScene(parentScene);
         stage.centerOnScreen();
     }
-    
-    // private void showError(String message) {
-    //     errorLabel.setText(message);
-    //     errorLabel.setVisible(true);
-    // }
 }
