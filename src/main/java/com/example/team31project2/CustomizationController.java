@@ -1,3 +1,6 @@
+/*
+@author Team-31
+*/
 package com.example.team31project2;
 
 import javafx.event.ActionEvent;
@@ -29,6 +32,7 @@ import org.controlsfx.control.action.Action;
 import java.util.ArrayList;
 
 public class CustomizationController {
+   
     static class Modifier {
         public int id;
         public String name;
@@ -60,6 +64,9 @@ public class CustomizationController {
     private TextField quantity;
 
     @FXML
+     /* 
+        @param takes an action 
+    */
     void decreaseQuantity(ActionEvent event) {
         try {
             int currentQty = Integer.parseInt(quantity.getText().trim());
@@ -109,7 +116,7 @@ public class CustomizationController {
     private List<Modifier> modifiers;
     private Scene parentScene;
     private OrderController parentController;
-    //TODO have to subtract inventory
+   
     // A list of valid modifier options for this specific product
     private List<Integer> validModifierIds = new ArrayList<>();
 
