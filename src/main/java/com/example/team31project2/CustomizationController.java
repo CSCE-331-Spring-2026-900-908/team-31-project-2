@@ -109,7 +109,7 @@ public class CustomizationController {
     private List<Modifier> modifiers;
     private Scene parentScene;
     private OrderController parentController;
-
+    //TODO have to subtract inventory
     // A list of valid modifier options for this specific product
     private List<Integer> validModifierIds = new ArrayList<>();
 

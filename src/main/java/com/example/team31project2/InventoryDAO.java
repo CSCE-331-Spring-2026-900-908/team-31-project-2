@@ -5,15 +5,28 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data access object for inventory items.
+ *
+ * @author Team-31
+ */
 public class InventoryDAO{
     private final Connection conn; 
 
+    /**
+     * Creates a DAO with an existing database connection.
+     *
+     * @param Conn database connection to use
+     */
     public InventoryDAO (Connection Conn){
         this.conn = Conn;
     }
 
-    
-
+    /**
+     * Retrieves all inventory items from the database.
+     *
+     * @return list of inventory items ordered by item id
+     */
     public List<InventoryItem> getAllItems(){
 
         String sql = " SELECT item_id, item_name, quantity, expiration_date, target_val\n FROM inventory\n ORDER BY item_id ASC ";

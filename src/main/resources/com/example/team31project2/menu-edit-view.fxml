@@ -35,9 +35,6 @@
                                       onAction="#handleNavigateInventory"/>
                             <MenuItem mnemonicParsing="false" text="Reports"
                                       onAction="#handleNavigateReports"/>
-                            <SeparatorMenuItem/>
-                            <MenuItem mnemonicParsing="false" text="Sign Out"
-                                      onAction="#handleSignOut"/>
                         </items>
                     </Menu>
                 </menus>
