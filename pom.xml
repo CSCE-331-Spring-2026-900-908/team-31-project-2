@@ -102,6 +102,22 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>3.12.0</version>
+
+      <configuration>
+        <!-- Use module path because you have module-info.java -->
+        <useModulePath>true</useModulePath>
+
+        <!-- Tell Javadoc which JavaFX modules to add -->
+        <additionalJOptions>
+          <additionalJOption>--add-modules</additionalJOption>
+          <additionalJOption>javafx.controls,javafx.fxml</additionalJOption>
+        </additionalJOptions>
+      </configuration>
+    </plugin>
     </plugins>
   </build>
 </project>
