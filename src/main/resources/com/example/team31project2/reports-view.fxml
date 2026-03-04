@@ -24,8 +24,6 @@
                                 <MenuItem mnemonicParsing="false" onAction="#handleNavigateMenuEdit" text="Menu" />
                                 <MenuItem mnemonicParsing="false" onAction="#handleNavigateEmployees" text="Employees" />
                                 <MenuItem mnemonicParsing="false" onAction="#handleNavigateInventory" text="Inventory" />
-                                <SeparatorMenuItem />
-                                <MenuItem mnemonicParsing="false" onAction="#handleSignOut" text="Sign Out" />
                             </items>
                         </Menu>
                     </menus>
