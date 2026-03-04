@@ -66,6 +66,7 @@ public class CustomizationController {
     @FXML
      /* 
         @param takes an action 
+        @returns nothing
     */
     void decreaseQuantity(ActionEvent event) {
         try {
@@ -79,6 +80,10 @@ public class CustomizationController {
     }
 
     @FXML
+    /* 
+        @param takes an action 
+        @returns nothing
+    */
     void increaseQuantity(ActionEvent event) {
         try {
             int currentQty = Integer.parseInt(quantity.getText().trim());
@@ -120,6 +125,13 @@ public class CustomizationController {
     // A list of valid modifier options for this specific product
     private List<Integer> validModifierIds = new ArrayList<>();
 
+        /* 
+        @param scene: takes the current scene 
+        @param controller: takes the controller of that sence 
+        @param detailID: gets the ID of that order detial like a modifer 
+        @param prodID: gets the product id 
+        @returns nothing
+        */  
     public void setParent(Scene scene, OrderController controller, int detailID, int prodID, boolean isNewItem) {
         parentScene = scene;
         parentController = controller;
@@ -135,6 +147,10 @@ public class CustomizationController {
 
     private static List<Modifier> cachedToppings = null;
 
+    
+        /* 
+        @returns nothing
+        */  
     private void loadToppingsCache() {
         if (cachedToppings != null)
             return;
@@ -164,6 +180,9 @@ public class CustomizationController {
     };
     private static final float[] SWEET_PRICES = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
+    /* 
+        @returns nothing
+    */  
     public void setModifiers() {
         modifiers = new ArrayList<Modifier>();
         validModifierIds.clear();
@@ -291,6 +310,10 @@ public class CustomizationController {
         }
     }
 
+    /*  
+        @param docuemnts events 
+        @returns nothing
+    */  
     @FXML
     void toggleModifier(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
@@ -309,6 +332,10 @@ public class CustomizationController {
     }
 
     @FXML
+    /*  
+        @param gets events 
+        @returns nothing
+    */  
     void setSize(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
         String text = source.getText();
@@ -322,6 +349,10 @@ public class CustomizationController {
     }
 
     @FXML
+    /*  
+        @param gets events 
+        @returns nothing
+    */  
     void setMilk(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
         String text = source.getText();
@@ -360,6 +391,10 @@ public class CustomizationController {
     // }
 
     @FXML
+    /*  
+        @param gets events 
+        @returns nothing
+    */  
     void cancel(ActionEvent event) {
         if (isNew) {
             // Clean up the newly-created order detail since the user cancelled
@@ -369,6 +404,10 @@ public class CustomizationController {
     }
 
     @FXML
+    /*  
+        @param gets events 
+        @returns nothing
+    */  
     void save(ActionEvent event) {
         String query = "DELETE FROM ordermodifier WHERE order_detail_id = ?;";
 
@@ -516,6 +555,9 @@ public class CustomizationController {
         exit();
     }
 
+    /*  
+        @returns nothing
+    */  
     private void exit() {
         parentController.updateOrderInfo();
         Stage stage = (Stage) notes.getScene().getWindow();
