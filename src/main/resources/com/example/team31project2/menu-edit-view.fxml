@@ -35,7 +35,6 @@
                                       onAction="#handleNavigateInventory"/>
                             <MenuItem mnemonicParsing="false" text="Reports"
                                       onAction="#handleNavigateReports"/>
-                            <SeparatorMenuItem/>
                         </items>
                     </Menu>
                 </menus>
