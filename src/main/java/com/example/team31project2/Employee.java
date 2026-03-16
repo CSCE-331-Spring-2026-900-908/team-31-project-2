@@ -1,5 +1,10 @@
 package com.example.team31project2;
 
+/**
+ * Represents an employee with an ID, name, role, and hashed PIN.
+ *
+ * @author Team-31
+ */
 public class Employee {
     private int id;
     private String name;

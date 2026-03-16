@@ -5,7 +5,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import io.github.cdimascio.dotenv.Dotenv;
 
-/*gets a connection to the sql database */
+/**
+ * Provides a JDBC connection to the PostgreSQL database.
+ * Credentials are loaded from environment variables via a {@code .env} file
+ * (DB_URL, DB_USER, DB_PASSWORD), with sensible defaults for local development.
+ */
 public class DatabaseConnection {
 
     private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();

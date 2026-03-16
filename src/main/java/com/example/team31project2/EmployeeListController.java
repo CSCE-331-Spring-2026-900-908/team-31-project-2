@@ -30,10 +30,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-/*  
-        @author team-31  
-*/  
-
+/**
+ * Controller for the employee list view.
+ * Allows managers to add, edit, enable, and remove employees.
+ *
+ * @author Team-31
+ */
 public class EmployeeListController {
 
     @FXML private TextField searchField;

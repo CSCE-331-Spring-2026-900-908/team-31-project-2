@@ -1,6 +1,3 @@
-/*
-@author Team-31
-*/
 package com.example.team31project2;
 
 import javafx.event.ActionEvent;
@@ -31,6 +28,14 @@ import org.controlsfx.control.action.Action;
 
 import java.util.ArrayList;
 
+/**
+ * Controller for the drink customization screen.
+ * Manages modifiers (toppings, milk type, size, ice level, sweetness),
+ * quantity, and notes for a given order detail. Persists selections
+ * to the database on save and cleans up on cancel.
+ *
+ * @author Team-31
+ */
 public class CustomizationController {
    
     static class Modifier {
