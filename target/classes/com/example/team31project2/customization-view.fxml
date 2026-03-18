@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" spacing="5.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.team31project2.CustomizationController">
+   <padding>
+      <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+   </padding>
+   <children>
+      <HBox alignment="CENTER" spacing="20.0">
+         <children>
+            <Label text="Quantity:">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#decreaseQuantity" prefHeight="40.0" prefWidth="40.0" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: #ffcdd2; -fx-background-radius: 20;" text="-" />
+            <TextField fx:id="quantity" alignment="CENTER" prefHeight="40.0" prefWidth="60.0" text="1">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </TextField>
+            <Button mnemonicParsing="false" onAction="#increaseQuantity" prefHeight="40.0" prefWidth="40.0" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-background-color: #c8e6c9; -fx-background-radius: 20;" text="+" />
+         </children>
+      </HBox>
+      <Label text="Add-ons">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <FlowPane fx:id="addOnsTable" alignment="CENTER" hgap="10.0" prefWidth="984.0" prefWrapLength="984.0" vgap="5.0" />
+      <HBox alignment="CENTER" prefWidth="1024.0" spacing="10.0">
+         <children>
+            <VBox alignment="CENTER" prefWidth="450.0" spacing="5.0">
+               <children>
+                  <Label text="Ice">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="iceLevel" blockIncrement="1.0" majorTickUnit="1.0" max="18.0" min="15.0" minorTickCount="0" prefHeight="33.0" prefWidth="450.0" showTickMarks="true" snapToTicks="true" value="17.0" />
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="81.0" text="No Ice" textAlignment="CENTER" />
+                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="195.0" text="Less Ice" textAlignment="CENTER" />
+                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="138.0" text="Normal Ice" textAlignment="CENTER" />
+                        <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="112.0" text="Extra Ice" textAlignment="CENTER" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefWidth="450.0" spacing="5.0">
+               <children>
+                  <Label text="Sweetness">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="sweetnessLevel" blockIncrement="25.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
+                  <HBox alignment="CENTER" prefHeight="5.0" prefWidth="450.0">
+                     <!-- Empty box to align bottoms with Ice labels -->
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <Label text="Milk Type">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+         <children>
+            <ToggleButton fx:id="wholeMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 10;" text="Whole Milk" textAlignment="CENTER">
+               <font>
+                  <Font size="20.0" />
+               </font>
+               <toggleGroup>
+                  <ToggleGroup fx:id="milk" />
+               </toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="almondMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 10;" text="Almond Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </ToggleButton>
+            <ToggleButton fx:id="oatMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 10;" text="Oat Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </ToggleButton>
+            <ToggleButton fx:id="soyMilk" mnemonicParsing="false" onAction="#setMilk" prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 10;" text="Soy Milk" textAlignment="CENTER" toggleGroup="$milk">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </ToggleButton>
+         </children>
+      </HBox>
+      <Label text="Size">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="20.0">
+         <children>
+            <ToggleButton fx:id="medium" mnemonicParsing="false" onAction="#setSize" prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 10;" text="Medium" textAlignment="CENTER">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <toggleGroup>
+                  <ToggleGroup fx:id="size" />
+               </toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="large" mnemonicParsing="false" onAction="#setSize" prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 10;" text="Large" textAlignment="CENTER" toggleGroup="$size">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </ToggleButton>
+         </children>
+      </HBox>
+      <Label text="Notes">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="notes" prefHeight="60.0" prefWidth="200.0" promptText="Special Notes/Comments" style="-fx-background-radius: 15; -fx-border-radius: 15;">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </TextArea>
+      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="100.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#cancel" prefHeight="50.0" prefWidth="150.0" styleClass="action-button-cancel" text="Cancel">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#save" prefHeight="50.0" prefWidth="150.0" styleClass="action-button-save" text="Save">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Button>
+         </children>
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+</VBox>
